@@ -33,6 +33,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'WoukieBox 2',
+      themeMode: ThemeMode.system,
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+      ),
       home: FutureBuilder(
         future: future,
         builder: (context, snapshot) {
@@ -48,10 +57,6 @@ class MyApp extends StatelessWidget {
                 : const OnboardingScreen();
           }
         },
-      ),
-      title: 'WoukieBox 2',
-      theme: ThemeData(
-        primarySwatch: Colors.indigo,
       ),
     );
   }

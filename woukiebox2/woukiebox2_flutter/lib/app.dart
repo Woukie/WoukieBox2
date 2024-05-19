@@ -28,48 +28,53 @@ class App extends StatelessWidget {
           ),
         ],
       ),
-      body: Container(
-        margin: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  const Expanded(
-                    child: Card(
-                      margin: EdgeInsets.all(0.0),
-                      elevation: 5,
-                      child: Messages(),
+      body: Card(
+        elevation: 0.5,
+        shape: Border.all(width: 0, color: Colors.transparent),
+        margin: const EdgeInsets.all(0),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    const Expanded(
+                      child: Card(
+                        margin: EdgeInsets.all(0.0),
+                        elevation: 0,
+                        child: Messages(),
+                      ),
                     ),
-                  ),
-                  Card(
-                    elevation: 5,
-                    margin: const EdgeInsets.only(left: 8.0),
-                    child: Container(
-                      width: 200,
-                      alignment: Alignment.topLeft,
-                      child: const Users(),
+                    Card(
+                      elevation: 0,
+                      margin: const EdgeInsets.only(left: 8.0),
+                      child: Container(
+                        width: 200,
+                        alignment: Alignment.topLeft,
+                        child: const Users(),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Card(
-              elevation: 5.0,
-              margin: const EdgeInsets.only(top: 8),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                child: const TextField(
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    isDense: true,
-                    border: InputBorder.none,
-                    hintText: "Send Message...",
-                  ),
+                  ],
                 ),
               ),
-            )
-          ],
+              Card(
+                elevation: 0,
+                margin: const EdgeInsets.only(top: 8),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  child: const TextField(
+                    maxLines: null,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      border: InputBorder.none,
+                      hintText: "Send Message...",
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
