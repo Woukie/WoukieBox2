@@ -30,6 +30,7 @@ void main() async {
     appWindow.minSize = initialSize;
     appWindow.size = initialSize;
     appWindow.alignment = Alignment.center;
+    appWindow.title = "WoukieBox 2";
     appWindow.show();
   });
 }
