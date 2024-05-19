@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
@@ -23,6 +24,14 @@ void main() async {
   );
 
   runApp(MyApp(future: sessionManager.initialize()));
+
+  doWhenWindowReady(() {
+    const initialSize = Size(600, 450);
+    appWindow.minSize = initialSize;
+    appWindow.size = initialSize;
+    appWindow.alignment = Alignment.center;
+    appWindow.show();
+  });
 }
 
 class MyApp extends StatelessWidget {
