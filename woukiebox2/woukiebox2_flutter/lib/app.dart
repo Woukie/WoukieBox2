@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -9,72 +9,102 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 5,
-        scrolledUnderElevation: 5,
-        shadowColor: Theme.of(context).colorScheme.shadow,
-        title: const Text('WoukieBox2'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: 'Back to login',
-          onPressed: () {},
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle_outlined),
-            tooltip: 'User Settings',
-            onPressed: () {},
-          ),
+    return Card(
+      elevation: 0.5,
+      shape: Border.all(width: 0, color: Colors.transparent),
+      margin: const EdgeInsets.all(0),
+      child: const Column(
+        children: [
+          AppBar(),
+          ChatBox(),
         ],
       ),
-      body: Card(
-        elevation: 0.5,
-        shape: Border.all(width: 0, color: Colors.transparent),
-        margin: const EdgeInsets.all(0),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    const Expanded(
-                      child: Card(
-                        margin: EdgeInsets.all(0.0),
-                        elevation: 0,
-                        child: Messages(),
-                      ),
-                    ),
-                    Card(
+    );
+  }
+}
+
+class ChatBox extends StatelessWidget {
+  const ChatBox({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: Card(
+                      margin: EdgeInsets.all(0.0),
                       elevation: 0,
-                      margin: const EdgeInsets.only(left: 8.0),
-                      child: Container(
-                        width: 200,
-                        alignment: Alignment.topLeft,
-                        child: const Users(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Card(
-                elevation: 0,
-                margin: const EdgeInsets.only(top: 8),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  child: const TextField(
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      isDense: true,
-                      border: InputBorder.none,
-                      hintText: "Send Message...",
+                      child: Messages(),
                     ),
                   ),
+                  Card(
+                    elevation: 0,
+                    margin: const EdgeInsets.only(left: 8.0),
+                    child: Container(
+                      width: 200,
+                      alignment: Alignment.topLeft,
+                      child: const Users(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Card(
+              elevation: 0,
+              margin: const EdgeInsets.only(top: 8),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                child: const TextField(
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    border: InputBorder.none,
+                    hintText: "Send Message...",
+                  ),
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AppBar extends StatelessWidget {
+  const AppBar({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      elevation: 2,
+      shape: Border.all(color: Colors.transparent, width: 0),
+      child: WindowTitleBarBox(
+        child: Row(
+          children: [
+            const Text(
+              "WoukieBox2",
+            ),
+            Expanded(child: MoveWindow()),
+            IconButton(
+              icon: const Icon(
+                Icons.account_circle_outlined,
+              ),
+              tooltip: 'User Settings',
+              onPressed: () {},
+            ),
+          ],
         ),
       ),
     );
