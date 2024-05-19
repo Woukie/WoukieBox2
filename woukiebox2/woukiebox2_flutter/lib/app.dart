@@ -92,9 +92,6 @@ class AppBar extends StatelessWidget {
       child: WindowTitleBarBox(
         child: Row(
           children: [
-            const Text(
-              "WoukieBox2",
-            ),
             Expanded(child: MoveWindow()),
             IconButton(
               icon: const Icon(
