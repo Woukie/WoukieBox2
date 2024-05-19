@@ -10,6 +10,7 @@ import 'package:woukiebox2_flutter/onboarding.dart';
 
 late SessionManager sessionManager;
 late Client client;
+final isMaximized = ValueNotifier<bool>(false);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,5 +1,7 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class App extends StatelessWidget {
   final TextStyle? style;
@@ -92,13 +94,59 @@ class AppBar extends StatelessWidget {
       child: WindowTitleBarBox(
         child: Row(
           children: [
-            Expanded(child: MoveWindow()),
-            IconButton(
-              icon: const Icon(
-                Icons.account_circle_outlined,
+            Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.account_circle_outlined,
+                  ),
+                  padding: EdgeInsets.zero,
+                  tooltip: 'User Settings',
+                  onPressed: () {
+                    appWindow.maximizeOrRestore();
+                  },
+                ),
               ),
-              tooltip: 'User Settings',
-              onPressed: () {},
+            ),
+            Expanded(child: MoveWindow()),
+            Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: Row(
+                children: [
+                  AspectRatio(
+                    aspectRatio: 1,
+                    child: IconButton(
+                      icon: const Icon(Icons.minimize),
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        appWindow.minimize();
+                      },
+                    ),
+                  ),
+                  AspectRatio(
+                    aspectRatio: 1,
+                    child: IconButton(
+                      icon: const Icon(Icons.fullscreen),
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        appWindow.maximizeOrRestore();
+                      },
+                    ),
+                  ),
+                  AspectRatio(
+                    aspectRatio: 1,
+                    child: IconButton(
+                      icon: const Icon(Icons.close),
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        appWindow.close();
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
