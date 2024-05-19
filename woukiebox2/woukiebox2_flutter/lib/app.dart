@@ -31,7 +31,7 @@ class ChatBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(12),
         child: Column(
           children: [
             Expanded(
@@ -46,7 +46,7 @@ class ChatBox extends StatelessWidget {
                   ),
                   Card(
                     elevation: 0,
-                    margin: const EdgeInsets.only(left: 8.0),
+                    margin: const EdgeInsets.only(left: 12),
                     child: Container(
                       width: 200,
                       alignment: Alignment.topLeft,
@@ -58,9 +58,9 @@ class ChatBox extends StatelessWidget {
             ),
             Card(
               elevation: 0,
-              margin: const EdgeInsets.only(top: 8),
+              margin: const EdgeInsets.only(top: 12),
               child: Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(12),
                 child: const TextField(
                   maxLines: null,
                   decoration: InputDecoration(
