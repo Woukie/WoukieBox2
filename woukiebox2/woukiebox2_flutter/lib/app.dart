@@ -2,6 +2,7 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:woukiebox2_flutter/main.dart';
 
 class App extends StatelessWidget {
   final TextStyle? style;
@@ -92,33 +93,53 @@ class AppBar extends StatelessWidget {
       elevation: 2,
       shape: Border.all(color: Colors.transparent, width: 0),
       child: WindowTitleBarBox(
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 12),
-              child: AspectRatio(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 12, right: 12),
+          child: Row(
+            children: [
+              AspectRatio(
                 aspectRatio: 1,
                 child: IconButton(
                   icon: const Icon(
                     Icons.account_circle_outlined,
                   ),
                   padding: EdgeInsets.zero,
-                  tooltip: 'User Settings',
+                  tooltip: 'Profile',
+                  onPressed: () {},
+                ),
+              ),
+              AspectRatio(
+                aspectRatio: 1,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.settings,
+                  ),
+                  padding: EdgeInsets.zero,
+                  tooltip: 'Settings',
+                  onPressed: () {},
+                ),
+              ),
+              AspectRatio(
+                aspectRatio: 1,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.logout,
+                  ),
+                  padding: EdgeInsets.zero,
+                  tooltip: 'Log Out',
+                  color: Theme.of(context).colorScheme.error,
                   onPressed: () {
-                    appWindow.maximizeOrRestore();
+                    sessionManager.signOut();
                   },
                 ),
               ),
-            ),
-            Expanded(child: MoveWindow()),
-            Padding(
-              padding: const EdgeInsets.only(right: 12.0),
-              child: Row(
+              Expanded(child: MoveWindow()),
+              Row(
                 children: [
                   AspectRatio(
                     aspectRatio: 1,
                     child: IconButton(
-                      icon: const Icon(Icons.minimize),
+                      icon: const Icon(Icons.remove),
                       padding: EdgeInsets.zero,
                       onPressed: () {
                         appWindow.minimize();
@@ -147,8 +168,8 @@ class AppBar extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
