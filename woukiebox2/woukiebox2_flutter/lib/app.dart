@@ -25,17 +25,34 @@ class App extends StatelessWidget {
         ],
       ),
       body: Container(
-        padding: const EdgeInsets.all(8.0),
+        margin:
+            const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0, top: 0.0),
         color: Colors.amber,
-        child: Row(
+        child: Column(
           children: [
             Expanded(
-              child: Container(
-                color: Colors.deepPurple,
-                child: const Text("messages"),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.topLeft,
+                      color: Colors.deepPurple,
+                      child: const Text("messages"),
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    color: Colors.yellow,
+                    child: const Text("users"),
+                  ),
+                ],
               ),
             ),
-            const Text("users"),
+            Container(
+              alignment: Alignment.centerLeft,
+              color: Colors.pink,
+              child: const Text("send messaghe here"),
+            ),
           ],
         ),
       ),
