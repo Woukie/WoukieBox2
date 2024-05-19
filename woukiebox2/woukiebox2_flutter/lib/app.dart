@@ -33,12 +33,8 @@ class App extends StatelessWidget {
             Expanded(
               child: Row(
                 children: [
-                  Expanded(
-                    child: Container(
-                      alignment: Alignment.topLeft,
-                      color: Colors.deepPurple,
-                      child: const Text("messages"),
-                    ),
+                  const Expanded(
+                    child: Messages(),
                   ),
                   Container(
                     alignment: Alignment.topLeft,
@@ -57,5 +53,42 @@ class App extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class Messages extends StatelessWidget {
+  const Messages({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var items = List<String>.generate(10000, (i) => 'Message $i');
+
+    return ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(items[index]),
+        );
+      },
+    );
+
+    // return Row(
+    //   children: [
+    //     Container(
+    //       alignment: Alignment.topLeft,
+    //       color: Colors.blue,
+    //       child: const Text("DATA"),
+    //     ),
+    //     Expanded(
+    //       child: Container(
+    //         alignment: Alignment.topLeft,
+    //         color: Colors.deepPurple,
+    //         child: const Text("messages"),
+    //       ),
+    //     ),
+    //   ],
+    // );
   }
 }
