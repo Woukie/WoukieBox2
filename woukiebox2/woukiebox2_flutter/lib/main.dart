@@ -45,9 +45,10 @@ class MyApp extends StatelessWidget {
       title: 'WoukieBox 2',
       themeMode: ThemeMode.system,
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        colorSchemeSeed: Colors.blue,
       ),
       darkTheme: ThemeData(
+        colorSchemeSeed: Colors.blue,
         useMaterial3: true,
         brightness: Brightness.dark,
       ),
