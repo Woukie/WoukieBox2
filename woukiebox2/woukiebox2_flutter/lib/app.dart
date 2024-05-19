@@ -1,6 +1,5 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class App extends StatelessWidget {
   final TextStyle? style;
