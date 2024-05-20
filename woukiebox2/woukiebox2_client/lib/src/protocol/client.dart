@@ -27,6 +27,14 @@ class EndpointExample extends _i1.EndpointRef {
       );
 }
 
+/// {@category Endpoint}
+class EndpointSockets extends _i1.EndpointRef {
+  EndpointSockets(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'sockets';
+}
+
 class _Modules {
   _Modules(Client client) {
     auth = _i3.Caller(client);
@@ -51,15 +59,21 @@ class Client extends _i1.ServerpodClient {
           connectionTimeout: connectionTimeout,
         ) {
     example = EndpointExample(this);
+    sockets = EndpointSockets(this);
     modules = _Modules(this);
   }
 
   late final EndpointExample example;
 
+  late final EndpointSockets sockets;
+
   late final _Modules modules;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {'example': example};
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+        'example': example,
+        'sockets': sockets,
+      };
 
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup =>

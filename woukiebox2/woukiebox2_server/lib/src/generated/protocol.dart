@@ -13,7 +13,16 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_auth_server/module.dart' as _i3;
 import 'example.dart' as _i4;
+import 'chat_message.dart' as _i5;
+import 'room_members.dart' as _i6;
+import 'system_message.dart' as _i7;
+import 'user.dart' as _i8;
+import 'protocol.dart' as _i9;
 export 'example.dart';
+export 'chat_message.dart';
+export 'room_members.dart';
+export 'system_message.dart';
+export 'user.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -41,8 +50,37 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i4.Example) {
       return _i4.Example.fromJson(data, this) as T;
     }
+    if (t == _i5.ChatMessage) {
+      return _i5.ChatMessage.fromJson(data, this) as T;
+    }
+    if (t == _i6.RoomMembers) {
+      return _i6.RoomMembers.fromJson(data, this) as T;
+    }
+    if (t == _i7.SystemMessage) {
+      return _i7.SystemMessage.fromJson(data, this) as T;
+    }
+    if (t == _i8.User) {
+      return _i8.User.fromJson(data, this) as T;
+    }
     if (t == _i1.getType<_i4.Example?>()) {
       return (data != null ? _i4.Example.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i5.ChatMessage?>()) {
+      return (data != null ? _i5.ChatMessage.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i6.RoomMembers?>()) {
+      return (data != null ? _i6.RoomMembers.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i7.SystemMessage?>()) {
+      return (data != null ? _i7.SystemMessage.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i8.User?>()) {
+      return (data != null ? _i8.User.fromJson(data, this) : null) as T;
+    }
+    if (t == List<_i9.User>) {
+      return (data as List).map((e) => deserialize<_i9.User>(e)).toList()
+          as dynamic;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
@@ -63,6 +101,18 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i4.Example) {
       return 'Example';
     }
+    if (data is _i5.ChatMessage) {
+      return 'ChatMessage';
+    }
+    if (data is _i6.RoomMembers) {
+      return 'RoomMembers';
+    }
+    if (data is _i7.SystemMessage) {
+      return 'SystemMessage';
+    }
+    if (data is _i8.User) {
+      return 'User';
+    }
     return super.getClassNameForObject(data);
   }
 
@@ -74,6 +124,18 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (data['className'] == 'Example') {
       return deserialize<_i4.Example>(data['data']);
+    }
+    if (data['className'] == 'ChatMessage') {
+      return deserialize<_i5.ChatMessage>(data['data']);
+    }
+    if (data['className'] == 'RoomMembers') {
+      return deserialize<_i6.RoomMembers>(data['data']);
+    }
+    if (data['className'] == 'SystemMessage') {
+      return deserialize<_i7.SystemMessage>(data['data']);
+    }
+    if (data['className'] == 'User') {
+      return deserialize<_i8.User>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

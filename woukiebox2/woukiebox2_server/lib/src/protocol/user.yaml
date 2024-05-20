@@ -1,0 +1,7 @@
+class: User
+
+fields:
+  id: String
+  username: String
+  bio: String
+  colour: String
