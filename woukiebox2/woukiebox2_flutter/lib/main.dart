@@ -5,8 +5,8 @@ import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
-import 'package:woukiebox2_flutter/app.dart';
-import 'package:woukiebox2_flutter/onboarding.dart';
+import 'package:woukiebox2_flutter/src/app/app.dart';
+import 'package:woukiebox2_flutter/src/authentication/onboarding.dart';
 
 late SessionManager sessionManager;
 late Client client;
