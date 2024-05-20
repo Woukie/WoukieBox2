@@ -1,5 +1,11 @@
+import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:woukiebox2_flutter/main.dart';
+import 'package:woukiebox2_flutter/src/app/settings_page.dart';
+
+import '../profile_page.dart';
 
 class Operations extends StatelessWidget {
   const Operations({
@@ -18,7 +24,15 @@ class Operations extends StatelessWidget {
             ),
             padding: EdgeInsets.zero,
             tooltip: 'Profile',
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet<void>(
+                isScrollControlled: true,
+                context: context,
+                builder: (context) {
+                  return const ProfilePage();
+                },
+              );
+            },
           ),
         ),
         AspectRatio(
@@ -29,7 +43,15 @@ class Operations extends StatelessWidget {
             ),
             padding: EdgeInsets.zero,
             tooltip: 'Settings',
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet<void>(
+                isScrollControlled: true,
+                context: context,
+                builder: (context) {
+                  return const SettingsPage();
+                },
+              );
+            },
           ),
         ),
         AspectRatio(
