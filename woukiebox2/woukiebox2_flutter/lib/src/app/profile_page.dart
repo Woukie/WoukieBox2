@@ -14,16 +14,16 @@ class ProfilePage extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: const Column(
             children: [
-              Card(
-                margin: EdgeInsets.zero,
-                elevation: 0,
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 4),
-                      child: CircleAvatar(),
-                    ),
-                    Expanded(
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(right: 12),
+                    child: CircleAvatar(),
+                  ),
+                  Expanded(
+                    child: Card(
+                      margin: EdgeInsets.zero,
+                      elevation: 0,
                       child: Padding(
                         padding: EdgeInsets.only(left: 8, right: 8),
                         child: TextField(
@@ -34,8 +34,8 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               Padding(
                 padding: EdgeInsets.only(top: 12),
