@@ -34,22 +34,33 @@ class ChatBox extends StatelessWidget {
                 ],
               ),
             ),
-            Card(
-              elevation: 0,
-              margin: const EdgeInsets.only(top: 12),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                child: const TextField(
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    isDense: true,
-                    border: InputBorder.none,
-                    hintText: "Send Message...",
-                  ),
-                ),
-              ),
-            )
+            const MessageBox()
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class MessageBox extends StatelessWidget {
+  const MessageBox({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.only(top: 12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        child: const TextField(
+          maxLines: null,
+          decoration: InputDecoration(
+            isDense: true,
+            border: InputBorder.none,
+            hintText: "Send Message...",
+          ),
         ),
       ),
     );
