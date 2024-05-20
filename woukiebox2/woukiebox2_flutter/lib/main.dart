@@ -41,10 +41,31 @@ void main() async {
   });
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final Future future;
 
   const MyApp({super.key, required this.future});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    sessionManager.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    sessionManager.removeListener(() {
+      setState(() {});
+    });
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +82,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       home: FutureBuilder(
-        future: future,
+        future: widget.future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Scaffold(
