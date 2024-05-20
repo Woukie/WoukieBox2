@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:provider/provider.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/src/app/app.dart';
 import 'package:woukiebox2_flutter/src/authentication/onboarding.dart';
+import 'package:woukiebox2_flutter/src/providers/theme_data_provider.dart';
 
 late SessionManager sessionManager;
 late Client client;
@@ -24,7 +26,10 @@ void main() async {
     caller: client.modules.auth,
   );
 
-  runApp(MyApp(future: sessionManager.initialize()));
+  runApp(ChangeNotifierProvider(
+    create: (context) => ThemeDataProvider(),
+    child: MyApp(future: sessionManager.initialize()),
+  ));
 
   doWhenWindowReady(() {
     const initialSize = Size(600, 450);
@@ -43,14 +48,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeDataProvider = Provider.of<ThemeDataProvider>(context);
     return MaterialApp(
       title: 'WoukieBox 2',
-      themeMode: ThemeMode.system,
+      themeMode: themeDataProvider.themeMode,
       theme: ThemeData(
-        colorSchemeSeed: Colors.blue,
+        colorSchemeSeed: themeDataProvider.color,
       ),
       darkTheme: ThemeData(
-        colorSchemeSeed: Colors.blue,
+        colorSchemeSeed: themeDataProvider.color,
         useMaterial3: true,
         brightness: Brightness.dark,
       ),
