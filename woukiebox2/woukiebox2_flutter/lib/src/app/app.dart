@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'chat_box.dart';
-import 'app_bar.dart';
+import 'bar/app_bar.dart';
 
 class App extends StatelessWidget {
   final TextStyle? style;
