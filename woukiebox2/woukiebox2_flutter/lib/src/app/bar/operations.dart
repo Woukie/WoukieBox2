@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:woukiebox2_flutter/main.dart';
 import 'package:woukiebox2_flutter/src/app/settings_page.dart';
+import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
 
 import '../profile_page.dart';
 
@@ -11,6 +13,8 @@ class Operations extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final connectionState = Provider.of<ConnectionStateProvider>(context).state;
+
     return Row(
       children: [
         AspectRatio(
@@ -63,6 +67,26 @@ class Operations extends StatelessWidget {
             onPressed: () {
               sessionManager.signOut();
             },
+          ),
+        ),
+        const VerticalDivider(),
+        Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: Tooltip(
+            message: "Status",
+            child: Icon(
+              switch (connectionState) {
+                ConnectionState.none => Icons.wifi_off,
+                ConnectionState.waiting => Icons.wifi_1_bar,
+                _ => Icons.wifi,
+              },
+              color: switch (connectionState) {
+                ConnectionState.none => Theme.of(context).colorScheme.error,
+                ConnectionState.waiting =>
+                  Theme.of(context).colorScheme.secondary,
+                _ => Theme.of(context).colorScheme.onSurfaceVariant,
+              },
+            ),
           ),
         ),
       ],
