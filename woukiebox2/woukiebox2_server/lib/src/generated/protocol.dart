@@ -14,12 +14,16 @@ import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_auth_server/module.dart' as _i3;
 import 'example.dart' as _i4;
 import 'chat_message.dart' as _i5;
-import 'room_members.dart' as _i6;
-import 'system_message.dart' as _i7;
-import 'user.dart' as _i8;
-import 'protocol.dart' as _i9;
+import 'join_message.dart' as _i6;
+import 'leave_message.dart' as _i7;
+import 'room_members.dart' as _i8;
+import 'system_message.dart' as _i9;
+import 'user.dart' as _i10;
+import 'protocol.dart' as _i11;
 export 'example.dart';
 export 'chat_message.dart';
+export 'join_message.dart';
+export 'leave_message.dart';
 export 'room_members.dart';
 export 'system_message.dart';
 export 'user.dart';
@@ -53,14 +57,20 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i5.ChatMessage) {
       return _i5.ChatMessage.fromJson(data, this) as T;
     }
-    if (t == _i6.RoomMembers) {
-      return _i6.RoomMembers.fromJson(data, this) as T;
+    if (t == _i6.JoinMessage) {
+      return _i6.JoinMessage.fromJson(data, this) as T;
     }
-    if (t == _i7.SystemMessage) {
-      return _i7.SystemMessage.fromJson(data, this) as T;
+    if (t == _i7.LeaveMessage) {
+      return _i7.LeaveMessage.fromJson(data, this) as T;
     }
-    if (t == _i8.User) {
-      return _i8.User.fromJson(data, this) as T;
+    if (t == _i8.RoomMembers) {
+      return _i8.RoomMembers.fromJson(data, this) as T;
+    }
+    if (t == _i9.SystemMessage) {
+      return _i9.SystemMessage.fromJson(data, this) as T;
+    }
+    if (t == _i10.User) {
+      return _i10.User.fromJson(data, this) as T;
     }
     if (t == _i1.getType<_i4.Example?>()) {
       return (data != null ? _i4.Example.fromJson(data, this) : null) as T;
@@ -68,18 +78,24 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i5.ChatMessage?>()) {
       return (data != null ? _i5.ChatMessage.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i6.RoomMembers?>()) {
-      return (data != null ? _i6.RoomMembers.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i6.JoinMessage?>()) {
+      return (data != null ? _i6.JoinMessage.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i7.SystemMessage?>()) {
-      return (data != null ? _i7.SystemMessage.fromJson(data, this) : null)
+    if (t == _i1.getType<_i7.LeaveMessage?>()) {
+      return (data != null ? _i7.LeaveMessage.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i8.RoomMembers?>()) {
+      return (data != null ? _i8.RoomMembers.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i9.SystemMessage?>()) {
+      return (data != null ? _i9.SystemMessage.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i8.User?>()) {
-      return (data != null ? _i8.User.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i10.User?>()) {
+      return (data != null ? _i10.User.fromJson(data, this) : null) as T;
     }
-    if (t == List<_i9.User>) {
-      return (data as List).map((e) => deserialize<_i9.User>(e)).toList()
+    if (t == List<_i11.User>) {
+      return (data as List).map((e) => deserialize<_i11.User>(e)).toList()
           as dynamic;
     }
     try {
@@ -104,13 +120,19 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i5.ChatMessage) {
       return 'ChatMessage';
     }
-    if (data is _i6.RoomMembers) {
+    if (data is _i6.JoinMessage) {
+      return 'JoinMessage';
+    }
+    if (data is _i7.LeaveMessage) {
+      return 'LeaveMessage';
+    }
+    if (data is _i8.RoomMembers) {
       return 'RoomMembers';
     }
-    if (data is _i7.SystemMessage) {
+    if (data is _i9.SystemMessage) {
       return 'SystemMessage';
     }
-    if (data is _i8.User) {
+    if (data is _i10.User) {
       return 'User';
     }
     return super.getClassNameForObject(data);
@@ -128,14 +150,20 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'ChatMessage') {
       return deserialize<_i5.ChatMessage>(data['data']);
     }
+    if (data['className'] == 'JoinMessage') {
+      return deserialize<_i6.JoinMessage>(data['data']);
+    }
+    if (data['className'] == 'LeaveMessage') {
+      return deserialize<_i7.LeaveMessage>(data['data']);
+    }
     if (data['className'] == 'RoomMembers') {
-      return deserialize<_i6.RoomMembers>(data['data']);
+      return deserialize<_i8.RoomMembers>(data['data']);
     }
     if (data['className'] == 'SystemMessage') {
-      return deserialize<_i7.SystemMessage>(data['data']);
+      return deserialize<_i9.SystemMessage>(data['data']);
     }
     if (data['className'] == 'User') {
-      return deserialize<_i8.User>(data['data']);
+      return deserialize<_i10.User>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

@@ -51,26 +51,24 @@ class SocketsEndpoint extends Endpoint {
     User user = await initUser(session);
 
     // Register the session with the global channel
-    session.messages.addListener(
-      'global',
-      (message) {
-        sendStreamMessage(session, message);
-      },
-    );
+    session.messages.addListener('global', (message) {
+      sendStreamMessage(session, message);
+    });
 
     // Send the client a list of all the members in the room
-    sendStreamMessage(
-      session,
-      RoomMembers(users: connectedUsers.toList()),
-    );
+    sendStreamMessage(session, RoomMembers(users: connectedUsers.toList()));
 
     // Broadcast to everyone that a new person has entered the room
-    session.messages.postMessage("global", user);
+    session.messages.postMessage("global", JoinMessage(user: user));
   }
 
+  // Remove the disconnecting user from the users list and broadcast to others that they have left
   @override
   Future<void> streamClosed(StreamingSession session) async {
-    connectedUsers.removeWhere((user) => user.id == getUserObject(session).id);
+    int id = getUserObject(session).id;
+    connectedUsers.removeWhere((user) => user.id == id);
+
+    session.messages.postMessage("global", LeaveMessage(id: id));
   }
 
   // Called when a message is recieved from the client, clients can basically just send chat messages and change their profile. All other events like join/leave messages are handled elsewhere

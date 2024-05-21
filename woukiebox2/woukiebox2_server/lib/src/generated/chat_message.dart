@@ -17,7 +17,7 @@ abstract class ChatMessage extends _i1.SerializableEntity {
   });
 
   factory ChatMessage({
-    required String sender,
+    required int sender,
     required String message,
   }) = _ChatMessageImpl;
 
@@ -27,18 +27,18 @@ abstract class ChatMessage extends _i1.SerializableEntity {
   ) {
     return ChatMessage(
       sender:
-          serializationManager.deserialize<String>(jsonSerialization['sender']),
+          serializationManager.deserialize<int>(jsonSerialization['sender']),
       message: serializationManager
           .deserialize<String>(jsonSerialization['message']),
     );
   }
 
-  String sender;
+  int sender;
 
   String message;
 
   ChatMessage copyWith({
-    String? sender,
+    int? sender,
     String? message,
   });
   @override
@@ -60,7 +60,7 @@ abstract class ChatMessage extends _i1.SerializableEntity {
 
 class _ChatMessageImpl extends ChatMessage {
   _ChatMessageImpl({
-    required String sender,
+    required int sender,
     required String message,
   }) : super._(
           sender: sender,
@@ -69,7 +69,7 @@ class _ChatMessageImpl extends ChatMessage {
 
   @override
   ChatMessage copyWith({
-    String? sender,
+    int? sender,
     String? message,
   }) {
     return ChatMessage(
