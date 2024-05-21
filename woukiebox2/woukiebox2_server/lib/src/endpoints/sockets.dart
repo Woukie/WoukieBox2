@@ -1,23 +1,58 @@
+import 'dart:math';
+
+import 'package:serverpod_auth_server/module.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
+const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+
 class SocketsEndpoint extends Endpoint {
+  final Random _rnd = Random();
+
+  // https://stackoverflow.com/questions/61919395/how-to-generate-random-string-in-dart
+  String getRandomString(int length) => String.fromCharCodes(
+        Iterable.generate(
+          length,
+          (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length)),
+        ),
+      );
+
+  Future<bool> initUser(StreamingSession session) async {
+    if (await session.isUserSignedIn) {
+      var userId = await session.auth.authenticatedUserId;
+      var userInfo = await Users.findUserByUserId(session, userId!);
+
+      if (userInfo != null) {
+        setUserObject(session, (
+          userId: userInfo.id,
+          color: "#FFFF00",
+          name: userInfo.userName,
+          bio: "not implemented",
+          verified: true,
+        ));
+
+        print("User info");
+
+        return true;
+      }
+    }
+
+    print("Could not authenticate user!");
+
+    setUserObject(session, (
+      userId: getRandomString(10),
+      color: "#00FF00",
+      name: "Anonymous",
+      bio: "",
+      verified: false,
+    ));
+
+    return false;
+  }
+
   @override
   Future<void> streamOpened(StreamingSession session) async {
-    print(session.userObject);
-
-    // if (await session.isUserSignedIn) {
-    //   setUserObject(session, (
-    //     color: "#FFFF00",
-    //     name: session.userObject,
-    //   ));
-    // } else {
-    //   setUserObject(session, (
-    //     color: "#FFFF00",
-    //     name: "Anonymous",
-    //     verified: false,
-    //   ));
-    // }
+    await initUser(session);
 
     // Register the session with the global channel
     session.messages.addListener(
