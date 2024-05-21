@@ -8,6 +8,7 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/src/app/app.dart';
 import 'package:woukiebox2_flutter/src/authentication/onboarding.dart';
+import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2_flutter/src/providers/theme_data_provider.dart';
 
 late SessionManager sessionManager;
@@ -26,9 +27,18 @@ void main() async {
     caller: client.modules.auth,
   );
 
-  runApp(ChangeNotifierProvider(
-    create: (context) => ThemeDataProvider(),
-    child: MyApp(future: sessionManager.initialize()),
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(
+        create: (context) => ThemeDataProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => ConnectionStateProvider(),
+      ),
+    ],
+    child: MyApp(
+      future: sessionManager.initialize(),
+    ),
   ));
 
   doWhenWindowReady(() {

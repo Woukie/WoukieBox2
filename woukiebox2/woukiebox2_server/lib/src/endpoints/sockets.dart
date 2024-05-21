@@ -4,6 +4,21 @@ import 'package:serverpod/serverpod.dart';
 class SocketsEndpoint extends Endpoint {
   @override
   Future<void> streamOpened(StreamingSession session) async {
+    print(session.userObject);
+
+    // if (await session.isUserSignedIn) {
+    //   setUserObject(session, (
+    //     color: "#FFFF00",
+    //     name: session.userObject,
+    //   ));
+    // } else {
+    //   setUserObject(session, (
+    //     color: "#FFFF00",
+    //     name: "Anonymous",
+    //     verified: false,
+    //   ));
+    // }
+
     // Register the session with the global channel
     session.messages.addListener(
       'global',
