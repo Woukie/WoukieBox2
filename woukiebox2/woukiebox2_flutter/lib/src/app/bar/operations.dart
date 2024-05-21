@@ -77,7 +77,6 @@ class Operations extends StatelessWidget {
             child: Icon(
               switch (connectionState) {
                 ConnectionState.none => Icons.wifi_off,
-                ConnectionState.waiting => Icons.wifi_1_bar,
                 _ => Icons.wifi,
               },
               color: switch (connectionState) {
