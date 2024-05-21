@@ -4,55 +4,51 @@ import 'package:serverpod_auth_server/module.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
-const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-
 class SocketsEndpoint extends Endpoint {
-  final Random _rnd = Random();
+  // setUserData is basically fucking useless because you can't get a list of all active sessions. We now have to manually keep track of users while STILL having to use userData to store the session id's
+  final Set<User> connectedUsers = {};
+  final Random random = Random();
 
-  // https://stackoverflow.com/questions/61919395/how-to-generate-random-string-in-dart
-  String getRandomString(int length) => String.fromCharCodes(
-        Iterable.generate(
-          length,
-          (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length)),
-        ),
-      );
-
-  Future<bool> initUser(StreamingSession session) async {
+  // Sets and returns the user object and updates connectedUsers. User constructed with database values if authenticated
+  Future<User> initUser(StreamingSession session) async {
     if (await session.isUserSignedIn) {
       var userId = await session.auth.authenticatedUserId;
       var userInfo = await Users.findUserByUserId(session, userId!);
 
       if (userInfo != null) {
-        setUserObject(session, (
-          userId: userInfo.id,
-          color: "#FFFF00",
-          name: userInfo.userName,
+        User user = User(
+          id: userId,
+          colour: "#FFFF00",
+          username: userInfo.userName,
           bio: "not implemented",
           verified: true,
-        ));
+        );
+        setUserObject(session, (id: user.id));
 
-        print("User info");
+        print("Authenticated user joined!");
 
-        return true;
+        return user;
       }
     }
 
-    print("Could not authenticate user!");
-
-    setUserObject(session, (
-      userId: getRandomString(10),
-      color: "#00FF00",
-      name: "Anonymous",
+    User user = User(
+      id: random.nextInt(100000),
+      colour: "#00FF00",
+      username: "Anonymous",
       bio: "",
       verified: false,
-    ));
+    );
 
-    return false;
+    setUserObject(session, (id: user.id));
+
+    print("Anonymous user joined!");
+
+    return user;
   }
 
   @override
   Future<void> streamOpened(StreamingSession session) async {
-    await initUser(session);
+    User user = await initUser(session);
 
     // Register the session with the global channel
     session.messages.addListener(
@@ -62,44 +58,35 @@ class SocketsEndpoint extends Endpoint {
       },
     );
 
-    print("user joined");
-
-    // Send the client all the members in the room
+    // Send the client a list of all the members in the room
     sendStreamMessage(
       session,
-      RoomMembers(users: [
-        User(
-          id: "2wad23",
-          username: "username",
-          bio: "bio",
-          colour: "colour",
-        ),
-        /* TODO: send all members to client */
-      ]),
+      RoomMembers(users: connectedUsers.toList()),
     );
 
-    // TODO: currently just sends a placeholder back to the user. Need to broadcast to ALL users in the channel
     // Broadcast to everyone that a new person has entered the room
-    sendStreamMessage(
-      session,
-      User(
-        id: "2wad23",
-        username: "username",
-        bio: "bio",
-        colour: "colour",
-      ),
-    );
+    session.messages.postMessage("global", user);
   }
 
+  @override
+  Future<void> streamClosed(StreamingSession session) async {
+    connectedUsers.removeWhere((user) => user.id == getUserObject(session).id);
+  }
+
+  // Called when a message is recieved from the client, clients can basically just send chat messages and change their profile. All other events like join/leave messages are handled elsewhere
   @override
   Future<void> handleStreamMessage(
     StreamingSession session,
     SerializableEntity message,
   ) async {
-    if (message is ChatMessage) {
+    print("Recieved stream message from a client!");
+    print(message);
+
+    if (message is String) {
       session.messages.postMessage(
         'global',
-        message,
+        ChatMessage(
+            sender: getUserObject(session).id, message: message as String),
       );
     }
   }

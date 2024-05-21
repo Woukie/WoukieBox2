@@ -16,13 +16,15 @@ abstract class User extends _i1.SerializableEntity {
     required this.username,
     required this.bio,
     required this.colour,
+    required this.verified,
   });
 
   factory User({
-    required String id,
+    required int id,
     required String username,
     required String bio,
     required String colour,
+    required bool verified,
   }) = _UserImpl;
 
   factory User.fromJson(
@@ -30,16 +32,18 @@ abstract class User extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return User(
-      id: serializationManager.deserialize<String>(jsonSerialization['id']),
+      id: serializationManager.deserialize<int>(jsonSerialization['id']),
       username: serializationManager
           .deserialize<String>(jsonSerialization['username']),
       bio: serializationManager.deserialize<String>(jsonSerialization['bio']),
       colour:
           serializationManager.deserialize<String>(jsonSerialization['colour']),
+      verified:
+          serializationManager.deserialize<bool>(jsonSerialization['verified']),
     );
   }
 
-  String id;
+  int id;
 
   String username;
 
@@ -47,11 +51,14 @@ abstract class User extends _i1.SerializableEntity {
 
   String colour;
 
+  bool verified;
+
   User copyWith({
-    String? id,
+    int? id,
     String? username,
     String? bio,
     String? colour,
+    bool? verified,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -60,35 +67,40 @@ abstract class User extends _i1.SerializableEntity {
       'username': username,
       'bio': bio,
       'colour': colour,
+      'verified': verified,
     };
   }
 }
 
 class _UserImpl extends User {
   _UserImpl({
-    required String id,
+    required int id,
     required String username,
     required String bio,
     required String colour,
+    required bool verified,
   }) : super._(
           id: id,
           username: username,
           bio: bio,
           colour: colour,
+          verified: verified,
         );
 
   @override
   User copyWith({
-    String? id,
+    int? id,
     String? username,
     String? bio,
     String? colour,
+    bool? verified,
   }) {
     return User(
       id: id ?? this.id,
       username: username ?? this.username,
       bio: bio ?? this.bio,
       colour: colour ?? this.colour,
+      verified: verified ?? this.verified,
     );
   }
 }
