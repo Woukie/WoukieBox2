@@ -2,19 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
 
-class ChatBox extends StatelessWidget {
+class ChatBox extends StatefulWidget {
   const ChatBox({
     super.key,
   });
 
   @override
+  State<ChatBox> createState() => _ChatBoxState();
+}
+
+class _ChatBoxState extends State<ChatBox> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final connectionProvider =
+          Provider.of<ConnectionStateProvider>(context, listen: false);
+      if (connectionProvider.state == ConnectionState.none) {
+        connectionProvider.openConnection();
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final connectionState = Provider.of<ConnectionStateProvider>(context);
-
-    if (connectionState.state == ConnectionState.none) {
-      connectionState.openConnection();
-    }
-
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
