@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart';
+import 'package:woukiebox2_flutter/main.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
+
+void sendMessage(String message) {
+  client.sockets.sendStreamMessage(ChatMessage(message: message));
+}
 
 class ChatBox extends StatefulWidget {
   const ChatBox({
@@ -61,10 +68,31 @@ class _ChatBoxState extends State<ChatBox> {
   }
 }
 
-class MessageBox extends StatelessWidget {
+class MessageBox extends StatefulWidget {
   const MessageBox({
     super.key,
   });
+
+  @override
+  State<MessageBox> createState() => _MessageBoxState();
+}
+
+class _MessageBoxState extends State<MessageBox> {
+  final _controller = TextEditingController();
+
+  late final _focusNode = FocusNode(
+    onKeyEvent: (FocusNode node, KeyEvent event) {
+      if (event is KeyDownEvent &&
+          event.logicalKey.keyLabel == "Enter" &&
+          !HardwareKeyboard.instance.isShiftPressed) {
+        sendMessage(_controller.text);
+        _controller.clear();
+        return KeyEventResult.handled;
+      }
+
+      return KeyEventResult.ignored;
+    },
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -73,13 +101,19 @@ class MessageBox extends StatelessWidget {
       margin: const EdgeInsets.only(top: 12),
       child: Container(
         padding: const EdgeInsets.all(12),
-        child: const TextField(
+        child: TextField(
+          controller: _controller,
           maxLines: null,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             isDense: true,
             border: InputBorder.none,
             hintText: "Send Message...",
           ),
+          onSubmitted: (value) {
+            sendMessage(_controller.text);
+            _controller.clear();
+          },
+          focusNode: _focusNode,
         ),
       ),
     );

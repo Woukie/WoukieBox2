@@ -1,5 +1,5 @@
 class: ChatMessage
 
 fields:
-  sender: int
+  sender: int?
   message: String

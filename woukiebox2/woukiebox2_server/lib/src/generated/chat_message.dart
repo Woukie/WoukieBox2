@@ -12,12 +12,12 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ChatMessage extends _i1.SerializableEntity {
   ChatMessage._({
-    required this.sender,
+    this.sender,
     required this.message,
   });
 
   factory ChatMessage({
-    required int sender,
+    int? sender,
     required String message,
   }) = _ChatMessageImpl;
 
@@ -27,13 +27,13 @@ abstract class ChatMessage extends _i1.SerializableEntity {
   ) {
     return ChatMessage(
       sender:
-          serializationManager.deserialize<int>(jsonSerialization['sender']),
+          serializationManager.deserialize<int?>(jsonSerialization['sender']),
       message: serializationManager
           .deserialize<String>(jsonSerialization['message']),
     );
   }
 
-  int sender;
+  int? sender;
 
   String message;
 
@@ -44,7 +44,7 @@ abstract class ChatMessage extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'sender': sender,
+      if (sender != null) 'sender': sender,
       'message': message,
     };
   }
@@ -52,15 +52,17 @@ abstract class ChatMessage extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'sender': sender,
+      if (sender != null) 'sender': sender,
       'message': message,
     };
   }
 }
 
+class _Undefined {}
+
 class _ChatMessageImpl extends ChatMessage {
   _ChatMessageImpl({
-    required int sender,
+    int? sender,
     required String message,
   }) : super._(
           sender: sender,
@@ -69,11 +71,11 @@ class _ChatMessageImpl extends ChatMessage {
 
   @override
   ChatMessage copyWith({
-    int? sender,
+    Object? sender = _Undefined,
     String? message,
   }) {
     return ChatMessage(
-      sender: sender ?? this.sender,
+      sender: sender is int? ? sender : this.sender,
       message: message ?? this.message,
     );
   }

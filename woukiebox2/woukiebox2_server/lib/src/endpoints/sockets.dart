@@ -69,6 +69,8 @@ class SocketsEndpoint extends Endpoint {
     connectedUsers.removeWhere((user) => user.id == id);
 
     session.messages.postMessage("global", LeaveMessage(id: id));
+
+    print("User left!");
   }
 
   // Called when a message is recieved from the client, clients can basically just send chat messages and change their profile. All other events like join/leave messages are handled elsewhere
@@ -80,11 +82,13 @@ class SocketsEndpoint extends Endpoint {
     print("Recieved stream message from a client!");
     print(message);
 
-    if (message is String) {
+    if (message is ChatMessage) {
       session.messages.postMessage(
         'global',
         ChatMessage(
-            sender: getUserObject(session).id, message: message as String),
+          sender: getUserObject(session).id,
+          message: message.message,
+        ),
       );
     }
   }
