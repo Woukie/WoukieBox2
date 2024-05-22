@@ -4,10 +4,10 @@ import 'package:woukiebox2_flutter/main.dart';
 import 'package:woukiebox2_flutter/src/app/settings_page.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
 
-import '../profile_page.dart';
+import 'app/profile_page.dart';
 
-class Operations extends StatelessWidget {
-  const Operations({
+class AppBarButtons extends StatelessWidget {
+  const AppBarButtons({
     super.key,
   });
 

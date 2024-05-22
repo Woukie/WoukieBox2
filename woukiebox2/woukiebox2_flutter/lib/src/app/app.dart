@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'chat_box.dart';
-import 'bar/app_bar.dart';
+import 'main_app_bar.dart';
 
 class App extends StatelessWidget {
   final TextStyle? style;
@@ -16,7 +16,7 @@ class App extends StatelessWidget {
       margin: const EdgeInsets.all(0),
       child: const Column(
         children: [
-          WoukieAppBar(),
+          MainAppBar(),
           ChatBox(),
         ],
       ),
