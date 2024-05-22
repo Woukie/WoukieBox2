@@ -127,17 +127,17 @@ class Messages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var items = List<String>.generate(10000, (i) => 'Message $i');
+    final messages = Provider.of<ConnectionStateProvider>(context).messages;
 
     return ListView.builder(
       reverse: true,
-      itemCount: items.length,
+      itemCount: messages.length,
       prototypeItem: const ListTile(
         title: Text("Test Message!"),
       ),
       itemBuilder: (context, index) {
         return ListTile(
-          title: Text(items[index]),
+          title: Text(messages[index]),
         );
       },
     );
