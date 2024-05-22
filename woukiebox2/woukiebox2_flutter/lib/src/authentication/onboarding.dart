@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 import 'package:woukiebox2_flutter/main.dart';
 import 'package:woukiebox2_flutter/src/authentication/onboarding_app_bar.dart';
-import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2_flutter/src/providers/joined_anonymously_provider.dart';
 
 class OnboardingScreen extends StatelessWidget {
