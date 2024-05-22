@@ -23,6 +23,7 @@ class SocketsEndpoint extends Endpoint {
           bio: "not implemented",
           verified: true,
         );
+        connectedUsers.add(user);
         setUserObject(session, (id: user.id));
 
         print("Authenticated user joined!");
@@ -38,7 +39,7 @@ class SocketsEndpoint extends Endpoint {
       bio: "",
       verified: false,
     );
-
+    connectedUsers.add(user);
     setUserObject(session, (id: user.id));
 
     print("Anonymous user joined!");
