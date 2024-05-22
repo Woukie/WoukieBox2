@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/main.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
+
+import 'message.dart';
 
 void sendMessage(String message) {
   client.sockets.sendStreamMessage(ChatMessage(message: message));
@@ -147,16 +150,12 @@ class Messages extends StatelessWidget {
     });
 
     return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 12),
       shrinkWrap: true,
       controller: scrollController,
       itemCount: messages.length,
-      prototypeItem: const ListTile(
-        title: Text("Test Message!"),
-      ),
       itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(messages[index]),
-        );
+        return Message(messages: messages, index: index);
       },
     );
   }

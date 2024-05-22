@@ -7,11 +7,11 @@ import 'package:woukiebox2_flutter/main.dart';
 class ConnectionStateProvider extends ChangeNotifier {
   ConnectionState _state = ConnectionState.none;
   final List<User> _users = List.empty(growable: true);
-  final List<String> _messages = List.empty(growable: true);
+  final List<ChatMessage> _messages = List.empty(growable: true);
 
   ConnectionState get state => _state;
   List<User> get users => _users;
-  List<String> get messages => _messages;
+  List<ChatMessage> get messages => _messages;
 
   StreamSubscription? _streamSubscription;
 
@@ -41,7 +41,7 @@ class ConnectionStateProvider extends ChangeNotifier {
 
   void _handleMessage(SerializableEntity message) {
     if (message is ChatMessage) {
-      _messages.add(message.message);
+      _messages.add(message);
       notifyListeners();
     }
   }
