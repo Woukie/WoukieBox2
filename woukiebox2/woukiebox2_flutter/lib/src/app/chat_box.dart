@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -42,11 +43,18 @@ class _ChatBoxState extends State<ChatBox> {
             Expanded(
               child: Row(
                 children: [
-                  Expanded(
+                  const Expanded(
                     child: Card(
-                      margin: const EdgeInsets.all(0.0),
+                      margin: EdgeInsets.all(0.0),
                       elevation: 0,
-                      child: Messages(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Flexible(
+                            child: Messages(),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Card(
@@ -100,7 +108,7 @@ class _MessageBoxState extends State<MessageBox> {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.only(top: 12),
-      child: Container(
+      child: Padding(
         padding: const EdgeInsets.all(12),
         child: TextField(
           controller: _controller,
@@ -128,8 +136,8 @@ class Messages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final messages = Provider.of<ConnectionStateProvider>(context).messages;
     final scrollController = ScrollController();
+    final messages = Provider.of<ConnectionStateProvider>(context).messages;
 
     WidgetsBinding.instance.addPostFrameCallback((duration) {
       if (scrollController.position.pixels >=
@@ -139,6 +147,7 @@ class Messages extends StatelessWidget {
     });
 
     return ListView.builder(
+      shrinkWrap: true,
       controller: scrollController,
       itemCount: messages.length,
       prototypeItem: const ListTile(
