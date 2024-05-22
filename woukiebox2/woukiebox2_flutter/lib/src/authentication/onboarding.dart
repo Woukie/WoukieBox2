@@ -4,6 +4,7 @@ import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 import 'package:woukiebox2_flutter/main.dart';
 import 'package:woukiebox2_flutter/src/authentication/onboarding_app_bar.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
+import 'package:woukiebox2_flutter/src/providers/joined_anonymously_provider.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -35,23 +36,24 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final connectionProvider =
-          Provider.of<ConnectionStateProvider>(context, listen: false);
-      if (connectionProvider.state != ConnectionState.none) {
-        connectionProvider.closeConnection();
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SignInWithEmailButton(
-        caller: client.modules.auth,
-      ),
+    final joinedAnonymouslyProvider =
+        Provider.of<JoinedAnonymouslyProvider>(context);
+
+    return Column(
+      children: [
+        SignInWithEmailButton(
+          caller: client.modules.auth,
+        ),
+        const Text("or"),
+        FilledButton.tonalIcon(
+          icon: const Icon(Icons.theater_comedy),
+          label: const Text("Join Anonymously"),
+          onPressed: () {
+            joinedAnonymouslyProvider.setJoined(true);
+          },
+        )
+      ],
     );
   }
 }

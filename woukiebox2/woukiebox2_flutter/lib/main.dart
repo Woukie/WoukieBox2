@@ -9,6 +9,7 @@ import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/src/app/app.dart';
 import 'package:woukiebox2_flutter/src/authentication/onboarding.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
+import 'package:woukiebox2_flutter/src/providers/joined_anonymously_provider.dart';
 import 'package:woukiebox2_flutter/src/providers/theme_data_provider.dart';
 
 late SessionManager sessionManager;
@@ -34,6 +35,9 @@ void main() async {
       ),
       ChangeNotifierProvider(
         create: (context) => ConnectionStateProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => JoinedAnonymouslyProvider(),
       ),
     ],
     child: MyApp(
@@ -80,6 +84,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final themeDataProvider = Provider.of<ThemeDataProvider>(context);
+    final joinedAnonymouslyProvider =
+        Provider.of<JoinedAnonymouslyProvider>(context);
+
     return MaterialApp(
       title: 'WoukieBox 2',
       themeMode: themeDataProvider.themeMode,
@@ -101,7 +108,8 @@ class _MyAppState extends State<MyApp> {
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
-            return sessionManager.isSignedIn
+            return (sessionManager.isSignedIn ||
+                    joinedAnonymouslyProvider.joined)
                 ? const App()
                 : const OnboardingScreen();
           }

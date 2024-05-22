@@ -5,6 +5,7 @@ import 'package:woukiebox2_flutter/main.dart';
 import 'package:woukiebox2_flutter/src/app/profile_page.dart';
 import 'package:woukiebox2_flutter/src/app/settings_page.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
+import 'package:woukiebox2_flutter/src/providers/joined_anonymously_provider.dart';
 
 import '../app_bar_buttons.dart';
 
@@ -42,7 +43,9 @@ class LeftButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final connectionState = Provider.of<ConnectionStateProvider>(context).state;
+    final connectionProvider = Provider.of<ConnectionStateProvider>(context);
+    final joinedAnonymouslyProvider =
+        Provider.of<JoinedAnonymouslyProvider>(context);
 
     return Row(
       children: [
@@ -95,6 +98,10 @@ class LeftButtons extends StatelessWidget {
             color: Theme.of(context).colorScheme.error,
             onPressed: () {
               sessionManager.signOut();
+              connectionProvider.closeConnection();
+              if (joinedAnonymouslyProvider.joined) {
+                joinedAnonymouslyProvider.setJoined(false);
+              }
             },
           ),
         ),
@@ -104,11 +111,11 @@ class LeftButtons extends StatelessWidget {
           child: Tooltip(
             message: "Status",
             child: Icon(
-              switch (connectionState) {
+              switch (connectionProvider.state) {
                 ConnectionState.none => Icons.wifi_off,
                 _ => Icons.wifi,
               },
-              color: switch (connectionState) {
+              color: switch (connectionProvider.state) {
                 ConnectionState.none => Theme.of(context).colorScheme.error,
                 ConnectionState.waiting =>
                   Theme.of(context).colorScheme.secondary,
