@@ -40,9 +40,15 @@ class ConnectionStateProvider extends ChangeNotifier {
   }
 
   void _handleMessage(SerializableEntity message) {
+    print(message);
     if (message is ChatMessage) {
       _messages.add(message);
       notifyListeners();
+    } else if (message is RoomMembers) {
+      _users.clear();
+      _users.addAll(message.users);
+      notifyListeners();
+      print(message);
     }
   }
 }

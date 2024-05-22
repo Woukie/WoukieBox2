@@ -1,8 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/main.dart';
@@ -168,16 +165,16 @@ class Users extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var items = List<String>.generate(10000, (i) => 'User $i');
+    final users = Provider.of<ConnectionStateProvider>(context).users;
 
     return ListView.builder(
-      itemCount: items.length,
+      itemCount: users.length,
       prototypeItem: const ListTile(
         title: Text("Test Message!"),
       ),
       itemBuilder: (context, index) {
         return ListTile(
-          title: Text(items[index]),
+          title: Text(users[index].username),
         );
       },
     );
