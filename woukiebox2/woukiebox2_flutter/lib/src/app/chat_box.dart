@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/main.dart';
@@ -41,9 +42,9 @@ class _ChatBoxState extends State<ChatBox> {
             Expanded(
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Card(
-                      margin: EdgeInsets.all(0.0),
+                      margin: const EdgeInsets.all(0.0),
                       elevation: 0,
                       child: Messages(),
                     ),
@@ -128,9 +129,17 @@ class Messages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final messages = Provider.of<ConnectionStateProvider>(context).messages;
+    final scrollController = ScrollController();
+
+    WidgetsBinding.instance.addPostFrameCallback((duration) {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 50) {
+        scrollController.jumpTo(scrollController.position.maxScrollExtent);
+      }
+    });
 
     return ListView.builder(
-      reverse: true,
+      controller: scrollController,
       itemCount: messages.length,
       prototypeItem: const ListTile(
         title: Text("Test Message!"),
