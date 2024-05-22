@@ -25,7 +25,6 @@ class ConnectionStateProvider extends ChangeNotifier {
 
       _streamSubscription ??= client.sockets.stream.listen(_handleMessage);
     } catch (error) {
-      print(error);
       _state = ConnectionState.none;
     }
     notifyListeners();
@@ -41,7 +40,6 @@ class ConnectionStateProvider extends ChangeNotifier {
   void _handleMessage(SerializableEntity message) {
     if (message is ChatMessage) {
       _messages.add(message.message);
-      print(_messages);
       notifyListeners();
     }
   }
