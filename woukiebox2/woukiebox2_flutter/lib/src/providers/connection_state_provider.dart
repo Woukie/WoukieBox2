@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
@@ -6,11 +7,11 @@ import 'package:woukiebox2_flutter/main.dart';
 
 class ConnectionStateProvider extends ChangeNotifier {
   ConnectionState _state = ConnectionState.none;
-  final List<User> _users = List.empty(growable: true);
+  final HashMap<int, User> _users = HashMap<int, User>();
   final List<ChatMessage> _messages = List.empty(growable: true);
 
   ConnectionState get state => _state;
-  List<User> get users => _users;
+  HashMap<int, User> get users => _users;
   List<ChatMessage> get messages => _messages;
 
   StreamSubscription? _streamSubscription;
@@ -31,7 +32,6 @@ class ConnectionStateProvider extends ChangeNotifier {
   }
 
   Future<void> closeConnection() async {
-    // await _streamSubscription!.cancel();
     await client.closeStreamingConnection();
     _messages.clear();
     _users.clear();
@@ -41,14 +41,26 @@ class ConnectionStateProvider extends ChangeNotifier {
 
   void _handleMessage(SerializableEntity message) {
     print(message);
+
     if (message is ChatMessage) {
       _messages.add(message);
       notifyListeners();
     } else if (message is RoomMembers) {
-      _users.clear();
-      _users.addAll(message.users);
+      _users.forEach((id, user) {
+        user.visible = false;
+      });
+
+      for (User user in message.users) {
+        _users[user.id] = user;
+      }
+
       notifyListeners();
-      print(message);
+    } else if (message is LeaveMessage) {
+      _users[message.id]?.visible = false;
+      notifyListeners();
+    } else if (message is JoinMessage) {
+      _users[message.user.id] = message.user;
+      notifyListeners();
     }
   }
 }

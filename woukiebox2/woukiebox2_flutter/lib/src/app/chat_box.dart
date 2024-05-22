@@ -166,15 +166,14 @@ class Users extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final users = Provider.of<ConnectionStateProvider>(context).users;
+    final List<User> userList = users.values.toList();
+    userList.removeWhere((user) => !(user.visible ?? true));
 
     return ListView.builder(
-      itemCount: users.length,
-      prototypeItem: const ListTile(
-        title: Text("Test Message!"),
-      ),
+      itemCount: userList.length,
       itemBuilder: (context, index) {
         return ListTile(
-          title: Text(users[index].username),
+          title: Text(userList[index].username),
         );
       },
     );

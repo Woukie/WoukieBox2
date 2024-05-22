@@ -1,7 +1,16 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
+import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
+
+User unknownUser = User(
+  id: -1,
+  username: "Unknown User",
+  bio: "",
+  colour: "#FF0000",
+  verified: false,
+  visible: false,
+);
 
 class Message extends StatelessWidget {
   const Message({super.key, required this.messages, required this.index});
@@ -27,6 +36,10 @@ class HeadMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final User user =
+        Provider.of<ConnectionStateProvider>(context).users[message.sender] ??
+            unknownUser;
+
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: Row(
@@ -42,7 +55,7 @@ class HeadMessage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("${message.sender}"),
+                Text(user.username),
                 Text(message.message),
               ],
             ),

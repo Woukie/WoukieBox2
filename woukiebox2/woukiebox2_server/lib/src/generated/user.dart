@@ -17,6 +17,7 @@ abstract class User extends _i1.SerializableEntity {
     required this.bio,
     required this.colour,
     required this.verified,
+    this.visible,
   });
 
   factory User({
@@ -25,6 +26,7 @@ abstract class User extends _i1.SerializableEntity {
     required String bio,
     required String colour,
     required bool verified,
+    bool? visible,
   }) = _UserImpl;
 
   factory User.fromJson(
@@ -40,6 +42,8 @@ abstract class User extends _i1.SerializableEntity {
           serializationManager.deserialize<String>(jsonSerialization['colour']),
       verified:
           serializationManager.deserialize<bool>(jsonSerialization['verified']),
+      visible:
+          serializationManager.deserialize<bool?>(jsonSerialization['visible']),
     );
   }
 
@@ -53,12 +57,15 @@ abstract class User extends _i1.SerializableEntity {
 
   bool verified;
 
+  bool? visible;
+
   User copyWith({
     int? id,
     String? username,
     String? bio,
     String? colour,
     bool? verified,
+    bool? visible,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -68,6 +75,7 @@ abstract class User extends _i1.SerializableEntity {
       'bio': bio,
       'colour': colour,
       'verified': verified,
+      if (visible != null) 'visible': visible,
     };
   }
 
@@ -79,9 +87,12 @@ abstract class User extends _i1.SerializableEntity {
       'bio': bio,
       'colour': colour,
       'verified': verified,
+      if (visible != null) 'visible': visible,
     };
   }
 }
+
+class _Undefined {}
 
 class _UserImpl extends User {
   _UserImpl({
@@ -90,12 +101,14 @@ class _UserImpl extends User {
     required String bio,
     required String colour,
     required bool verified,
+    bool? visible,
   }) : super._(
           id: id,
           username: username,
           bio: bio,
           colour: colour,
           verified: verified,
+          visible: visible,
         );
 
   @override
@@ -105,6 +118,7 @@ class _UserImpl extends User {
     String? bio,
     String? colour,
     bool? verified,
+    Object? visible = _Undefined,
   }) {
     return User(
       id: id ?? this.id,
@@ -112,6 +126,7 @@ class _UserImpl extends User {
       bio: bio ?? this.bio,
       colour: colour ?? this.colour,
       verified: verified ?? this.verified,
+      visible: visible is bool? ? visible : this.visible,
     );
   }
 }

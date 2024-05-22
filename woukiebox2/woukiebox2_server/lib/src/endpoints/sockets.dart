@@ -22,6 +22,7 @@ class SocketsEndpoint extends Endpoint {
           username: userInfo.userName,
           bio: "not implemented",
           verified: true,
+          visible: true,
         );
         connectedUsers.add(user);
         setUserObject(session, (id: user.id));
@@ -38,6 +39,7 @@ class SocketsEndpoint extends Endpoint {
       username: "Anonymous",
       bio: "",
       verified: false,
+      visible: true,
     );
     connectedUsers.add(user);
     setUserObject(session, (id: user.id));
