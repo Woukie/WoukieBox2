@@ -6,7 +6,7 @@ import 'package:woukiebox2_flutter/main.dart';
 
 class ConnectionStateProvider extends ChangeNotifier {
   ConnectionState _state = ConnectionState.none;
-  final List<User> _users = List.empty();
+  final List<User> _users = List.empty(growable: true);
   final List<String> _messages = List.empty(growable: true);
 
   ConnectionState get state => _state;
@@ -33,6 +33,8 @@ class ConnectionStateProvider extends ChangeNotifier {
   Future<void> closeConnection() async {
     // await _streamSubscription!.cancel();
     await client.closeStreamingConnection();
+    _messages.clear();
+    _users.clear();
     _state = ConnectionState.none;
     notifyListeners();
   }
