@@ -1,5 +1,10 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:woukiebox2_flutter/main.dart';
+import 'package:woukiebox2_flutter/src/app/profile_page.dart';
+import 'package:woukiebox2_flutter/src/app/settings_page.dart';
+import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
 
 import '../app_bar_buttons.dart';
 
@@ -19,9 +24,9 @@ class MainAppBar extends StatelessWidget {
           padding: const EdgeInsets.only(left: 12, right: 12),
           child: Row(
             children: [
-              const AppBarButtons(),
+              const LeftButtons(),
               Expanded(child: MoveWindow()),
-              const Controls(),
+              const AppBarButtons(),
             ],
           ),
         ),
@@ -30,43 +35,86 @@ class MainAppBar extends StatelessWidget {
   }
 }
 
-class Controls extends StatelessWidget {
-  const Controls({
+class LeftButtons extends StatelessWidget {
+  const LeftButtons({
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
+    final connectionState = Provider.of<ConnectionStateProvider>(context).state;
+
     return Row(
       children: [
         AspectRatio(
           aspectRatio: 1,
           child: IconButton(
-            icon: const Icon(Icons.remove),
+            icon: const Icon(
+              Icons.account_circle_outlined,
+            ),
             padding: EdgeInsets.zero,
+            tooltip: 'Profile',
             onPressed: () {
-              appWindow.minimize();
+              showModalBottomSheet<void>(
+                isScrollControlled: true,
+                context: context,
+                builder: (context) {
+                  return const ProfilePage();
+                },
+              );
             },
           ),
         ),
         AspectRatio(
           aspectRatio: 1,
           child: IconButton(
-            icon: const Icon(Icons.fullscreen),
+            icon: const Icon(
+              Icons.settings,
+            ),
             padding: EdgeInsets.zero,
+            tooltip: 'Settings',
             onPressed: () {
-              appWindow.maximizeOrRestore();
+              showModalBottomSheet<void>(
+                isScrollControlled: true,
+                context: context,
+                builder: (context) {
+                  return const SettingsPage();
+                },
+              );
             },
           ),
         ),
         AspectRatio(
           aspectRatio: 1,
           child: IconButton(
-            icon: const Icon(Icons.close),
+            icon: const Icon(
+              Icons.logout,
+            ),
             padding: EdgeInsets.zero,
+            tooltip: 'Log Out',
+            color: Theme.of(context).colorScheme.error,
             onPressed: () {
-              appWindow.close();
+              sessionManager.signOut();
             },
+          ),
+        ),
+        const VerticalDivider(),
+        Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: Tooltip(
+            message: "Status",
+            child: Icon(
+              switch (connectionState) {
+                ConnectionState.none => Icons.wifi_off,
+                _ => Icons.wifi,
+              },
+              color: switch (connectionState) {
+                ConnectionState.none => Theme.of(context).colorScheme.error,
+                ConnectionState.waiting =>
+                  Theme.of(context).colorScheme.secondary,
+                _ => Theme.of(context).colorScheme.onSurfaceVariant,
+              },
+            ),
           ),
         ),
       ],

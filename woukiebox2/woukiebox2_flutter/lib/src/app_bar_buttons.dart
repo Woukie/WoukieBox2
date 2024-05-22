@@ -1,10 +1,5 @@
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:woukiebox2_flutter/main.dart';
-import 'package:woukiebox2_flutter/src/app/settings_page.dart';
-import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
-
-import 'app/profile_page.dart';
 
 class AppBarButtons extends StatelessWidget {
   const AppBarButtons({
@@ -13,79 +8,36 @@ class AppBarButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final connectionState = Provider.of<ConnectionStateProvider>(context).state;
-
     return Row(
       children: [
         AspectRatio(
           aspectRatio: 1,
           child: IconButton(
-            icon: const Icon(
-              Icons.account_circle_outlined,
-            ),
+            icon: const Icon(Icons.remove),
             padding: EdgeInsets.zero,
-            tooltip: 'Profile',
             onPressed: () {
-              showModalBottomSheet<void>(
-                isScrollControlled: true,
-                context: context,
-                builder: (context) {
-                  return const ProfilePage();
-                },
-              );
+              appWindow.minimize();
             },
           ),
         ),
         AspectRatio(
           aspectRatio: 1,
           child: IconButton(
-            icon: const Icon(
-              Icons.settings,
-            ),
+            icon: const Icon(Icons.fullscreen),
             padding: EdgeInsets.zero,
-            tooltip: 'Settings',
             onPressed: () {
-              showModalBottomSheet<void>(
-                isScrollControlled: true,
-                context: context,
-                builder: (context) {
-                  return const SettingsPage();
-                },
-              );
+              appWindow.maximizeOrRestore();
             },
           ),
         ),
         AspectRatio(
           aspectRatio: 1,
           child: IconButton(
-            icon: const Icon(
-              Icons.logout,
-            ),
+            icon: const Icon(Icons.close),
             padding: EdgeInsets.zero,
-            tooltip: 'Log Out',
-            color: Theme.of(context).colorScheme.error,
             onPressed: () {
-              sessionManager.signOut();
+              appWindow.close();
             },
-          ),
-        ),
-        const VerticalDivider(),
-        Padding(
-          padding: const EdgeInsets.only(left: 4),
-          child: Tooltip(
-            message: "Status",
-            child: Icon(
-              switch (connectionState) {
-                ConnectionState.none => Icons.wifi_off,
-                _ => Icons.wifi,
-              },
-              color: switch (connectionState) {
-                ConnectionState.none => Theme.of(context).colorScheme.error,
-                ConnectionState.waiting =>
-                  Theme.of(context).colorScheme.secondary,
-                _ => Theme.of(context).colorScheme.onSurfaceVariant,
-              },
-            ),
           ),
         ),
       ],
