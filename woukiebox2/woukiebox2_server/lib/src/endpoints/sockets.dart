@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:woukiebox2_server/src/generated/update_profile.dart';
 
 class SocketsEndpoint extends Endpoint {
   // setUserData is basically fucking useless because you can't get a list of all active sessions. We now have to manually keep track of users while STILL having to use userData to store the session id's
@@ -35,7 +34,7 @@ class SocketsEndpoint extends Endpoint {
     }
 
     User user = User(
-      id: random.nextInt(100000),
+      id: 1111000000000 + random.nextInt(100000000),
       colour: "#00FF00",
       username: "Anonymous",
       bio: "",
