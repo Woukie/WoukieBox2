@@ -34,10 +34,7 @@ class SocketsEndpoint extends Endpoint {
       var userInfo = await Users.findUserByUserId(session, userId!);
 
       if (userInfo != null) {
-        UserPersistent extraUserData = await getPersistentData(
-          session,
-          userId,
-        );
+        UserPersistent extraUserData = await getPersistentData(session, userId);
 
         User user = User(
           id: userId,
@@ -125,10 +122,7 @@ class SocketsEndpoint extends Endpoint {
       // Update the users profile on the database
       var userId = await session.auth.authenticatedUserId;
       if (userId != null) {
-        UserPersistent extraUserData = await getPersistentData(
-          session,
-          userId,
-        );
+        UserPersistent extraUserData = await getPersistentData(session, userId);
 
         extraUserData.bio = message.bio ?? extraUserData.bio;
         extraUserData.color = message.colour ?? extraUserData.color;
