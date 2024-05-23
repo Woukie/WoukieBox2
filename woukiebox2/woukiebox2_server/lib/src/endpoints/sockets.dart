@@ -111,6 +111,16 @@ class SocketsEndpoint extends Endpoint {
           extraUserData.color = message.colour ?? extraUserData.color;
 
           await UserPersistent.db.updateRow(session, extraUserData);
+        } else {
+          // If your account somehow doesn't already have persistent data
+          UserPersistent.db.insertRow(
+            session,
+            UserPersistent(
+              userInfoId: userId,
+              color: message.colour ?? "#FF0000",
+              bio: message.bio ?? "",
+            ),
+          );
         }
 
         if (message.username != null) {
