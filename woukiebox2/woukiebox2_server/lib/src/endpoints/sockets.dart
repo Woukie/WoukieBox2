@@ -9,6 +9,29 @@ class SocketsEndpoint extends Endpoint {
   final Set<User> connectedUsers = {};
   final Random random = Random();
 
+  Future<UserPersistent> getPersistentData(
+    session,
+    userId,
+    String? fallbackColour,
+    String? fallbackBio,
+  ) async {
+    UserPersistent? extraUserData = await UserPersistent.db.findFirstRow(
+      session,
+      where: (record) => record.userInfoId.equals(userId),
+    );
+
+    extraUserData ??= await UserPersistent.db.insertRow(
+      session,
+      UserPersistent(
+        userInfoId: userId,
+        color: fallbackColour ?? "#FF0000",
+        bio: fallbackBio ?? "",
+      ),
+    );
+
+    return extraUserData;
+  }
+
   // Sets and returns the user object and updates connectedUsers. User constructed with database values if authenticated
   Future<User> initUser(StreamingSession session) async {
     if (await session.isUserSignedIn) {
@@ -16,14 +39,22 @@ class SocketsEndpoint extends Endpoint {
       var userInfo = await Users.findUserByUserId(session, userId!);
 
       if (userInfo != null) {
+        UserPersistent extraUserData = await getPersistentData(
+          session,
+          userId,
+          "#FF0000",
+          "",
+        );
+
         User user = User(
           id: userId,
-          colour: "#FFFF00",
+          colour: extraUserData.color,
           username: userInfo.userName,
-          bio: "not implemented",
+          bio: extraUserData.bio,
           verified: true,
           visible: true,
         );
+
         connectedUsers.add(user);
         setUserObject(session, (id: user.id));
 
@@ -41,6 +72,7 @@ class SocketsEndpoint extends Endpoint {
       verified: false,
       visible: true,
     );
+
     connectedUsers.add(user);
     setUserObject(session, (id: user.id));
 
@@ -100,27 +132,17 @@ class SocketsEndpoint extends Endpoint {
       // Update the users profile on the database
       var userId = await session.auth.authenticatedUserId;
       if (userId != null) {
-        UserPersistent? extraUserData = await UserPersistent.db.findFirstRow(
+        UserPersistent extraUserData = await getPersistentData(
           session,
-          where: (record) => record.userInfoId.equals(userId),
+          userId,
+          "#FF0000",
+          "",
         );
 
-        if (extraUserData != null) {
-          extraUserData.bio = message.bio ?? extraUserData.bio;
-          extraUserData.color = message.colour ?? extraUserData.color;
+        extraUserData.bio = message.bio ?? extraUserData.bio;
+        extraUserData.color = message.colour ?? extraUserData.color;
 
-          await UserPersistent.db.updateRow(session, extraUserData);
-        } else {
-          // If your account somehow doesn't already have persistent data
-          UserPersistent.db.insertRow(
-            session,
-            UserPersistent(
-              userInfoId: userId,
-              color: message.colour ?? "#FF0000",
-              bio: message.bio ?? "",
-            ),
-          );
-        }
+        await UserPersistent.db.updateRow(session, extraUserData);
 
         if (message.username != null) {
           Users.changeUserName(session, userId, message.username!);
