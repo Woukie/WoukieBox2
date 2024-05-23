@@ -9,10 +9,12 @@ class ConnectionStateProvider extends ChangeNotifier {
   ConnectionState _state = ConnectionState.none;
   final HashMap<int, User> _users = HashMap<int, User>();
   final List<ChatMessage> _messages = List.empty(growable: true);
+  int? _currentUser;
 
   ConnectionState get state => _state;
   HashMap<int, User> get users => _users;
   List<ChatMessage> get messages => _messages;
+  int? get currentUser => _currentUser;
 
   StreamSubscription? _streamSubscription;
 
@@ -60,6 +62,23 @@ class ConnectionStateProvider extends ChangeNotifier {
       notifyListeners();
     } else if (message is JoinMessage) {
       _users[message.user.id] = message.user;
+      notifyListeners();
+    } else if (message is SelfIdentifier) {
+      _currentUser = message.id;
+      notifyListeners();
+    } else if (message is UpdateProfile) {
+      User? user = _users[message.sender];
+      if (user == null) return;
+
+      _users.update(
+        message.sender!, // We know there's a user here
+        (user) => user.copyWith(
+          bio: message.bio,
+          colour: message.colour,
+          username: message.username,
+        ),
+      );
+
       notifyListeners();
     }
   }

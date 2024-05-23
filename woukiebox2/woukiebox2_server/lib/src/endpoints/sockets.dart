@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:woukiebox2_server/src/generated/update_profile.dart';
 
 class SocketsEndpoint extends Endpoint {
   // setUserData is basically fucking useless because you can't get a list of all active sessions. We now have to manually keep track of users while STILL having to use userData to store the session id's
@@ -61,6 +62,9 @@ class SocketsEndpoint extends Endpoint {
     // Send the client a list of all the members in the room
     sendStreamMessage(session, RoomMembers(users: connectedUsers.toList()));
 
+    // Give the client their ID so they know which user they are
+    sendStreamMessage(session, SelfIdentifier(id: user.id));
+
     // Broadcast to everyone that a new person has entered the room
     session.messages.postMessage("global", JoinMessage(user: user));
   }
@@ -91,6 +95,16 @@ class SocketsEndpoint extends Endpoint {
         ChatMessage(
           sender: getUserObject(session).id,
           message: message.message,
+        ),
+      );
+    } else if (message is UpdateProfile) {
+      session.messages.postMessage(
+        'global',
+        UpdateProfile(
+          sender: getUserObject(session).id,
+          username: message.username,
+          bio: message.bio,
+          colour: message.colour,
         ),
       );
     }

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart';
+import 'package:woukiebox2_flutter/main.dart';
+import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({
@@ -7,16 +11,26 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final User? user;
+
+    final connectionStateProvider =
+        Provider.of<ConnectionStateProvider>(context);
+
+    user = connectionStateProvider.users[connectionStateProvider.currentUser];
+
+    final nameController = TextEditingController(text: user?.username);
+    final bioController = TextEditingController(text: user?.bio);
+
     return Wrap(
       children: [
         Container(
           width: 250,
           padding: const EdgeInsets.all(12),
-          child: const Column(
+          child: Column(
             children: [
               Row(
                 children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.only(right: 12),
                     child: CircleAvatar(),
                   ),
@@ -25,9 +39,10 @@ class ProfilePage extends StatelessWidget {
                       margin: EdgeInsets.zero,
                       elevation: 0,
                       child: Padding(
-                        padding: EdgeInsets.only(left: 8, right: 8),
+                        padding: const EdgeInsets.only(left: 8, right: 8),
                         child: TextField(
-                          decoration: InputDecoration(
+                          controller: nameController,
+                          decoration: const InputDecoration(
                             hintText: "Name...",
                             border: InputBorder.none,
                           ),
@@ -38,15 +53,16 @@ class ProfilePage extends StatelessWidget {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.only(top: 12),
+                padding: const EdgeInsets.only(top: 12, bottom: 12),
                 child: Card(
                   elevation: 0,
                   margin: EdgeInsets.zero,
                   child: Padding(
-                    padding: EdgeInsets.only(left: 8, right: 8),
+                    padding: const EdgeInsets.only(left: 8, right: 8),
                     child: TextField(
+                      controller: bioController,
                       maxLines: 5,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: "Bio...",
                         border: InputBorder.none,
                       ),
@@ -54,6 +70,21 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
               ),
+              Row(
+                children: [
+                  Expanded(
+                    child: FilledButton.tonal(
+                      onPressed: () {
+                        client.sockets.sendStreamMessage(UpdateProfile(
+                          username: nameController.text,
+                          bio: bioController.text,
+                        ));
+                      },
+                      child: const Text("Update"),
+                    ),
+                  ),
+                ],
+              )
             ],
           ),
         )

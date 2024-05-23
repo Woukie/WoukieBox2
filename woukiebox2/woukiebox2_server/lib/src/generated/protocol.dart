@@ -17,15 +17,19 @@ import 'chat_message.dart' as _i5;
 import 'join_message.dart' as _i6;
 import 'leave_message.dart' as _i7;
 import 'room_members.dart' as _i8;
-import 'system_message.dart' as _i9;
-import 'user.dart' as _i10;
-import 'protocol.dart' as _i11;
+import 'self_identifier.dart' as _i9;
+import 'system_message.dart' as _i10;
+import 'update_profile.dart' as _i11;
+import 'user.dart' as _i12;
+import 'protocol.dart' as _i13;
 export 'example.dart';
 export 'chat_message.dart';
 export 'join_message.dart';
 export 'leave_message.dart';
 export 'room_members.dart';
+export 'self_identifier.dart';
 export 'system_message.dart';
+export 'update_profile.dart';
 export 'user.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
@@ -66,11 +70,17 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i8.RoomMembers) {
       return _i8.RoomMembers.fromJson(data, this) as T;
     }
-    if (t == _i9.SystemMessage) {
-      return _i9.SystemMessage.fromJson(data, this) as T;
+    if (t == _i9.SelfIdentifier) {
+      return _i9.SelfIdentifier.fromJson(data, this) as T;
     }
-    if (t == _i10.User) {
-      return _i10.User.fromJson(data, this) as T;
+    if (t == _i10.SystemMessage) {
+      return _i10.SystemMessage.fromJson(data, this) as T;
+    }
+    if (t == _i11.UpdateProfile) {
+      return _i11.UpdateProfile.fromJson(data, this) as T;
+    }
+    if (t == _i12.User) {
+      return _i12.User.fromJson(data, this) as T;
     }
     if (t == _i1.getType<_i4.Example?>()) {
       return (data != null ? _i4.Example.fromJson(data, this) : null) as T;
@@ -87,15 +97,23 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i8.RoomMembers?>()) {
       return (data != null ? _i8.RoomMembers.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i9.SystemMessage?>()) {
-      return (data != null ? _i9.SystemMessage.fromJson(data, this) : null)
+    if (t == _i1.getType<_i9.SelfIdentifier?>()) {
+      return (data != null ? _i9.SelfIdentifier.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i10.User?>()) {
-      return (data != null ? _i10.User.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i10.SystemMessage?>()) {
+      return (data != null ? _i10.SystemMessage.fromJson(data, this) : null)
+          as T;
     }
-    if (t == List<_i11.User>) {
-      return (data as List).map((e) => deserialize<_i11.User>(e)).toList()
+    if (t == _i1.getType<_i11.UpdateProfile?>()) {
+      return (data != null ? _i11.UpdateProfile.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i12.User?>()) {
+      return (data != null ? _i12.User.fromJson(data, this) : null) as T;
+    }
+    if (t == List<_i13.User>) {
+      return (data as List).map((e) => deserialize<_i13.User>(e)).toList()
           as dynamic;
     }
     try {
@@ -129,10 +147,16 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i8.RoomMembers) {
       return 'RoomMembers';
     }
-    if (data is _i9.SystemMessage) {
+    if (data is _i9.SelfIdentifier) {
+      return 'SelfIdentifier';
+    }
+    if (data is _i10.SystemMessage) {
       return 'SystemMessage';
     }
-    if (data is _i10.User) {
+    if (data is _i11.UpdateProfile) {
+      return 'UpdateProfile';
+    }
+    if (data is _i12.User) {
       return 'User';
     }
     return super.getClassNameForObject(data);
@@ -159,11 +183,17 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'RoomMembers') {
       return deserialize<_i8.RoomMembers>(data['data']);
     }
+    if (data['className'] == 'SelfIdentifier') {
+      return deserialize<_i9.SelfIdentifier>(data['data']);
+    }
     if (data['className'] == 'SystemMessage') {
-      return deserialize<_i9.SystemMessage>(data['data']);
+      return deserialize<_i10.SystemMessage>(data['data']);
+    }
+    if (data['className'] == 'UpdateProfile') {
+      return deserialize<_i11.UpdateProfile>(data['data']);
     }
     if (data['className'] == 'User') {
-      return deserialize<_i10.User>(data['data']);
+      return deserialize<_i12.User>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
