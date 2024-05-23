@@ -98,6 +98,27 @@ class SocketsEndpoint extends Endpoint {
         ),
       );
     } else if (message is UpdateProfile) {
+      // Update the users profile on the database
+      var userId = await session.auth.authenticatedUserId;
+      if (userId != null) {
+        UserPersistent? extraUserData = await UserPersistent.db.findFirstRow(
+          session,
+          where: (record) => record.userInfoId.equals(userId),
+        );
+
+        if (extraUserData != null) {
+          extraUserData.bio = message.bio ?? extraUserData.bio;
+          extraUserData.color = message.colour ?? extraUserData.color;
+
+          await UserPersistent.db.updateRow(session, extraUserData);
+        }
+
+        if (message.username != null) {
+          Users.changeUserName(session, userId, message.username!);
+        }
+      }
+
+      // Tell everyone about the profile change
       session.messages.postMessage(
         'global',
         UpdateProfile(

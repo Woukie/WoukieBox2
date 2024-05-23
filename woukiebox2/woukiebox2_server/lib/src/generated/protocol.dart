@@ -21,7 +21,8 @@ import 'self_identifier.dart' as _i9;
 import 'system_message.dart' as _i10;
 import 'update_profile.dart' as _i11;
 import 'user.dart' as _i12;
-import 'protocol.dart' as _i13;
+import 'user_persistent.dart' as _i13;
+import 'protocol.dart' as _i14;
 export 'example.dart';
 export 'chat_message.dart';
 export 'join_message.dart';
@@ -31,6 +32,7 @@ export 'self_identifier.dart';
 export 'system_message.dart';
 export 'update_profile.dart';
 export 'user.dart';
+export 'user_persistent.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -42,6 +44,80 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
+    _i2.TableDefinition(
+      name: 'userpersistent',
+      dartName: 'UserPersistent',
+      schema: 'public',
+      module: 'woukiebox2',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'userpersistent_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userInfoId',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'color',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'bio',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'userpersistent_fk_0',
+          columns: ['userInfoId'],
+          referenceTable: 'serverpod_user_info',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'userpersistent_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'user_info_id_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userInfoId',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
     ..._i3.Protocol.targetTableDefinitions,
     ..._i2.Protocol.targetTableDefinitions,
   ];
@@ -82,6 +158,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i12.User) {
       return _i12.User.fromJson(data, this) as T;
     }
+    if (t == _i13.UserPersistent) {
+      return _i13.UserPersistent.fromJson(data, this) as T;
+    }
     if (t == _i1.getType<_i4.Example?>()) {
       return (data != null ? _i4.Example.fromJson(data, this) : null) as T;
     }
@@ -112,8 +191,12 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i12.User?>()) {
       return (data != null ? _i12.User.fromJson(data, this) : null) as T;
     }
-    if (t == List<_i13.User>) {
-      return (data as List).map((e) => deserialize<_i13.User>(e)).toList()
+    if (t == _i1.getType<_i13.UserPersistent?>()) {
+      return (data != null ? _i13.UserPersistent.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == List<_i14.User>) {
+      return (data as List).map((e) => deserialize<_i14.User>(e)).toList()
           as dynamic;
     }
     try {
@@ -159,6 +242,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i12.User) {
       return 'User';
     }
+    if (data is _i13.UserPersistent) {
+      return 'UserPersistent';
+    }
     return super.getClassNameForObject(data);
   }
 
@@ -195,6 +281,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'User') {
       return deserialize<_i12.User>(data['data']);
     }
+    if (data['className'] == 'UserPersistent') {
+      return deserialize<_i13.UserPersistent>(data['data']);
+    }
     return super.deserializeByClassName(data);
   }
 
@@ -211,6 +300,10 @@ class Protocol extends _i1.SerializationManagerServer {
       if (table != null) {
         return table;
       }
+    }
+    switch (t) {
+      case _i13.UserPersistent:
+        return _i13.UserPersistent.t;
     }
     return null;
   }

@@ -19,8 +19,9 @@ import 'self_identifier.dart' as _i7;
 import 'system_message.dart' as _i8;
 import 'update_profile.dart' as _i9;
 import 'user.dart' as _i10;
-import 'protocol.dart' as _i11;
-import 'package:serverpod_auth_client/module.dart' as _i12;
+import 'user_persistent.dart' as _i11;
+import 'protocol.dart' as _i12;
+import 'package:serverpod_auth_client/module.dart' as _i13;
 export 'example.dart';
 export 'chat_message.dart';
 export 'join_message.dart';
@@ -30,6 +31,7 @@ export 'self_identifier.dart';
 export 'system_message.dart';
 export 'update_profile.dart';
 export 'user.dart';
+export 'user_persistent.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -77,6 +79,9 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i10.User) {
       return _i10.User.fromJson(data, this) as T;
     }
+    if (t == _i11.UserPersistent) {
+      return _i11.UserPersistent.fromJson(data, this) as T;
+    }
     if (t == _i1.getType<_i2.Example?>()) {
       return (data != null ? _i2.Example.fromJson(data, this) : null) as T;
     }
@@ -107,12 +112,16 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i10.User?>()) {
       return (data != null ? _i10.User.fromJson(data, this) : null) as T;
     }
-    if (t == List<_i11.User>) {
-      return (data as List).map((e) => deserialize<_i11.User>(e)).toList()
+    if (t == _i1.getType<_i11.UserPersistent?>()) {
+      return (data != null ? _i11.UserPersistent.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == List<_i12.User>) {
+      return (data as List).map((e) => deserialize<_i12.User>(e)).toList()
           as dynamic;
     }
     try {
-      return _i12.Protocol().deserialize<T>(data, t);
+      return _i13.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -120,7 +129,7 @@ class Protocol extends _i1.SerializationManager {
   @override
   String? getClassNameForObject(Object data) {
     String? className;
-    className = _i12.Protocol().getClassNameForObject(data);
+    className = _i13.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
@@ -151,6 +160,9 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i10.User) {
       return 'User';
     }
+    if (data is _i11.UserPersistent) {
+      return 'UserPersistent';
+    }
     return super.getClassNameForObject(data);
   }
 
@@ -158,7 +170,7 @@ class Protocol extends _i1.SerializationManager {
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
-      return _i12.Protocol().deserializeByClassName(data);
+      return _i13.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'Example') {
       return deserialize<_i2.Example>(data['data']);
@@ -186,6 +198,9 @@ class Protocol extends _i1.SerializationManager {
     }
     if (data['className'] == 'User') {
       return deserialize<_i10.User>(data['data']);
+    }
+    if (data['className'] == 'UserPersistent') {
+      return deserialize<_i11.UserPersistent>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

@@ -1,0 +1,11 @@
+class: UserPersistent
+
+table: userpersistent
+fields:
+  userInfo: module:auth:UserInfo?, relation
+  color: String
+  bio: String
+indexes:
+  user_info_id_unique_idx:
+    fields: userInfoId
+    unique: true
