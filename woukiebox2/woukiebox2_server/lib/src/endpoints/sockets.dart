@@ -9,12 +9,7 @@ class SocketsEndpoint extends Endpoint {
   final Set<User> connectedUsers = {};
   final Random random = Random();
 
-  Future<UserPersistent> getPersistentData(
-    session,
-    userId,
-    String? fallbackColour,
-    String? fallbackBio,
-  ) async {
+  Future<UserPersistent> getPersistentData(session, userId) async {
     UserPersistent? extraUserData = await UserPersistent.db.findFirstRow(
       session,
       where: (record) => record.userInfoId.equals(userId),
@@ -24,8 +19,8 @@ class SocketsEndpoint extends Endpoint {
       session,
       UserPersistent(
         userInfoId: userId,
-        color: fallbackColour ?? "#FF0000",
-        bio: fallbackBio ?? "",
+        color: "#FF0000",
+        bio: "",
       ),
     );
 
@@ -42,8 +37,6 @@ class SocketsEndpoint extends Endpoint {
         UserPersistent extraUserData = await getPersistentData(
           session,
           userId,
-          "#FF0000",
-          "",
         );
 
         User user = User(
@@ -135,8 +128,6 @@ class SocketsEndpoint extends Endpoint {
         UserPersistent extraUserData = await getPersistentData(
           session,
           userId,
-          "#FF0000",
-          "",
         );
 
         extraUserData.bio = message.bio ?? extraUserData.bio;
