@@ -66,7 +66,19 @@ class ConnectionStateProvider extends ChangeNotifier {
       _users[message.id]?.visible = false;
       notifyListeners();
     } else if (message is JoinMessage) {
-      _messages.add("${message.user.username} joined the chat");
+      _messages.add(TextSpan(
+        children: [
+          TextSpan(
+            text: message.user.username,
+            style: TextStyle(
+              color: HexColor.fromHex(message.user.colour),
+            ),
+          ),
+          const TextSpan(
+            text: " joined the chat",
+          ),
+        ],
+      ));
       _users[message.user.id] = message.user;
       notifyListeners();
     } else if (message is SelfIdentifier) {
@@ -76,30 +88,6 @@ class ConnectionStateProvider extends ChangeNotifier {
       User? user = _users[message.sender];
       // The server never sends a null sender, and all users are tracked. But who knows?
       if (user == null) return;
-
-      if (message.username != null || message.colour != null) {
-        _messages.add(TextSpan(
-          children: [
-            TextSpan(
-              text: user.username,
-              style: TextStyle(
-                color: HexColor.fromHex(user.colour),
-              ),
-            ),
-            const TextSpan(
-              text: " is now known as ",
-            ),
-            TextSpan(
-              text: message.username ??
-                  user.username, // In the case where only colour is updated
-              style: TextStyle(
-                  color: HexColor.fromHex(message.colour ?? user.colour)),
-            ),
-          ],
-        ));
-      }
-
-      // Don't alert others of bio changes
 
       _users.update(
         message.sender!, // We know there's a user with this id

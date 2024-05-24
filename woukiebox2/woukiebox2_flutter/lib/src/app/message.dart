@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
+import 'package:woukiebox2_flutter/src/util/hex_color.dart';
 
 User unknownUser = User(
   id: -1,
@@ -101,7 +102,10 @@ class HeadMessage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(user.username),
+                Text(
+                  user.username,
+                  style: TextStyle(color: HexColor.fromHex(user.colour)),
+                ),
                 Text(message.message),
               ],
             ),
