@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2_flutter/src/util/hex_color.dart';
+import 'package:woukiebox2_flutter/src/util/written_message.dart';
 
 User unknownUser = User(
   id: -1,
@@ -24,21 +25,17 @@ class Message extends StatelessWidget {
     final message = messages[index];
     final parentMessage = index != 0 ? messages[index - 1] : null;
 
-    if (message is ChatMessage) {
-      bool typeMatch = parentMessage is ChatMessage;
+    if (message is WrittenMessage) {
+      bool typeMatch = parentMessage is WrittenMessage;
 
-      bool child = typeMatch && parentMessage.sender == message.sender;
+      bool child = typeMatch && parentMessage.senderId == message.senderId;
 
       return child
           ? ChildMessage(message: messages[index])
           : HeadMessage(message: messages[index]);
     }
 
-    // System messages
-    if (message is String) {
-      return SystemMessageWrapper(child: TextSpan(text: message));
-    }
-
+    // Reserved for system messages with specific styling intent
     if (message is TextSpan) {
       return SystemMessageWrapper(child: message);
     }
@@ -79,14 +76,10 @@ class SystemMessageWrapper extends StatelessWidget {
 class HeadMessage extends StatelessWidget {
   const HeadMessage({super.key, required this.message});
 
-  final ChatMessage message;
+  final WrittenMessage message;
 
   @override
   Widget build(BuildContext context) {
-    final User user =
-        Provider.of<ConnectionStateProvider>(context).users[message.sender] ??
-            unknownUser;
-
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: Row(
@@ -103,8 +96,8 @@ class HeadMessage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  user.username,
-                  style: TextStyle(color: HexColor.fromHex(user.colour)),
+                  message.username,
+                  style: TextStyle(color: HexColor.fromHex(message.colour)),
                 ),
                 Text(message.message),
               ],
@@ -119,7 +112,7 @@ class HeadMessage extends StatelessWidget {
 class ChildMessage extends StatelessWidget {
   const ChildMessage({super.key, required this.message});
 
-  final ChatMessage message;
+  final WrittenMessage message;
 
   @override
   Widget build(BuildContext context) {

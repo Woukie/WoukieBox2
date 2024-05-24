@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/main.dart';
 import 'package:woukiebox2_flutter/src/util/hex_color.dart';
+import 'package:woukiebox2_flutter/src/util/written_message.dart';
 
 class ConnectionStateProvider extends ChangeNotifier {
   ConnectionState _state = ConnectionState.none;
@@ -46,7 +47,18 @@ class ConnectionStateProvider extends ChangeNotifier {
     print(message);
 
     if (message is ChatMessage) {
-      _messages.add(message);
+      User? user = _users[message.sender];
+      if (user == null) return; // This will never happen. But who knows?
+
+      // We do this to preserve the details at the time of the message. If we only have a reference to the user.id, then sender and color would update
+      _messages.add(
+        WrittenMessage(
+          user.id,
+          user.username,
+          message.message,
+          user.colour,
+        ),
+      );
       notifyListeners();
     } else if (message is RoomMembers) {
       _users.forEach((id, user) {
@@ -62,7 +74,20 @@ class ConnectionStateProvider extends ChangeNotifier {
       User? user = _users[message.id];
       if (user == null) return; // This will never happen. But who knows?
 
-      _messages.add("${user.username} left the chat");
+      _messages.add(TextSpan(
+        children: [
+          TextSpan(
+            text: user.username,
+            style: TextStyle(
+              color: HexColor.fromHex(user.colour),
+            ),
+          ),
+          const TextSpan(
+            text: " left the chat",
+          ),
+        ],
+      ));
+
       _users[message.id]?.visible = false;
       notifyListeners();
     } else if (message is JoinMessage) {
@@ -88,6 +113,30 @@ class ConnectionStateProvider extends ChangeNotifier {
       User? user = _users[message.sender];
       // The server never sends a null sender, and all users are tracked. But who knows?
       if (user == null) return;
+
+      if (message.username != null || message.colour != null) {
+        _messages.add(TextSpan(
+          children: [
+            TextSpan(
+              text: user.username,
+              style: TextStyle(
+                color: HexColor.fromHex(user.colour),
+              ),
+            ),
+            const TextSpan(
+              text: " is now known as ",
+            ),
+            TextSpan(
+              text: message.username ??
+                  user.username, // In the case where only colour is updated
+              style: TextStyle(
+                  color: HexColor.fromHex(message.colour ?? user.colour)),
+            ),
+          ],
+        ));
+      }
+
+      // Don't alert others of bio changes
 
       _users.update(
         message.sender!, // We know there's a user with this id
