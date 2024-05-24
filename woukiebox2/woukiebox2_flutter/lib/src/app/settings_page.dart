@@ -43,17 +43,18 @@ class SettingsPage extends StatelessWidget {
                     child: FilledButton.tonalIcon(
                       icon: const Icon(Icons.edit),
                       onPressed: () async {
-                        themeDataProvider
-                            .updateSelectedColor(await showColorPickerDialog(
-                          context,
-                          themeDataProvider.color,
-                          pickersEnabled: <ColorPickerType, bool>{
-                            ColorPickerType.wheel: true,
-                            ColorPickerType.accent: false,
-                            ColorPickerType.primary: false,
-                          },
-                          enableShadesSelection: false,
-                        ));
+                        themeDataProvider.updateSelectedColor(
+                          await showColorPickerDialog(
+                            context,
+                            themeDataProvider.color,
+                            pickersEnabled: <ColorPickerType, bool>{
+                              ColorPickerType.wheel: true,
+                              ColorPickerType.accent: false,
+                              ColorPickerType.primary: false,
+                            },
+                            enableShadesSelection: false,
+                          ),
+                        );
                       },
                       label: const Text("Theme Colour"),
                     ),
