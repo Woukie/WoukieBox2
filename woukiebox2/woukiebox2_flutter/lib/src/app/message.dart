@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/src/util/hex_color.dart';
 import 'package:woukiebox2_flutter/src/util/written_message.dart';
