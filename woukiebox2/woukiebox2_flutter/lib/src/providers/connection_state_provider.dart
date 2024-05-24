@@ -77,7 +77,7 @@ class ConnectionStateProvider extends ChangeNotifier {
       // The server never sends a null sender, and all users are tracked. But who knows?
       if (user == null) return;
 
-      if (message.username != null) {
+      if (message.username != null || message.colour != null) {
         _messages.add(
           RichText(
             text: TextSpan(
@@ -92,7 +92,8 @@ class ConnectionStateProvider extends ChangeNotifier {
                   text: " is now known as ",
                 ),
                 TextSpan(
-                  text: message.username,
+                  text: message.username ??
+                      user.username, // In the case where only colour is updated
                   style: TextStyle(
                       color: HexColor.fromHex(message.colour ?? user.colour)),
                 ),
