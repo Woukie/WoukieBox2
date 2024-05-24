@@ -74,36 +74,25 @@ class ConnectionStateProvider extends ChangeNotifier {
       User? user = _users[message.id];
       if (user == null) return; // This will never happen. But who knows?
 
-      _messages.add(TextSpan(
-        children: [
-          TextSpan(
-            text: user.username,
-            style: TextStyle(
-              color: HexColor.fromHex(user.colour),
-            ),
-          ),
-          const TextSpan(
-            text: " left the chat",
-          ),
-        ],
-      ));
+      _messages.add(
+        WrittenLeaveMessage(
+          message.id,
+          user.username,
+          user.colour,
+        ),
+      );
 
       _users[message.id]?.visible = false;
       notifyListeners();
     } else if (message is JoinMessage) {
-      _messages.add(TextSpan(
-        children: [
-          TextSpan(
-            text: message.user.username,
-            style: TextStyle(
-              color: HexColor.fromHex(message.user.colour),
-            ),
-          ),
-          const TextSpan(
-            text: " joined the chat",
-          ),
-        ],
-      ));
+      _messages.add(
+        WrittenJoinMessage(
+          message.user.id,
+          message.user.username,
+          message.user.colour,
+        ),
+      );
+
       _users[message.user.id] = message.user;
       notifyListeners();
     } else if (message is SelfIdentifier) {
@@ -114,29 +103,18 @@ class ConnectionStateProvider extends ChangeNotifier {
       // The server never sends a null sender, and all users are tracked. But who knows?
       if (user == null) return;
 
+      // We only want to print name and colour changes to the chat
       if (message.username != null || message.colour != null) {
-        _messages.add(TextSpan(
-          children: [
-            TextSpan(
-              text: user.username,
-              style: TextStyle(
-                color: HexColor.fromHex(user.colour),
-              ),
-            ),
-            const TextSpan(
-              text: " is now known as ",
-            ),
-            TextSpan(
-              text: message.username ??
-                  user.username, // In the case where only colour is updated
-              style: TextStyle(
-                  color: HexColor.fromHex(message.colour ?? user.colour)),
-            ),
-          ],
-        ));
+        _messages.add(
+          WrittenProfileMessage(
+            message.sender!,
+            user.username,
+            user.colour,
+            message.username,
+            message.colour,
+          ),
+        );
       }
-
-      // Don't alert others of bio changes
 
       _users.update(
         message.sender!, // We know there's a user with this id

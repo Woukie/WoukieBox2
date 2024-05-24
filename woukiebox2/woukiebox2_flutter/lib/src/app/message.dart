@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
-import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2_flutter/src/util/hex_color.dart';
 import 'package:woukiebox2_flutter/src/util/written_message.dart';
 
@@ -35,9 +33,64 @@ class Message extends StatelessWidget {
           : HeadMessage(message: messages[index]);
     }
 
-    // Reserved for system messages with specific styling intent
-    if (message is TextSpan) {
-      return SystemMessageWrapper(child: message);
+    if (message is WrittenLeaveMessage) {
+      return SystemMessageWrapper(
+        child: TextSpan(
+          children: [
+            TextSpan(
+              text: message.username,
+              style: TextStyle(
+                color: HexColor.fromHex(message.colour),
+              ),
+            ),
+            const TextSpan(
+              text: " left the chat",
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (message is WrittenJoinMessage) {
+      return SystemMessageWrapper(
+        child: TextSpan(
+          children: [
+            TextSpan(
+              text: message.username,
+              style: TextStyle(
+                color: HexColor.fromHex(message.colour),
+              ),
+            ),
+            const TextSpan(
+              text: " joined the chat",
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (message is WrittenProfileMessage) {
+      return SystemMessageWrapper(
+        child: TextSpan(
+          children: [
+            TextSpan(
+              text: message.oldUsername,
+              style: TextStyle(
+                color: HexColor.fromHex(message.oldColour),
+              ),
+            ),
+            const TextSpan(
+              text: " is now known as ",
+            ),
+            TextSpan(
+              text: message.newUsername ?? message.oldUsername,
+              style: TextStyle(
+                  color:
+                      HexColor.fromHex(message.newColour ?? message.oldColour)),
+            ),
+          ],
+        ),
+      );
     }
 
     // This literally cannot happen
