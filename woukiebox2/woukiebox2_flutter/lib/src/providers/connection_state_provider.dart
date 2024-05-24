@@ -78,29 +78,25 @@ class ConnectionStateProvider extends ChangeNotifier {
       if (user == null) return;
 
       if (message.username != null || message.colour != null) {
-        _messages.add(
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: user.username,
-                  style: TextStyle(
-                    color: HexColor.fromHex(user.colour),
-                  ),
-                ),
-                const TextSpan(
-                  text: " is now known as ",
-                ),
-                TextSpan(
-                  text: message.username ??
-                      user.username, // In the case where only colour is updated
-                  style: TextStyle(
-                      color: HexColor.fromHex(message.colour ?? user.colour)),
-                ),
-              ],
+        _messages.add(TextSpan(
+          children: [
+            TextSpan(
+              text: user.username,
+              style: TextStyle(
+                color: HexColor.fromHex(user.colour),
+              ),
             ),
-          ),
-        );
+            const TextSpan(
+              text: " is now known as ",
+            ),
+            TextSpan(
+              text: message.username ??
+                  user.username, // In the case where only colour is updated
+              style: TextStyle(
+                  color: HexColor.fromHex(message.colour ?? user.colour)),
+            ),
+          ],
+        ));
       }
 
       // Don't alert others of bio changes

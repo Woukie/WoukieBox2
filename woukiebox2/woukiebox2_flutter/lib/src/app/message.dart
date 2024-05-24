@@ -35,14 +35,43 @@ class Message extends StatelessWidget {
 
     // System messages
     if (message is String) {
-      return Text(message);
+      return SystemMessageWrapper(child: TextSpan(text: message));
     }
 
-    if (message is Widget) {
-      return message;
+    if (message is TextSpan) {
+      return SystemMessageWrapper(child: message);
     }
 
+    // This literally cannot happen
     return const Text("unknown chat message :)");
+  }
+}
+
+class SystemMessageWrapper extends StatelessWidget {
+  final TextSpan child;
+
+  const SystemMessageWrapper({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8, right: 8),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(fontStyle: FontStyle.italic),
+                children: [
+                  child,
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
