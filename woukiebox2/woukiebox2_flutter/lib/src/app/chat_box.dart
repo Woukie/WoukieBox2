@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/main.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
+import 'package:woukiebox2_flutter/src/util/hex_color.dart';
 
 import 'message.dart';
 
@@ -172,8 +174,27 @@ class Users extends StatelessWidget {
     return ListView.builder(
       itemCount: userList.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(userList[index].username),
+        return Row(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: CircleAvatar(),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Text(
+                  softWrap: false,
+                  overflow: TextOverflow.fade,
+                  maxLines: 1,
+                  userList[index].username,
+                  style: TextStyle(
+                    color: HexColor.fromHex(userList[index].colour),
+                  ),
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
