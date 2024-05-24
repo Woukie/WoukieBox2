@@ -141,7 +141,7 @@ class Messages extends StatelessWidget {
 
     WidgetsBinding.instance.addPostFrameCallback((duration) {
       if (scrollController.position.pixels >=
-          scrollController.position.maxScrollExtent - 50) {
+          scrollController.position.maxScrollExtent - 300) {
         scrollController.jumpTo(scrollController.position.maxScrollExtent);
       }
     });
