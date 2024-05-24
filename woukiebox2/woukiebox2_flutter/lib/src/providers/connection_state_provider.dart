@@ -4,7 +4,6 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/main.dart';
-import 'package:woukiebox2_flutter/src/util/hex_color.dart';
 import 'package:woukiebox2_flutter/src/util/written_message.dart';
 
 class ConnectionStateProvider extends ChangeNotifier {
