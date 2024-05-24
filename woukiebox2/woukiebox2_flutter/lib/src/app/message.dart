@@ -15,17 +15,34 @@ User unknownUser = User(
 class Message extends StatelessWidget {
   const Message({super.key, required this.messages, required this.index});
 
-  final List<ChatMessage> messages;
+  final List<dynamic> messages;
   final int index;
 
   @override
   Widget build(BuildContext context) {
-    final bool head =
-        index == 0 || messages[index - 1].sender != messages[index].sender;
+    final message = messages[index];
+    final parentMessage = index != 0 ? messages[index - 1] : null;
 
-    return head
-        ? HeadMessage(message: messages[index])
-        : ChildMessage(message: messages[index]);
+    if (message is ChatMessage) {
+      bool typeMatch = parentMessage is ChatMessage;
+
+      bool child = typeMatch && parentMessage.sender == message.sender;
+
+      return child
+          ? ChildMessage(message: messages[index])
+          : HeadMessage(message: messages[index]);
+    }
+
+    // System messages
+    if (message is String) {
+      return Text(message);
+    }
+
+    if (message is Widget) {
+      return message;
+    }
+
+    return const Text("unknown chat message :)");
   }
 }
 

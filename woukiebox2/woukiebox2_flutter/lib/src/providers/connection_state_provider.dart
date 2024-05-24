@@ -4,16 +4,17 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/main.dart';
+import 'package:woukiebox2_flutter/src/util/hex_color.dart';
 
 class ConnectionStateProvider extends ChangeNotifier {
   ConnectionState _state = ConnectionState.none;
   final HashMap<int, User> _users = HashMap<int, User>();
-  final List<ChatMessage> _messages = List.empty(growable: true);
+  final List<dynamic> _messages = List.empty(growable: true);
   int? _currentUser;
 
   ConnectionState get state => _state;
   HashMap<int, User> get users => _users;
-  List<ChatMessage> get messages => _messages;
+  List<dynamic> get messages => _messages;
   int? get currentUser => _currentUser;
 
   StreamSubscription? _streamSubscription;
@@ -58,9 +59,14 @@ class ConnectionStateProvider extends ChangeNotifier {
 
       notifyListeners();
     } else if (message is LeaveMessage) {
+      User? user = _users[message.id];
+      if (user == null) return; // This will never happen. But who knows?
+
+      _messages.add("${user.username} left the chat");
       _users[message.id]?.visible = false;
       notifyListeners();
     } else if (message is JoinMessage) {
+      _messages.add("${message.user.username} joined the chat");
       _users[message.user.id] = message.user;
       notifyListeners();
     } else if (message is SelfIdentifier) {
@@ -68,10 +74,38 @@ class ConnectionStateProvider extends ChangeNotifier {
       notifyListeners();
     } else if (message is UpdateProfile) {
       User? user = _users[message.sender];
+      // The server never sends a null sender, and all users are tracked. But who knows?
       if (user == null) return;
 
+      if (message.username != null) {
+        _messages.add(
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: user.username,
+                  style: TextStyle(
+                    color: HexColor.fromHex(user.colour),
+                  ),
+                ),
+                const TextSpan(
+                  text: " is now known as ",
+                ),
+                TextSpan(
+                  text: message.username,
+                  style: TextStyle(
+                      color: HexColor.fromHex(message.colour ?? user.colour)),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      // Don't alert others of bio changes
+
       _users.update(
-        message.sender!, // We know there's a user here
+        message.sender!, // We know there's a user with this id
         (user) => user.copyWith(
           bio: message.bio,
           colour: message.colour,

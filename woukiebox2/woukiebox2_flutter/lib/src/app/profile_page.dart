@@ -75,10 +75,12 @@ class ProfilePage extends StatelessWidget {
                   Expanded(
                     child: FilledButton.tonal(
                       onPressed: () {
-                        client.sockets.sendStreamMessage(UpdateProfile(
-                          username: nameController.text,
-                          bio: bioController.text,
-                        ));
+                        client.sockets.sendStreamMessage(
+                          UpdateProfile(
+                              username: nameController.text,
+                              bio: bioController.text,
+                              colour: "#FF0000"),
+                        );
                       },
                       child: const Text("Update"),
                     ),
