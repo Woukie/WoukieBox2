@@ -11,12 +11,8 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final User? user;
-
-    final connectionStateProvider =
-        Provider.of<ConnectionStateProvider>(context);
-
-    user = connectionStateProvider.users[connectionStateProvider.currentUser];
+    final connectionProvider = Provider.of<ConnectionStateProvider>(context);
+    final User? user = connectionProvider.users[connectionProvider.currentUser];
 
     final nameController = TextEditingController(text: user?.username);
     final bioController = TextEditingController(text: user?.bio);
@@ -77,9 +73,13 @@ class ProfilePage extends StatelessWidget {
                       onPressed: () {
                         client.sockets.sendStreamMessage(
                           UpdateProfile(
-                              username: nameController.text,
-                              bio: bioController.text,
-                              colour: "#FF0000"),
+                            bio: bioController.text != user?.bio
+                                ? bioController.text
+                                : null,
+                            username: nameController.text != user?.username
+                                ? nameController.text
+                                : null,
+                          ),
                         );
                       },
                       child: const Text("Update"),
