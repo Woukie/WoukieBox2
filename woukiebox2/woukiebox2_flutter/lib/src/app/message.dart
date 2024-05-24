@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/src/util/hex_color.dart';
 import 'package:woukiebox2_flutter/src/util/written_message.dart';
@@ -36,6 +37,7 @@ class Message extends StatelessWidget {
     if (message is WrittenLeaveMessage) {
       return SystemMessageWrapper(
         child: TextSpan(
+          style: DefaultTextStyle.of(context).style,
           children: [
             TextSpan(
               text: message.username,
@@ -54,6 +56,7 @@ class Message extends StatelessWidget {
     if (message is WrittenJoinMessage) {
       return SystemMessageWrapper(
         child: TextSpan(
+          style: DefaultTextStyle.of(context).style,
           children: [
             TextSpan(
               text: message.username,
@@ -72,6 +75,7 @@ class Message extends StatelessWidget {
     if (message is WrittenProfileMessage) {
       return SystemMessageWrapper(
         child: TextSpan(
+          style: DefaultTextStyle.of(context).style,
           children: [
             TextSpan(
               text: message.oldUsername,
@@ -79,9 +83,7 @@ class Message extends StatelessWidget {
                 color: HexColor.fromHex(message.oldColour),
               ),
             ),
-            const TextSpan(
-              text: " is now known as ",
-            ),
+            const TextSpan(text: " is now known as "),
             TextSpan(
               text: message.newUsername ?? message.oldUsername,
               style: TextStyle(
