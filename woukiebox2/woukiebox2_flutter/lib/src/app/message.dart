@@ -56,7 +56,7 @@ class SystemMessageWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
+        padding: const EdgeInsets.only(top: 12, left: 8, right: 8),
         child: Card(
           child: Padding(
             padding: const EdgeInsets.only(left: 8, right: 8),
