@@ -43,8 +43,6 @@ class ConnectionStateProvider extends ChangeNotifier {
   }
 
   void _handleMessage(SerializableEntity message) {
-    print(message);
-
     if (message is ChatMessage) {
       User? user = _users[message.sender];
       if (user == null) return; // This will never happen. But who knows?
