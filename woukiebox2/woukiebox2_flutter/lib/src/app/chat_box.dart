@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -174,29 +175,125 @@ class Users extends StatelessWidget {
     return ListView.builder(
       itemCount: userList.length,
       itemBuilder: (context, index) {
-        return Row(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: CircleAvatar(),
+        Color color = HexColor.fromHex(userList[index].colour);
+        User user = userList[index];
+
+        return GestureDetector(
+          onTapDown: (TapDownDetails details) async {
+            final screenSize = MediaQuery.of(context).size;
+            Offset offset = details.globalPosition;
+
+            await showMenu(
+              context: context,
+              position: RelativeRect.fromLTRB(
+                offset.dx,
+                offset.dy,
+                screenSize.width - offset.dx,
+                screenSize.height - offset.dy,
+              ),
+              items: [
+                PopupMenuItem(
+                  enabled: false,
+                  child: ProfilePreview(user: user),
+                ),
+              ],
+              elevation: 8.0,
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              margin: EdgeInsets.zero,
+              child: UserItem(
+                colour: color,
+                username: user.username,
+              ),
             ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class ProfilePreview extends StatelessWidget {
+  const ProfilePreview({
+    super.key,
+    required this.user,
+  });
+
+  final User user;
+
+  @override
+  Widget build(BuildContext context) {
+    TextStyle textStyle = Theme.of(context).primaryTextTheme.bodyMedium!;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            const CircleAvatar(),
+            Text(
+              style: textStyle.copyWith(
+                color: HexColor.fromHex(user.colour),
+              ),
+              user.username,
+            ),
+          ],
+        ),
+        Row(
+          children: [
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Text(
-                  softWrap: false,
-                  overflow: TextOverflow.fade,
-                  maxLines: 1,
-                  userList[index].username,
-                  style: TextStyle(
-                    color: HexColor.fromHex(userList[index].colour),
+              child: Card(
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    user.bio == "" ? "This user has no bio" : user.bio,
                   ),
                 ),
               ),
             ),
           ],
-        );
-      },
+        ),
+      ],
+    );
+  }
+}
+
+class UserItem extends StatelessWidget {
+  const UserItem({
+    super.key,
+    required this.username,
+    required this.colour,
+  });
+
+  final String username;
+  final Color colour;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: CircleAvatar(),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Text(
+              softWrap: false,
+              overflow: TextOverflow.fade,
+              maxLines: 1,
+              username,
+              style: TextStyle(
+                color: colour,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
