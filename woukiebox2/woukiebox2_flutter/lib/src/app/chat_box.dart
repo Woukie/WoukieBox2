@@ -228,35 +228,66 @@ class ProfilePreview extends StatelessWidget {
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).primaryTextTheme.bodyMedium!;
 
-    return Column(
-      children: [
-        Row(
+    return SizedBox(
+      width: 200,
+      height: 250,
+      child: Padding(
+        // Unify the padding from the stock popup
+        padding: const EdgeInsets.only(top: 3, bottom: 3),
+        child: Column(
           children: [
-            const CircleAvatar(),
-            Text(
-              style: textStyle.copyWith(
-                color: HexColor.fromHex(user.colour),
-              ),
-              user.username,
+            Row(
+              children: [
+                const CircleAvatar(),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 12),
+                    child: Text(
+                      style: textStyle.copyWith(
+                        color: HexColor.fromHex(user.colour),
+                      ),
+                      user.username,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        Row(
-          children: [
             Expanded(
-              child: Card(
-                margin: EdgeInsets.zero,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    user.bio == "" ? "This user has no bio" : user.bio,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              left: 8,
+                              right: 8,
+                              top: 4,
+                              bottom: 4,
+                            ),
+                            child: Text(
+                              user.bio == ""
+                                  ? "This user has no bio..."
+                                  : user.bio,
+                              style: user.bio == ""
+                                  ? const TextStyle(fontStyle: FontStyle.italic)
+                                  : null,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 }
