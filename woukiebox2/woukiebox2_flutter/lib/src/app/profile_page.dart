@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,9 +40,22 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               Row(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(right: 12),
-                    child: CircleAvatar(),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Material(
+                        elevation: 3,
+                        shape: const CircleBorder(),
+                        color: Colors.grey[500],
+                        clipBehavior: Clip.antiAlias,
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              "https://pngimg.com/uploads/pirate/pirate_PNG70.png",
+                        ),
+                      ),
+                    ),
                   ),
                   Expanded(
                     child: Card(
