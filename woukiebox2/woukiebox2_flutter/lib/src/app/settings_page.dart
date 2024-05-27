@@ -48,9 +48,8 @@ class SettingsPage extends StatelessWidget {
                             context,
                             themeDataProvider.color,
                             pickersEnabled: <ColorPickerType, bool>{
-                              ColorPickerType.wheel: true,
                               ColorPickerType.accent: false,
-                              ColorPickerType.primary: false,
+                              ColorPickerType.primary: true,
                             },
                             enableShadesSelection: false,
                           ),
