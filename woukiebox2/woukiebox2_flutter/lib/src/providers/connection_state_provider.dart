@@ -7,38 +7,43 @@ import 'package:woukiebox2_flutter/main.dart';
 import 'package:woukiebox2_flutter/src/util/written_message.dart';
 
 class ConnectionStateProvider extends ChangeNotifier {
-  ConnectionState _state = ConnectionState.none;
+  late final StreamingConnectionHandler _connectionHandler;
+
   final HashMap<int, User> _users = HashMap<int, User>();
   final List<dynamic> _messages = List.empty(growable: true);
   int? _currentUser;
 
-  ConnectionState get state => _state;
+  StreamingConnectionHandler get connectionHandler => _connectionHandler;
   HashMap<int, User> get users => _users;
   List<dynamic> get messages => _messages;
   int? get currentUser => _currentUser;
 
   StreamSubscription? _streamSubscription;
 
+  ConnectionStateProvider() {
+    _connectionHandler = StreamingConnectionHandler(
+      client: client,
+      listener: _handleStatus,
+    );
+  }
+
   void openConnection() async {
-    _state = ConnectionState.waiting;
-    notifyListeners();
-    try {
-      await client.openStreamingConnection();
+    _connectionHandler.connect();
 
-      _state = ConnectionState.active;
+    _streamSubscription ??= client.sockets.stream.listen(_handleMessage);
 
-      _streamSubscription ??= client.sockets.stream.listen(_handleMessage);
-    } catch (error) {
-      _state = ConnectionState.none;
-    }
     notifyListeners();
   }
 
   Future<void> closeConnection() async {
-    await client.closeStreamingConnection();
+    _connectionHandler.close();
     _messages.clear();
     _users.clear();
-    _state = ConnectionState.none;
+    notifyListeners();
+  }
+
+  // Get latest state with _connectionHandler.status
+  void _handleStatus(StreamingConnectionHandlerState message) {
     notifyListeners();
   }
 

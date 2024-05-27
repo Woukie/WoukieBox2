@@ -1,6 +1,7 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/main.dart';
 import 'package:woukiebox2_flutter/src/app/profile_page.dart';
 import 'package:woukiebox2_flutter/src/app/settings_page.dart';
@@ -99,9 +100,7 @@ class LeftButtons extends StatelessWidget {
             onPressed: () {
               sessionManager.signOut();
               connectionProvider.closeConnection();
-              if (joinedAnonymouslyProvider.joined) {
-                joinedAnonymouslyProvider.setJoined(false);
-              }
+              joinedAnonymouslyProvider.setJoined(false);
             },
           ),
         ),
@@ -111,18 +110,28 @@ class LeftButtons extends StatelessWidget {
           child: Tooltip(
             message: "Status",
             child: Icon(
-              switch (connectionProvider.state) {
-                ConnectionState.none => Icons.wifi_off,
-                _ => Icons.wifi,
+              switch (connectionProvider.connectionHandler.status.status) {
+                StreamingConnectionStatus.connected => Icons.wifi,
+                StreamingConnectionStatus.disconnected => Icons.wifi_off,
+                StreamingConnectionStatus.connecting => Icons.wifi_2_bar,
+                StreamingConnectionStatus.waitingToRetry => Icons.timer,
               },
-              color: switch (connectionProvider.state) {
-                ConnectionState.none => Theme.of(context).colorScheme.error,
-                ConnectionState.waiting =>
+              color: switch (
+                  connectionProvider.connectionHandler.status.status) {
+                StreamingConnectionStatus.connected =>
+                  Theme.of(context).colorScheme.onSurfaceVariant,
+                StreamingConnectionStatus.disconnected =>
+                  Theme.of(context).colorScheme.error,
+                StreamingConnectionStatus.connecting =>
                   Theme.of(context).colorScheme.secondary,
-                _ => Theme.of(context).colorScheme.onSurfaceVariant,
+                StreamingConnectionStatus.waitingToRetry =>
+                  Theme.of(context).colorScheme.secondary,
               },
             ),
           ),
+        ),
+        Text(
+          "${connectionProvider.connectionHandler.status.retryInSeconds ?? ""}",
         ),
       ],
     );

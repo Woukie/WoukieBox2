@@ -28,7 +28,8 @@ class _ChatBoxState extends State<ChatBox> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final connectionProvider =
           Provider.of<ConnectionStateProvider>(context, listen: false);
-      if (connectionProvider.state == ConnectionState.none) {
+      if (connectionProvider.connectionHandler.status.status ==
+          StreamingConnectionStatus.disconnected) {
         connectionProvider.openConnection();
       }
     });
