@@ -9,6 +9,44 @@ class SocketsEndpoint extends Endpoint {
   final Set<User> connectedUsers = {};
   final Random random = Random();
 
+  // Profile image uploading. Can't use default as I need control over the naming scheme
+  Future<String?> getUploadDescription(Session session) async {
+    if (!await session.isUserSignedIn) {
+      throw 'Could not upload image. User not authenticated';
+    }
+
+    var userId = await session.auth.authenticatedUserId;
+    UserPersistent extraUserData = await getPersistentData(session, userId);
+
+    String filePath = "$userId/${random.nextInt(100000000)}";
+
+    final uploadDescription =
+        await session.storage.createDirectFileUploadDescription(
+      storageId: 'public',
+      path: filePath,
+    );
+
+    extraUserData.image = filePath;
+    await UserPersistent.db.updateRow(session, extraUserData);
+
+    return uploadDescription;
+  }
+
+  Future<bool> verifyUpload(Session session) async {
+    if (!await session.isUserSignedIn) {
+      throw 'Could not verify upload. User not authenticated';
+    }
+
+    var userId = await session.auth.authenticatedUserId;
+    UserPersistent extraUserData = await getPersistentData(session, userId);
+
+    return await session.storage.verifyDirectFileUpload(
+      storageId: 'public',
+      path: extraUserData.image,
+    );
+  }
+
+  // Sockets
   Future<UserPersistent> getPersistentData(session, userId) async {
     UserPersistent? extraUserData = await UserPersistent.db.findFirstRow(
       session,
@@ -20,6 +58,7 @@ class SocketsEndpoint extends Endpoint {
       UserPersistent(
         userInfoId: userId,
         color: "FFFF00",
+        image: "",
         bio: "",
       ),
     );
@@ -40,7 +79,7 @@ class SocketsEndpoint extends Endpoint {
           id: userId,
           colour: extraUserData.color,
           username: userInfo.userName,
-          image: userInfo.imageUrl ?? "",
+          image: extraUserData.image,
           bio: extraUserData.bio,
           verified: true,
           visible: true,

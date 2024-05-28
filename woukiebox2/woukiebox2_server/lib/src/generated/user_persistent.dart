@@ -18,6 +18,7 @@ abstract class UserPersistent extends _i1.TableRow {
     this.userInfo,
     required this.color,
     required this.bio,
+    required this.image,
   }) : super(id);
 
   factory UserPersistent({
@@ -26,6 +27,7 @@ abstract class UserPersistent extends _i1.TableRow {
     _i2.UserInfo? userInfo,
     required String color,
     required String bio,
+    required String image,
   }) = _UserPersistentImpl;
 
   factory UserPersistent.fromJson(
@@ -41,6 +43,8 @@ abstract class UserPersistent extends _i1.TableRow {
       color:
           serializationManager.deserialize<String>(jsonSerialization['color']),
       bio: serializationManager.deserialize<String>(jsonSerialization['bio']),
+      image:
+          serializationManager.deserialize<String>(jsonSerialization['image']),
     );
   }
 
@@ -56,6 +60,8 @@ abstract class UserPersistent extends _i1.TableRow {
 
   String bio;
 
+  String image;
+
   @override
   _i1.Table get table => t;
 
@@ -65,6 +71,7 @@ abstract class UserPersistent extends _i1.TableRow {
     _i2.UserInfo? userInfo,
     String? color,
     String? bio,
+    String? image,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -74,6 +81,7 @@ abstract class UserPersistent extends _i1.TableRow {
       if (userInfo != null) 'userInfo': userInfo?.toJson(),
       'color': color,
       'bio': bio,
+      'image': image,
     };
   }
 
@@ -85,6 +93,7 @@ abstract class UserPersistent extends _i1.TableRow {
       'userInfoId': userInfoId,
       'color': color,
       'bio': bio,
+      'image': image,
     };
   }
 
@@ -96,6 +105,7 @@ abstract class UserPersistent extends _i1.TableRow {
       if (userInfo != null) 'userInfo': userInfo?.allToJson(),
       'color': color,
       'bio': bio,
+      'image': image,
     };
   }
 
@@ -117,6 +127,9 @@ abstract class UserPersistent extends _i1.TableRow {
         return;
       case 'bio':
         bio = value;
+        return;
+      case 'image':
+        image = value;
         return;
       default:
         throw UnimplementedError();
@@ -282,12 +295,14 @@ class _UserPersistentImpl extends UserPersistent {
     _i2.UserInfo? userInfo,
     required String color,
     required String bio,
+    required String image,
   }) : super._(
           id: id,
           userInfoId: userInfoId,
           userInfo: userInfo,
           color: color,
           bio: bio,
+          image: image,
         );
 
   @override
@@ -297,6 +312,7 @@ class _UserPersistentImpl extends UserPersistent {
     Object? userInfo = _Undefined,
     String? color,
     String? bio,
+    String? image,
   }) {
     return UserPersistent(
       id: id is int? ? id : this.id,
@@ -305,6 +321,7 @@ class _UserPersistentImpl extends UserPersistent {
           userInfo is _i2.UserInfo? ? userInfo : this.userInfo?.copyWith(),
       color: color ?? this.color,
       bio: bio ?? this.bio,
+      image: image ?? this.image,
     );
   }
 }
@@ -324,6 +341,10 @@ class UserPersistentTable extends _i1.Table {
       'bio',
       this,
     );
+    image = _i1.ColumnString(
+      'image',
+      this,
+    );
   }
 
   late final _i1.ColumnInt userInfoId;
@@ -333,6 +354,8 @@ class UserPersistentTable extends _i1.Table {
   late final _i1.ColumnString color;
 
   late final _i1.ColumnString bio;
+
+  late final _i1.ColumnString image;
 
   _i2.UserInfoTable get userInfo {
     if (_userInfo != null) return _userInfo!;
@@ -353,6 +376,7 @@ class UserPersistentTable extends _i1.Table {
         userInfoId,
         color,
         bio,
+        image,
       ];
 
   @override

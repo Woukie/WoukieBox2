@@ -57,7 +57,28 @@ class Endpoints extends _i1.EndpointDispatch {
     connectors['sockets'] = _i1.EndpointConnector(
       name: 'sockets',
       endpoint: endpoints['sockets']!,
-      methodConnectors: {},
+      methodConnectors: {
+        'getUploadDescription': _i1.MethodConnector(
+          name: 'getUploadDescription',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['sockets'] as _i3.SocketsEndpoint)
+                  .getUploadDescription(session),
+        ),
+        'verifyUpload': _i1.MethodConnector(
+          name: 'verifyUpload',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['sockets'] as _i3.SocketsEndpoint)
+                  .verifyUpload(session),
+        ),
+      },
     );
     modules['serverpod_auth'] = _i4.Endpoints()..initializeEndpoints(server);
   }

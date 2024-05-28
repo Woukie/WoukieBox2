@@ -18,6 +18,7 @@ abstract class UserPersistent extends _i1.SerializableEntity {
     this.userInfo,
     required this.color,
     required this.bio,
+    required this.image,
   });
 
   factory UserPersistent({
@@ -26,6 +27,7 @@ abstract class UserPersistent extends _i1.SerializableEntity {
     _i2.UserInfo? userInfo,
     required String color,
     required String bio,
+    required String image,
   }) = _UserPersistentImpl;
 
   factory UserPersistent.fromJson(
@@ -41,6 +43,8 @@ abstract class UserPersistent extends _i1.SerializableEntity {
       color:
           serializationManager.deserialize<String>(jsonSerialization['color']),
       bio: serializationManager.deserialize<String>(jsonSerialization['bio']),
+      image:
+          serializationManager.deserialize<String>(jsonSerialization['image']),
     );
   }
 
@@ -57,12 +61,15 @@ abstract class UserPersistent extends _i1.SerializableEntity {
 
   String bio;
 
+  String image;
+
   UserPersistent copyWith({
     int? id,
     int? userInfoId,
     _i2.UserInfo? userInfo,
     String? color,
     String? bio,
+    String? image,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -72,6 +79,7 @@ abstract class UserPersistent extends _i1.SerializableEntity {
       if (userInfo != null) 'userInfo': userInfo?.toJson(),
       'color': color,
       'bio': bio,
+      'image': image,
     };
   }
 }
@@ -85,12 +93,14 @@ class _UserPersistentImpl extends UserPersistent {
     _i2.UserInfo? userInfo,
     required String color,
     required String bio,
+    required String image,
   }) : super._(
           id: id,
           userInfoId: userInfoId,
           userInfo: userInfo,
           color: color,
           bio: bio,
+          image: image,
         );
 
   @override
@@ -100,6 +110,7 @@ class _UserPersistentImpl extends UserPersistent {
     Object? userInfo = _Undefined,
     String? color,
     String? bio,
+    String? image,
   }) {
     return UserPersistent(
       id: id is int? ? id : this.id,
@@ -108,6 +119,7 @@ class _UserPersistentImpl extends UserPersistent {
           userInfo is _i2.UserInfo? ? userInfo : this.userInfo?.copyWith(),
       color: color ?? this.color,
       bio: bio ?? this.bio,
+      image: image ?? this.image,
     );
   }
 }

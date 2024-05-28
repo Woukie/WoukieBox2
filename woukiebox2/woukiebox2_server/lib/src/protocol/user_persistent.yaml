@@ -5,6 +5,7 @@ fields:
   userInfo: module:auth:UserInfo?, relation
   color: String
   bio: String
+  image: String
 indexes:
   user_info_id_unique_idx:
     fields: userInfoId

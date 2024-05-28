@@ -29,6 +29,7 @@ void run(List<String> args) async {
         UserPersistent(
           userInfoId: userInfo.id!,
           color: "FF0000",
+          image: "",
           bio: "",
         ),
       );

@@ -33,6 +33,19 @@ class EndpointSockets extends _i1.EndpointRef {
 
   @override
   String get name => 'sockets';
+
+  _i2.Future<String?> getUploadDescription() =>
+      caller.callServerEndpoint<String?>(
+        'sockets',
+        'getUploadDescription',
+        {},
+      );
+
+  _i2.Future<bool> verifyUpload() => caller.callServerEndpoint<bool>(
+        'sockets',
+        'verifyUpload',
+        {},
+      );
 }
 
 class _Modules {

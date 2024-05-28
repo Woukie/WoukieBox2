@@ -1,7 +1,8 @@
+import 'dart:io';
+
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/main.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
@@ -50,9 +51,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         shape: const CircleBorder(),
                         color: Colors.grey[500],
                         clipBehavior: Clip.antiAlias,
-                        child: UserImageButton(
-                          elevation: 1,
-                          sessionManager: sessionManager,
+                        child: IconButton(
+                          icon: const Icon(Icons.person),
+                          onPressed: uploadPfp,
                         ),
                       ),
                     ),
@@ -146,5 +147,27 @@ class _ProfilePageState extends State<ProfilePage> {
         )
       ],
     );
+  }
+
+  void uploadPfp() async {
+    var uploadDescription = await client.sockets.getUploadDescription();
+    print("Got upload description");
+    print(uploadDescription);
+
+    var file = File("files\\image.png");
+    final uint8list = await file.readAsBytes();
+    final byteData = uint8list.buffer.asByteData();
+
+    print("Got file as byte array from");
+    print(file.absolute.path);
+
+    if (uploadDescription != null) {
+      var uploader = FileUploader(uploadDescription);
+      print("Got uploader");
+
+      print("Submitting image");
+      await uploader.uploadByteData(byteData);
+      print(await client.sockets.verifyUpload());
+    }
   }
 }
