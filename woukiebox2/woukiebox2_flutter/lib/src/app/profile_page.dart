@@ -43,18 +43,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(right: 12),
-                    child: SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: Material(
-                        elevation: 3,
-                        shape: const CircleBorder(),
-                        color: Colors.grey[500],
-                        clipBehavior: Clip.antiAlias,
-                        child: IconButton(
-                          icon: const Icon(Icons.person),
-                          onPressed: uploadPfp,
-                        ),
+                    child: CircleAvatar(
+                      foregroundImage: NetworkImage(
+                        user.image,
                       ),
                     ),
                   ),

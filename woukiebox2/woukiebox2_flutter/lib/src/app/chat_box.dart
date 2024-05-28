@@ -205,6 +205,7 @@ class Users extends StatelessWidget {
               margin: EdgeInsets.zero,
               child: UserItem(
                 colour: color,
+                image: user.image,
                 username: user.username,
               ),
             ),
@@ -237,7 +238,9 @@ class ProfilePreview extends StatelessWidget {
           children: [
             Row(
               children: [
-                const CircleAvatar(),
+                CircleAvatar(
+                  foregroundImage: NetworkImage(user.image),
+                ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 12),
@@ -296,18 +299,22 @@ class UserItem extends StatelessWidget {
     super.key,
     required this.username,
     required this.colour,
+    required this.image,
   });
 
   final String username;
+  final String image;
   final Color colour;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: CircleAvatar(),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            foregroundImage: NetworkImage(image),
+          ),
         ),
         Expanded(
           child: Padding(

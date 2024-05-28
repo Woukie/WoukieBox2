@@ -140,10 +140,10 @@ class HeadMessage extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 12, right: 12),
+          Padding(
+            padding: const EdgeInsets.only(left: 12, right: 12),
             child: CircleAvatar(
-              radius: 20,
+              foregroundImage: NetworkImage(message.image),
             ),
           ),
           Expanded(

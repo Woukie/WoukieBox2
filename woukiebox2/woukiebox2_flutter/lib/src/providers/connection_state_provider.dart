@@ -59,6 +59,7 @@ class ConnectionStateProvider extends ChangeNotifier {
           user.username,
           message.message,
           user.colour,
+          user.image,
         ),
       );
       notifyListeners();

@@ -4,8 +4,15 @@ class WrittenMessage {
   final String username;
   final String colour;
   final String message;
+  final String image; // Lead messages have images
 
-  WrittenMessage(this.senderId, this.username, this.message, this.colour);
+  WrittenMessage(
+    this.senderId,
+    this.username,
+    this.message,
+    this.colour,
+    this.image,
+  );
 }
 
 class WrittenJoinMessage {
