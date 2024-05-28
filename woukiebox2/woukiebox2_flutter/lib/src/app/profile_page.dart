@@ -151,23 +151,19 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void uploadPfp() async {
     var uploadDescription = await client.sockets.getUploadDescription();
-    print("Got upload description");
-    print(uploadDescription);
 
     var file = File("files\\image.png");
     final uint8list = await file.readAsBytes();
     final byteData = uint8list.buffer.asByteData();
 
-    print("Got file as byte array from");
-    print(file.absolute.path);
+    // print("File location");
+    // print(file.absolute.path);
 
     if (uploadDescription != null) {
       var uploader = FileUploader(uploadDescription);
-      print("Got uploader");
 
-      print("Submitting image");
       await uploader.uploadByteData(byteData);
-      print(await client.sockets.verifyUpload());
+      await client.sockets.verifyUpload();
     }
   }
 }

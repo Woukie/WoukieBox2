@@ -5,3 +5,4 @@ fields:
   username: String?
   bio: String?
   colour: String?
+  image: String?

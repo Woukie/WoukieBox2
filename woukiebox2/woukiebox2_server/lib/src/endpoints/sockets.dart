@@ -18,7 +18,7 @@ class SocketsEndpoint extends Endpoint {
     var userId = await session.auth.authenticatedUserId;
     UserPersistent extraUserData = await getPersistentData(session, userId);
 
-    String filePath = "$userId/${random.nextInt(100000000)}";
+    String filePath = "${userId}_${random.nextInt(100000000)}";
 
     final uploadDescription =
         await session.storage.createDirectFileUploadDescription(
@@ -40,10 +40,28 @@ class SocketsEndpoint extends Endpoint {
     var userId = await session.auth.authenticatedUserId;
     UserPersistent extraUserData = await getPersistentData(session, userId);
 
-    return await session.storage.verifyDirectFileUpload(
+    var successful = await session.storage.verifyDirectFileUpload(
       storageId: 'public',
       path: extraUserData.image,
     );
+
+    Uri? imageUri = await session.storage.getPublicUrl(
+      storageId: 'public',
+      path: extraUserData.image,
+    );
+
+    // Update everyone with image change
+    if (successful) {
+      session.messages.postMessage(
+        'global',
+        UpdateProfile(
+          sender: userId,
+          image: imageUri.toString(),
+        ),
+      );
+    }
+
+    return successful;
   }
 
   // Sockets
@@ -75,11 +93,16 @@ class SocketsEndpoint extends Endpoint {
       if (userInfo != null) {
         UserPersistent extraUserData = await getPersistentData(session, userId);
 
+        Uri? imageUri = await session.storage.getPublicUrl(
+          storageId: 'public',
+          path: extraUserData.image,
+        );
+
         User user = User(
           id: userId,
           colour: extraUserData.color,
           username: userInfo.userName,
-          image: extraUserData.image,
+          image: imageUri.toString(),
           bio: extraUserData.bio,
           verified: true,
           visible: true,
