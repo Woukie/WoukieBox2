@@ -8,6 +8,7 @@ User unknownUser = User(
   username: "Unknown User",
   bio: "",
   colour: "#FF0000",
+  image: "",
   verified: false,
   visible: false,
 );

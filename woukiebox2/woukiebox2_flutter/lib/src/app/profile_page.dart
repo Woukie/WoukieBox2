@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/main.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
@@ -50,9 +51,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         shape: const CircleBorder(),
                         color: Colors.grey[500],
                         clipBehavior: Clip.antiAlias,
-                        child: CachedNetworkImage(
-                          imageUrl:
-                              "https://pngimg.com/uploads/pirate/pirate_PNG70.png",
+                        child: UserImageButton(
+                          elevation: 1,
+                          sessionManager: sessionManager,
                         ),
                       ),
                     ),

@@ -16,6 +16,7 @@ abstract class User extends _i1.SerializableEntity {
     required this.username,
     required this.bio,
     required this.colour,
+    required this.image,
     required this.verified,
     this.visible,
   });
@@ -25,6 +26,7 @@ abstract class User extends _i1.SerializableEntity {
     required String username,
     required String bio,
     required String colour,
+    required String image,
     required bool verified,
     bool? visible,
   }) = _UserImpl;
@@ -40,6 +42,8 @@ abstract class User extends _i1.SerializableEntity {
       bio: serializationManager.deserialize<String>(jsonSerialization['bio']),
       colour:
           serializationManager.deserialize<String>(jsonSerialization['colour']),
+      image:
+          serializationManager.deserialize<String>(jsonSerialization['image']),
       verified:
           serializationManager.deserialize<bool>(jsonSerialization['verified']),
       visible:
@@ -55,6 +59,8 @@ abstract class User extends _i1.SerializableEntity {
 
   String colour;
 
+  String image;
+
   bool verified;
 
   bool? visible;
@@ -64,6 +70,7 @@ abstract class User extends _i1.SerializableEntity {
     String? username,
     String? bio,
     String? colour,
+    String? image,
     bool? verified,
     bool? visible,
   });
@@ -74,6 +81,7 @@ abstract class User extends _i1.SerializableEntity {
       'username': username,
       'bio': bio,
       'colour': colour,
+      'image': image,
       'verified': verified,
       if (visible != null) 'visible': visible,
     };
@@ -86,6 +94,7 @@ abstract class User extends _i1.SerializableEntity {
       'username': username,
       'bio': bio,
       'colour': colour,
+      'image': image,
       'verified': verified,
       if (visible != null) 'visible': visible,
     };
@@ -100,6 +109,7 @@ class _UserImpl extends User {
     required String username,
     required String bio,
     required String colour,
+    required String image,
     required bool verified,
     bool? visible,
   }) : super._(
@@ -107,6 +117,7 @@ class _UserImpl extends User {
           username: username,
           bio: bio,
           colour: colour,
+          image: image,
           verified: verified,
           visible: visible,
         );
@@ -117,6 +128,7 @@ class _UserImpl extends User {
     String? username,
     String? bio,
     String? colour,
+    String? image,
     bool? verified,
     Object? visible = _Undefined,
   }) {
@@ -125,6 +137,7 @@ class _UserImpl extends User {
       username: username ?? this.username,
       bio: bio ?? this.bio,
       colour: colour ?? this.colour,
+      image: image ?? this.image,
       verified: verified ?? this.verified,
       visible: visible is bool? ? visible : this.visible,
     );

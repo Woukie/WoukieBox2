@@ -26,7 +26,11 @@ void run(List<String> args) async {
     onUserCreated: (session, userInfo) async {
       await UserPersistent.db.insertRow(
         session,
-        UserPersistent(userInfoId: userInfo.id!, color: "#FF0000", bio: ""),
+        UserPersistent(
+          userInfoId: userInfo.id!,
+          color: "FF0000",
+          bio: "",
+        ),
       );
     },
   ));
