@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
+import 'package:woukiebox2_flutter/src/app/profile_pic.dart';
 import 'package:woukiebox2_flutter/src/app/profile_preview.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2_flutter/src/util/hex_color.dart';
@@ -148,8 +149,8 @@ class HeadMessage extends StatelessWidget {
             child: ProfilePreview(
               user: Provider.of<ConnectionStateProvider>(context)
                   .users[message.senderId]!,
-              child: CircleAvatar(
-                foregroundImage: NetworkImage(message.image),
+              child: ProfilePic(
+                url: message.image,
               ),
             ),
           ),

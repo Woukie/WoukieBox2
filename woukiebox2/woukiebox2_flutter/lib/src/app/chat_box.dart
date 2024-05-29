@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/main.dart';
+import 'package:woukiebox2_flutter/src/app/profile_pic.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2_flutter/src/util/hex_color.dart';
 
@@ -215,8 +216,8 @@ class UserItem extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            foregroundImage: NetworkImage(image),
+          child: ProfilePic(
+            url: image,
           ),
         ),
         Expanded(

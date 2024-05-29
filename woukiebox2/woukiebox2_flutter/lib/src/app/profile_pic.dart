@@ -13,18 +13,20 @@ class ProfilePic extends StatelessWidget {
     if (url != null && url != "") {
       if (local != null && local!) {
         return CircleAvatar(
+          radius: 20,
           foregroundImage: FileImage(File(url!)),
         );
       }
 
       return CircleAvatar(
+        radius: 20,
         foregroundImage: NetworkImage(url!),
       );
     }
 
     return const Icon(
-      Icons.account_circle,
       size: 40,
+      Icons.person,
     );
   }
 }

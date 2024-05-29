@@ -48,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Padding(
                     padding: const EdgeInsets.only(right: 12),
                     child: GestureDetector(
-                      onTap: chooseProfilePicture,
+                      onTap: user.verified ? chooseProfilePicture : null,
                       child: ProfilePic(
                         url: newImage == "" ? user.image : newImage,
                         local: newImage != "",
