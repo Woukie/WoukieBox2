@@ -1,7 +1,7 @@
 FROM dart:3.2.5 AS build
 
 WORKDIR /app
-COPY woukiebox2_server/. .
+COPY . .
 
 RUN dart pub get
 RUN dart compile exe bin/main.dart -o bin/server

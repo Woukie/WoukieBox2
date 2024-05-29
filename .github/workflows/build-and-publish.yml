@@ -16,13 +16,15 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v4
 
-      - name: Attach encoded passwords
-        id: write_file
-        uses: timheuer/base64-to-file@v1.2
-        with:
-          fileName: "passwords.yaml"
-          fileDir: "./woukiebox2_server/config/"
-          encodedString: ${{ secrets.PASSWORDS_BASE64 }}
+      - name: Create passwords file
+        working-directory: woukiebox2_server
+        shell: bash
+        env:
+          SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
+        run: |
+          pwd
+          echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
+          ls config/
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
@@ -37,11 +39,12 @@ jobs:
           images: woukie/woukiebox2
 
       - name: Build and push Docker image
+        working-directory: woukiebox2_server
         id: push
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           context: .
-          file: ./woukiebox2_server/Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
