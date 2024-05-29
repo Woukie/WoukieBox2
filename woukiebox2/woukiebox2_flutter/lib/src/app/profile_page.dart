@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:file_selector/file_selector.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/main.dart';
+import 'package:woukiebox2_flutter/src/app/profile_pic.dart';
 import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2_flutter/src/util/hex_color.dart';
 
@@ -18,7 +20,11 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  late Color nameColor;
+  TextEditingController? nameController;
+  TextEditingController? bioController;
+
+  Color? nameColor;
+  String newImage = "";
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +33,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (user == null) return const Text("Unknown User");
 
-    nameColor = HexColor.fromHex(user.colour);
-
-    final nameController = TextEditingController(text: user.username);
-    final bioController = TextEditingController(text: user.bio);
+    nameController ??= TextEditingController(text: user.username);
+    bioController ??= TextEditingController(text: user.bio);
 
     return Wrap(
       children: [
@@ -43,9 +47,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(right: 12),
-                    child: CircleAvatar(
-                      foregroundImage: NetworkImage(
-                        user.image,
+                    child: GestureDetector(
+                      onTap: chooseProfilePicture,
+                      child: ProfilePic(
+                        url: newImage == "" ? user.image : newImage,
+                        local: newImage != "",
                       ),
                     ),
                   ),
@@ -73,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               onPressed: () async {
                                 nameColor = await showColorPickerDialog(
                                   context,
-                                  nameColor,
+                                  nameColor ?? HexColor.fromHex(user.colour),
                                   pickersEnabled: <ColorPickerType, bool>{
                                     ColorPickerType.wheel: true,
                                     ColorPickerType.accent: false,
@@ -116,17 +122,21 @@ class _ProfilePageState extends State<ProfilePage> {
                       onPressed: () {
                         client.sockets.sendStreamMessage(
                           UpdateProfile(
-                            bio: bioController.text != user.bio
-                                ? bioController.text
+                            bio: bioController?.text != user.bio
+                                ? bioController?.text
                                 : null,
-                            username: nameController.text != user.username
-                                ? nameController.text
+                            username: nameController?.text != user.username
+                                ? nameController?.text
                                 : null,
-                            colour: nameColor.hex != user.colour
-                                ? nameColor.hex
+                            colour: nameColor?.hex != user.colour
+                                ? nameColor?.hex
                                 : null,
                           ),
                         );
+
+                        if (newImage != "") {
+                          uploadPfp(newImage);
+                        }
                       },
                       child: const Text("Update"),
                     ),
@@ -140,15 +150,12 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void uploadPfp() async {
+  void uploadPfp(String path) async {
     var uploadDescription = await client.sockets.getUploadDescription();
 
-    var file = File("files\\image.png");
+    var file = File(path);
     final uint8list = await file.readAsBytes();
     final byteData = uint8list.buffer.asByteData();
-
-    // print("File location");
-    // print(file.absolute.path);
 
     if (uploadDescription != null) {
       var uploader = FileUploader(uploadDescription);
@@ -156,5 +163,16 @@ class _ProfilePageState extends State<ProfilePage> {
       await uploader.uploadByteData(byteData);
       await client.sockets.verifyUpload();
     }
+  }
+
+  void chooseProfilePicture() async {
+    const XTypeGroup typeGroup = XTypeGroup(
+      label: 'images',
+      extensions: <String>['jpg', 'png'],
+    );
+    final XFile? file =
+        await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+    newImage = file?.path ?? "";
+    setState(() {});
   }
 }
