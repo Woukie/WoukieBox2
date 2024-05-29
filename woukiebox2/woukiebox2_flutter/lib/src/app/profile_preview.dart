@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2_flutter/src/app/profile_pic.dart';
 import 'package:woukiebox2_flutter/src/util/hex_color.dart';
@@ -93,6 +94,18 @@ class ProfilePreview extends StatelessWidget {
                             ),
                           ),
                         ),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                "#${user.id}",
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
