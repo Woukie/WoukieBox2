@@ -20,6 +20,11 @@ class SocketsEndpoint extends Endpoint {
 
     String filePath = "${userId}_${random.nextInt(100000000)}";
 
+    await session.storage.deleteFile(
+      storageId: 'public',
+      path: extraUserData.image,
+    );
+
     final uploadDescription =
         await session.storage.createDirectFileUploadDescription(
       storageId: 'public',
