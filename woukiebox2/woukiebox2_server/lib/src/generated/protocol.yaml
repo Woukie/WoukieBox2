@@ -1,5 +1,3 @@
-example:
-  - hello:
 sockets:
   - getUploadDescription:
   - verifyUpload:
