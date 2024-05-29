@@ -21,7 +21,7 @@ jobs:
         uses: timheuer/base64-to-file@v1.2
         with:
           fileName: "passwords.yaml"
-          fileDir: "./config/"
+          fileDir: "./woukiebox2_server/config/"
           encodedString: ${{ secrets.PASSWORDS_BASE64 }}
 
       - name: Log in to Docker Hub
