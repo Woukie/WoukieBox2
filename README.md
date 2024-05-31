@@ -15,4 +15,5 @@ WoukieBox but with flutter
 - In the server:
   - Run `docker compose up --build --detach` to start the postgres and redis databases
   - Run `dart bin/main.dart` to start the serverpod server
+  - May need to run `dart bin/main.dart --role maintenance --apply-migrations` if you have issues connecting to database
 - In the flutter application run `flutter run` and choose to build for windows
