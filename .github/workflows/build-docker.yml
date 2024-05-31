@@ -1,4 +1,4 @@
-name: Publish Docker Image
+name: Build and Push Docker Image to DockerHub
 
 on:
   push:
@@ -15,16 +15,6 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-
-      - name: Create passwords file
-        working-directory: woukiebox2_server
-        shell: bash
-        env:
-          SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
-        run: |
-          pwd
-          echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
-          ls config/
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
