@@ -4,6 +4,7 @@ WoukieBox but with flutter
 ## Features
 - One single global chatroom
 - Authentication
-- Profile pics
+- Profile customisation
+- App Themes
 - Desktop app
 - Anonymous connection
