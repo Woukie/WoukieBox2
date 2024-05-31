@@ -12,6 +12,7 @@ ENV runmode=production
 ENV serverid=default
 ENV logging=normal
 ENV role=monolith
+ENV args=
 
 COPY --from=build /runtime/ /
 COPY --from=build /app/bin/server server
@@ -21,6 +22,4 @@ EXPOSE 8080
 EXPOSE 8081
 EXPOSE 8082
 
-CMD ["dart", "bin/main.dart", "--mode=$runmode", "--role=maintenance", "--apply-migrations"]
-
-ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role
+ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role $args
