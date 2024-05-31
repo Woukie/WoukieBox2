@@ -15,7 +15,6 @@ ENV role=monolith
 
 COPY --from=build /runtime/ /
 COPY --from=build /app/bin/server server
-COPY --from=build /app/config/ config/
 COPY --from=build /app/web/ web/
 
 EXPOSE 8080
