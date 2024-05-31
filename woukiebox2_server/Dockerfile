@@ -21,6 +21,6 @@ EXPOSE 8080
 EXPOSE 8081
 EXPOSE 8082
 
-RUN serverpod create-migration
+RUN dart bin/main.dart --mode production --role maintenance --apply-migrations
 
 ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role --apply-migrations
