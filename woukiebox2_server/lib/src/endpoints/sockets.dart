@@ -188,7 +188,7 @@ class SocketsEndpoint extends Endpoint {
         ),
       );
     } else if (message is UpdateProfile) {
-      // Update the users profile on the database
+      // Update the users profile on the database, also note that profile pics are neither cached or updated in UpdateProfile.
       var userId = await session.auth.authenticatedUserId;
       if (userId != null) {
         UserPersistent extraUserData = await getPersistentData(session, userId);
@@ -202,6 +202,15 @@ class SocketsEndpoint extends Endpoint {
           Users.changeUserName(session, userId, message.username!);
         }
       }
+
+      // Also update the cached user as some users are anonymous
+      User user = connectedUsers.firstWhere((user) => user.id == userId);
+      user.bio = message.bio ?? user.bio;
+      user.username = message.bio ?? user.bio;
+      user.colour = message.bio ?? user.bio;
+
+      connectedUsers.removeWhere((user) => user.id == userId);
+      connectedUsers.add(user);
 
       // Tell everyone about the profile change
       session.messages.postMessage(
