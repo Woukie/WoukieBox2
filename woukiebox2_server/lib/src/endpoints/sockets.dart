@@ -213,6 +213,9 @@ class SocketsEndpoint extends Endpoint {
       connectedUsers.removeWhere((user) => user.id == unauthedID);
       connectedUsers.add(user);
 
+      print("Updated connected users");
+      print(connectedUsers);
+
       // Tell everyone about the profile change
       session.messages.postMessage(
         'global',
