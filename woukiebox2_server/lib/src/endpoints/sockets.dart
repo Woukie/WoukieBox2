@@ -210,9 +210,6 @@ class SocketsEndpoint extends Endpoint {
       user.username = message.bio ?? user.bio;
       user.colour = message.bio ?? user.bio;
 
-      connectedUsers.removeWhere((user) => user.id == unauthedID);
-      connectedUsers.add(user);
-
       print("Updated connected users");
       print(connectedUsers);
 
