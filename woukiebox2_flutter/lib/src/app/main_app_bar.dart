@@ -1,4 +1,5 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
@@ -18,22 +19,35 @@ class MainAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.zero,
-      elevation: 2,
-      shape: Border.all(color: Colors.transparent, width: 0),
-      child: WindowTitleBarBox(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 12, right: 12),
-          child: Row(
-            children: [
-              const LeftButtons(),
-              Expanded(child: MoveWindow()),
-              const AppBarButtons(),
-            ],
+        margin: EdgeInsets.zero,
+        elevation: 2,
+        shape: Border.all(color: Colors.transparent, width: 0),
+        child: TitleBar(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 12, right: 12),
+            child: Row(
+              children: [
+                const LeftButtons(),
+                Expanded(child: MoveWindow()),
+                kIsWeb ? Container() : const AppBarButtons(),
+              ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
+  }
+}
+
+class TitleBar extends StatelessWidget {
+  final Widget? child;
+  const TitleBar({super.key, this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    double titlebarHeight = 30;
+    if (!kIsWeb) {
+      titlebarHeight = appWindow.titleBarHeight;
+    }
+    return SizedBox(height: titlebarHeight, child: child ?? Container());
   }
 }
 
