@@ -203,20 +203,21 @@ class SocketsEndpoint extends Endpoint {
         }
       }
 
+      var unauthedID = getUserObject(session).id;
       // Also update the cached user as some users are anonymous
-      User user = connectedUsers.firstWhere((user) => user.id == userId);
+      User user = connectedUsers.firstWhere((user) => user.id == unauthedID);
       user.bio = message.bio ?? user.bio;
       user.username = message.bio ?? user.bio;
       user.colour = message.bio ?? user.bio;
 
-      connectedUsers.removeWhere((user) => user.id == userId);
+      connectedUsers.removeWhere((user) => user.id == unauthedID);
       connectedUsers.add(user);
 
       // Tell everyone about the profile change
       session.messages.postMessage(
         'global',
         UpdateProfile(
-          sender: getUserObject(session).id,
+          sender: unauthedID,
           username: message.username,
           bio: message.bio,
           colour: message.colour,
