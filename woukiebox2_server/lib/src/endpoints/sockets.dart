@@ -207,11 +207,8 @@ class SocketsEndpoint extends Endpoint {
       // Also update the cached user as some users are anonymous
       User user = connectedUsers.firstWhere((user) => user.id == unauthedID);
       user.bio = message.bio ?? user.bio;
-      user.username = message.bio ?? user.bio;
-      user.colour = message.bio ?? user.bio;
-
-      print("Updated connected users");
-      print(connectedUsers);
+      user.username = message.username ?? user.username;
+      user.colour = message.colour ?? user.colour;
 
       // Tell everyone about the profile change
       session.messages.postMessage(
