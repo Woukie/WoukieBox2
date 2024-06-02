@@ -119,8 +119,6 @@ class ConnectionStateProvider extends ChangeNotifier {
         );
       }
 
-      print(message.image);
-
       _users.update(
         message.sender!, // We know there's a user with this id
         (user) => user.copyWith(
