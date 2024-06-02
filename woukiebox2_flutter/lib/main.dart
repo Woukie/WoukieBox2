@@ -6,11 +6,11 @@ import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
-import 'package:woukiebox2_flutter/src/app/app.dart';
-import 'package:woukiebox2_flutter/src/authentication/onboarding.dart';
-import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
-import 'package:woukiebox2_flutter/src/providers/joined_anonymously_provider.dart';
-import 'package:woukiebox2_flutter/src/providers/theme_data_provider.dart';
+import 'package:woukiebox2/src/app/app.dart';
+import 'package:woukiebox2/src/authentication/onboarding.dart';
+import 'package:woukiebox2/src/providers/connection_state_provider.dart';
+import 'package:woukiebox2/src/providers/joined_anonymously_provider.dart';
+import 'package:woukiebox2/src/providers/theme_data_provider.dart';
 
 late SessionManager sessionManager;
 late Client client;
@@ -50,7 +50,7 @@ void main() async {
     appWindow.minSize = initialSize;
     appWindow.size = initialSize;
     appWindow.alignment = Alignment.center;
-    appWindow.title = "WoukieBox 2";
+    appWindow.title = "WoukieBox2";
     appWindow.show();
   });
 }

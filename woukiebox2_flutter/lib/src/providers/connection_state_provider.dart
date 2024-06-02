@@ -3,8 +3,8 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
-import 'package:woukiebox2_flutter/main.dart';
-import 'package:woukiebox2_flutter/src/util/written_message.dart';
+import 'package:woukiebox2/main.dart';
+import 'package:woukiebox2/src/util/written_message.dart';
 
 class ConnectionStateProvider extends ChangeNotifier {
   late final StreamingConnectionHandler _connectionHandler;

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
-import 'package:woukiebox2_flutter/main.dart';
-import 'package:woukiebox2_flutter/src/app/profile_pic.dart';
-import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
-import 'package:woukiebox2_flutter/src/util/hex_color.dart';
+import 'package:woukiebox2/main.dart';
+import 'package:woukiebox2/src/app/profile_pic.dart';
+import 'package:woukiebox2/src/providers/connection_state_provider.dart';
+import 'package:woukiebox2/src/util/hex_color.dart';
 
 import 'message.dart';
 import 'profile_preview.dart';

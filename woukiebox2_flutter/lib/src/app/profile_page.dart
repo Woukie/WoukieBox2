@@ -5,10 +5,10 @@ import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
-import 'package:woukiebox2_flutter/main.dart';
-import 'package:woukiebox2_flutter/src/app/profile_pic.dart';
-import 'package:woukiebox2_flutter/src/providers/connection_state_provider.dart';
-import 'package:woukiebox2_flutter/src/util/hex_color.dart';
+import 'package:woukiebox2/main.dart';
+import 'package:woukiebox2/src/app/profile_pic.dart';
+import 'package:woukiebox2/src/providers/connection_state_provider.dart';
+import 'package:woukiebox2/src/util/hex_color.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({

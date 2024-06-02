@@ -1,7 +1,7 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:woukiebox2_flutter/src/providers/theme_data_provider.dart';
+import 'package:woukiebox2/src/providers/theme_data_provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({

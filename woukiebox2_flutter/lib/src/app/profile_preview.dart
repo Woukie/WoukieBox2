@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
-import 'package:woukiebox2_flutter/src/app/profile_pic.dart';
-import 'package:woukiebox2_flutter/src/util/hex_color.dart';
+import 'package:woukiebox2/src/app/profile_pic.dart';
+import 'package:woukiebox2/src/util/hex_color.dart';
 
 // Wraps a child in a gesture detector that opens the profile preview when clicked on
 class ProfilePreview extends StatelessWidget {

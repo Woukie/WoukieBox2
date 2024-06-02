@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
-import 'package:woukiebox2_flutter/main.dart';
-import 'package:woukiebox2_flutter/src/authentication/onboarding_app_bar.dart';
-import 'package:woukiebox2_flutter/src/providers/joined_anonymously_provider.dart';
+import 'package:woukiebox2/main.dart';
+import 'package:woukiebox2/src/authentication/onboarding_app_bar.dart';
+import 'package:woukiebox2/src/providers/joined_anonymously_provider.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
