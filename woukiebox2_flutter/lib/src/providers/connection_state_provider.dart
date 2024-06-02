@@ -39,6 +39,7 @@ class ConnectionStateProvider extends ChangeNotifier {
     _connectionHandler.close();
     _messages.clear();
     _users.clear();
+    _currentUser = null;
     notifyListeners();
   }
 
