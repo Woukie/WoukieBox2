@@ -140,6 +140,7 @@ class _RegisterState extends State<Register> {
           content: TextField(
             enabled: _enabled,
             controller: _validationCodeController,
+            keyboardType: TextInputType.number,
             decoration: const InputDecoration(
               labelText: 'Verification code',
               helperText: 'Enter the code we sent to your inbox',
