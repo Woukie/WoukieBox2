@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:serverpod/serverpod.dart';
@@ -9,6 +11,8 @@ import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';
 
 void run(List<String> args) async {
+  final Random random = Random();
+
   final pod = Serverpod(
     args,
     Protocol(),
@@ -49,7 +53,7 @@ void run(List<String> args) async {
         session,
         UserPersistent(
           userInfoId: userInfo.id!,
-          color: "FF0000",
+          color: ((random.nextDouble() * 0.5 + 0.5) * 0xFFFFFF).toString(),
           image: "",
           bio: "",
         ),

@@ -80,7 +80,7 @@ class SocketsEndpoint extends Endpoint {
       session,
       UserPersistent(
         userInfoId: userId,
-        color: "FFFF00",
+        color: ((random.nextDouble() * 0.5 + 0.5) * 0xFFFFFF).toString(),
         image: "",
         bio: "",
       ),
@@ -127,7 +127,7 @@ class SocketsEndpoint extends Endpoint {
 
     User user = User(
       id: 1111000000000 + random.nextInt(100000000),
-      colour: "00FF00",
+      colour: ((random.nextDouble() * 0.5 + 0.5) * 0xFFFFFF).toString(),
       username: "Anonymous",
       image: "",
       bio: "",
