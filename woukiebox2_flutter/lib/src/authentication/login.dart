@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
@@ -18,6 +19,9 @@ class _LoginState extends State<Login> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  String? _emailError;
+  String? _passwordError;
 
   late final EmailAuthController _emailAuth;
 
@@ -41,21 +45,29 @@ class _LoginState extends State<Login> {
           TextField(
             controller: _emailController,
             enabled: _enabled,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
+              errorText: _emailError,
               labelText: "Email",
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
+            onChanged: (_) {
+              _validateEmail();
+            },
           ),
           const Padding(padding: EdgeInsets.all(6)),
           TextField(
             controller: _passwordController,
             enabled: _enabled,
             obscureText: true,
-            decoration: const InputDecoration(
-              suffixIcon: Icon(Icons.remove_red_eye),
+            decoration: InputDecoration(
+              errorText: _passwordError,
+              suffixIcon: const Icon(Icons.remove_red_eye),
               labelText: "Password",
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
+            onChanged: (_) {
+              _validatePassword();
+            },
           ),
           const Padding(padding: EdgeInsets.all(6)),
           const Text("Forgot password? well fuck off then"),
@@ -118,6 +130,47 @@ class _LoginState extends State<Login> {
         ],
       ),
     );
+  }
+
+  // Todo: duplicate code. combine with register
+  bool _validateEmail() {
+    var email = _emailController.text.trim().toLowerCase();
+    if (!EmailValidator.validate(email)) {
+      setState(() {
+        _emailError = "Invalid email";
+      });
+
+      return false;
+    }
+
+    setState(() {
+      _emailError = null;
+    });
+    return true;
+  }
+
+  bool _validatePassword() {
+    var password = _passwordController.text;
+    if (password.length < 5) {
+      setState(() {
+        _passwordError = "Minimum of 5 characters";
+      });
+
+      return false;
+    }
+
+    if (password.length > 25) {
+      setState(() {
+        _passwordError = "Maximum of 25 characters";
+      });
+
+      return false;
+    }
+
+    setState(() {
+      _passwordError = null;
+    });
+    return true;
   }
 
   Future<void> _signIn() async {
