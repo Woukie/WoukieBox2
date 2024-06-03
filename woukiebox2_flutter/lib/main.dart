@@ -92,11 +92,13 @@ class _MyAppState extends State<MyApp> {
       themeMode: themeDataProvider.themeMode,
       theme: ThemeData(
         colorSchemeSeed: themeDataProvider.color,
+        fontFamily: 'Fredoka',
       ),
       darkTheme: ThemeData(
         colorSchemeSeed: themeDataProvider.color,
         useMaterial3: true,
         brightness: Brightness.dark,
+        fontFamily: 'Fredoka',
       ),
       home: FutureBuilder(
         future: widget.future,
