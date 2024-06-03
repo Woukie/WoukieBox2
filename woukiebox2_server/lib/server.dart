@@ -15,6 +15,7 @@ void run(List<String> args) async {
 
   auth.AuthConfig.set(auth.AuthConfig(
     minPasswordLength: 5,
+    maxPasswordLength: 25,
     sendValidationEmail: (session, email, validationCode) async {
       print('Validation code: $validationCode');
       return true;
