@@ -1,7 +1,7 @@
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:window_manager/window_manager.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/profile_page.dart';
@@ -28,7 +28,11 @@ class MainAppBar extends StatelessWidget {
             child: Row(
               children: [
                 const LeftButtons(),
-                Expanded(child: MoveWindow()),
+                Expanded(
+                  child: DragToMoveArea(
+                    child: Container(),
+                  ),
+                ),
                 kIsWeb ? Container() : const AppBarButtons(),
               ],
             ),
@@ -43,11 +47,7 @@ class TitleBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double titlebarHeight = 30;
-    if (!kIsWeb) {
-      titlebarHeight = appWindow.titleBarHeight;
-    }
-    return SizedBox(height: titlebarHeight, child: child ?? Container());
+    return SizedBox(height: 30, child: child ?? Container());
   }
 }
 

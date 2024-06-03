@@ -1,5 +1,5 @@
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../app_bar_buttons.dart';
 
@@ -14,12 +14,17 @@ class OnboardingAppBar extends StatelessWidget {
       margin: EdgeInsets.zero,
       elevation: 2,
       shape: Border.all(color: Colors.transparent, width: 0),
-      child: WindowTitleBarBox(
+      child: SizedBox(
+        height: 30,
         child: Padding(
           padding: const EdgeInsets.only(right: 12),
           child: Row(
             children: [
-              Expanded(child: MoveWindow()),
+              Expanded(
+                child: DragToMoveArea(
+                  child: Container(),
+                ),
+              ),
               const AppBarButtons(),
             ],
           ),

@@ -1,5 +1,5 @@
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 
 class AppBarButtons extends StatelessWidget {
   const AppBarButtons({
@@ -16,7 +16,7 @@ class AppBarButtons extends StatelessWidget {
             icon: const Icon(Icons.remove),
             padding: EdgeInsets.zero,
             onPressed: () {
-              appWindow.minimize();
+              windowManager.minimize();
             },
           ),
         ),
@@ -26,7 +26,7 @@ class AppBarButtons extends StatelessWidget {
             icon: const Icon(Icons.fullscreen),
             padding: EdgeInsets.zero,
             onPressed: () {
-              appWindow.maximizeOrRestore();
+              windowManager.maximize();
             },
           ),
         ),
@@ -36,7 +36,7 @@ class AppBarButtons extends StatelessWidget {
             icon: const Icon(Icons.close),
             padding: EdgeInsets.zero,
             onPressed: () {
-              appWindow.close();
+              windowManager.close();
             },
           ),
         ),

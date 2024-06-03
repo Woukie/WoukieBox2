@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:provider/provider.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
+import 'package:window_manager/window_manager.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/src/app/app.dart';
 import 'package:woukiebox2/src/authentication/onboarding.dart';
@@ -14,10 +14,24 @@ import 'package:woukiebox2/src/providers/theme_data_provider.dart';
 
 late SessionManager sessionManager;
 late Client client;
-final isMaximized = ValueNotifier<bool>(false);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
+
+  WindowOptions windowOptions = const WindowOptions(
+    size: Size(600, 450),
+    minimumSize: Size(600, 450),
+    center: true,
+    backgroundColor: Colors.transparent,
+    skipTaskbar: false,
+    titleBarStyle: TitleBarStyle.hidden,
+  );
+
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
 
   client = Client(
     'https://api.woukiebox.woukie.net/',
@@ -44,15 +58,6 @@ void main() async {
       future: sessionManager.initialize(),
     ),
   ));
-
-  doWhenWindowReady(() {
-    const initialSize = Size(600, 450);
-    appWindow.minSize = initialSize;
-    appWindow.size = initialSize;
-    appWindow.alignment = Alignment.center;
-    appWindow.title = "WoukieBox2";
-    appWindow.show();
-  });
 }
 
 class MyApp extends StatefulWidget {
