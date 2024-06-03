@@ -124,9 +124,6 @@ class _RegisterState extends State<Register> {
   }
 
   Future<void> _confirmEmailDialoge(BuildContext context) {
-    final TextEditingController _validationCodeController =
-        TextEditingController();
-
     return showDialog<void>(
       barrierDismissible: false,
       context: context,
