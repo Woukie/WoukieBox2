@@ -10,9 +10,11 @@ import 'package:woukiebox2/src/util/written_message.dart';
 import 'package:windows_notification/notification_message.dart';
 import 'package:windows_notification/windows_notification.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class ConnectionStateProvider extends ChangeNotifier {
   late final StreamingConnectionHandler _connectionHandler;
+  final player = AudioPlayer();
 
   final _winNotifyPlugin = WindowsNotification(
       applicationId:
@@ -102,6 +104,7 @@ class ConnectionStateProvider extends ChangeNotifier {
             NotificationMessage.fromCustomTemplate("ToastGeneric");
         _winNotifyPlugin.showNotificationCustomTemplate(
             notificationMessage, await messageNotification(user, message));
+        await player.play(AssetSource("audio/recieve-message.mp3"));
       }
     } else if (message is RoomMembers) {
       _users.forEach((id, user) {
