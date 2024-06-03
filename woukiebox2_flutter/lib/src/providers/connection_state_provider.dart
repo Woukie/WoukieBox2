@@ -18,6 +18,9 @@ class ConnectionStateProvider extends ChangeNotifier {
       applicationId:
           r"{6D809377-6AF0-444B-8957-A3773F02200E}\WoukieBox2\WoukieBox2.exe");
 
+  final String template =
+      "<toast> <visual> <binding template='ToastGeneric'> <text>Notification text.</text> </binding> </visual> <audio src='ms-appx:///Audio/NotificationSound.mp3'/> </toast>";
+
   final HashMap<int, User> _users = HashMap<int, User>();
   final List<dynamic> _messages = List.empty(growable: true);
   int? _currentUser;
@@ -72,6 +75,11 @@ class ConnectionStateProvider extends ChangeNotifier {
           user.image,
         ),
       );
+
+      NotificationMessage a = NotificationMessage.fromCustomTemplate(
+          "notificationid_1",
+          group: "weather_group");
+      _winNotifyPlugin.showNotificationCustomTemplate(a, template);
 
       notifyListeners();
       if (!await windowManager.isFocused()) {
