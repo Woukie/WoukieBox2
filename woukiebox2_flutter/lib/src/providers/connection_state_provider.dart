@@ -14,6 +14,7 @@ import 'package:audioplayers/audioplayers.dart';
 
 class ConnectionStateProvider extends ChangeNotifier {
   late final StreamingConnectionHandler _connectionHandler;
+  bool _joinedAnonymously = false;
   final player = AudioPlayer();
 
   final _winNotifyPlugin = WindowsNotification(
@@ -51,8 +52,14 @@ class ConnectionStateProvider extends ChangeNotifier {
   HashMap<int, User> get users => _users;
   List<dynamic> get messages => _messages;
   int? get currentUser => _currentUser;
+  bool get joinedAnonymously => _joinedAnonymously;
 
   StreamSubscription? _streamSubscription;
+
+  void setJoinedAnonymously(bool value) {
+    _joinedAnonymously = value;
+    notifyListeners();
+  }
 
   ConnectionStateProvider() {
     _connectionHandler = StreamingConnectionHandler(
@@ -74,11 +81,19 @@ class ConnectionStateProvider extends ChangeNotifier {
     _messages.clear();
     _users.clear();
     _currentUser = null;
+    _joinedAnonymously = false;
     notifyListeners();
   }
 
   // Get latest state with _connectionHandler.status
   void _handleStatus(StreamingConnectionHandlerState message) {
+    if (connectionHandler.client.streamingConnectionStatus ==
+        StreamingConnectionStatus.disconnected) {
+      _messages.clear();
+      _users.clear();
+      _currentUser = null;
+      _joinedAnonymously = false;
+    }
     notifyListeners();
   }
 

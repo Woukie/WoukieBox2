@@ -7,7 +7,6 @@ import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/profile_page.dart';
 import 'package:woukiebox2/src/app/settings_page.dart';
 import 'package:woukiebox2/src/providers/connection_state_provider.dart';
-import 'package:woukiebox2/src/providers/joined_anonymously_provider.dart';
 
 import '../app_bar_buttons.dart';
 
@@ -59,8 +58,6 @@ class LeftButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final connectionProvider = Provider.of<ConnectionStateProvider>(context);
-    final joinedAnonymouslyProvider =
-        Provider.of<JoinedAnonymouslyProvider>(context);
 
     return Row(
       children: [
@@ -114,7 +111,6 @@ class LeftButtons extends StatelessWidget {
             onPressed: () {
               sessionManager.signOut();
               connectionProvider.closeConnection();
-              joinedAnonymouslyProvider.setJoined(false);
             },
           ),
         ),

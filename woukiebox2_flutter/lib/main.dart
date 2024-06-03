@@ -5,11 +5,11 @@ import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:woukiebox2/src/providers/connection_state_provider.dart';
+import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/src/app/app.dart';
 import 'package:woukiebox2/src/authentication/onboarding.dart';
-import 'package:woukiebox2/src/providers/connection_state_provider.dart';
-import 'package:woukiebox2/src/providers/joined_anonymously_provider.dart';
 import 'package:woukiebox2/src/providers/theme_data_provider.dart';
 
 late SessionManager sessionManager;
@@ -50,9 +50,6 @@ void main() async {
       ChangeNotifierProvider(
         create: (context) => ConnectionStateProvider(),
       ),
-      ChangeNotifierProvider(
-        create: (context) => JoinedAnonymouslyProvider(),
-      ),
     ],
     child: MyApp(
       future: sessionManager.initialize(),
@@ -89,8 +86,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final themeDataProvider = Provider.of<ThemeDataProvider>(context);
-    final joinedAnonymouslyProvider =
-        Provider.of<JoinedAnonymouslyProvider>(context);
+    final connectionStateProvider =
+        Provider.of<ConnectionStateProvider>(context);
 
     return MaterialApp(
       title: 'WoukieBox 2',
@@ -116,7 +113,7 @@ class _MyAppState extends State<MyApp> {
             return Text('Error: ${snapshot.error}');
           } else {
             return (sessionManager.isSignedIn ||
-                    joinedAnonymouslyProvider.joined)
+                    connectionStateProvider.joinedAnonymously)
                 ? const App()
                 : const OnboardingScreen();
           }

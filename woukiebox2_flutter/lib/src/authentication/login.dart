@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 import 'package:woukiebox2/main.dart';
-import 'package:woukiebox2/src/providers/joined_anonymously_provider.dart';
+import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 
 class Login extends StatefulWidget {
   const Login({
@@ -33,8 +33,8 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    final joinedAnonymouslyProvider =
-        Provider.of<JoinedAnonymouslyProvider>(context);
+    final connectionStateProvider =
+        Provider.of<ConnectionStateProvider>(context);
     final TabController tabController = DefaultTabController.of(context);
 
     return Padding(
@@ -101,7 +101,7 @@ class _LoginState extends State<Login> {
                   icon: const Icon(Icons.theater_comedy),
                   onPressed: _enabled
                       ? () {
-                          joinedAnonymouslyProvider.setJoined(true);
+                          connectionStateProvider.setJoinedAnonymously(true);
                         }
                       : null,
                   label: const Text("Join Anonymously"),
