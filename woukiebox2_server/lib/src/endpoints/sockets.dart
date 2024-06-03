@@ -1,4 +1,6 @@
+import 'dart:ffi';
 import 'dart:math';
+import 'dart:core';
 
 import 'package:serverpod_auth_server/module.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
@@ -80,7 +82,7 @@ class SocketsEndpoint extends Endpoint {
       session,
       UserPersistent(
         userInfoId: userId,
-        color: ((random.nextDouble() * 0.5 + 0.5) * 0xFFFFFF).toString(),
+        color: randomColour(),
         image: "",
         bio: "",
       ),
@@ -127,7 +129,7 @@ class SocketsEndpoint extends Endpoint {
 
     User user = User(
       id: 1111000000000 + random.nextInt(100000000),
-      colour: ((random.nextDouble() * 0.5 + 0.5) * 0xFFFFFF).toString(),
+      colour: randomColour(),
       username: "Anonymous",
       image: "",
       bio: "",
@@ -226,5 +228,26 @@ class SocketsEndpoint extends Endpoint {
         ),
       );
     }
+  }
+
+  String randomColour() {
+    double r = Random().nextDouble();
+    double g = Random().nextDouble();
+    double b = Random().nextDouble();
+
+    final double magnitude = sqrt(r * r + g * g + b * b);
+
+    r = r.abs() / magnitude;
+    g = g.abs() / magnitude;
+    b = b.abs() / magnitude;
+
+    r *= 256;
+    g *= 256;
+    b *= 256;
+
+    return '${1.toRadixString(16).padLeft(2, '0')}'
+        '${r.floor().toRadixString(16).padLeft(2, '0')}'
+        '${g.floor().toRadixString(16).padLeft(2, '0')}'
+        '${b.floor().toRadixString(16).padLeft(2, '0')}';
   }
 }

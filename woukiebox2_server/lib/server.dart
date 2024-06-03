@@ -48,17 +48,6 @@ void run(List<String> args) async {
       print('Validation code: $validationCode');
       return true;
     },
-    onUserCreated: (session, userInfo) async {
-      await UserPersistent.db.insertRow(
-        session,
-        UserPersistent(
-          userInfoId: userInfo.id!,
-          color: ((random.nextDouble() * 0.5 + 0.5) * 0xFFFFFF).toString(),
-          image: "",
-          bio: "",
-        ),
-      );
-    },
   ));
 
   pod.webServer.addRoute(RouteRoot(), '/');
