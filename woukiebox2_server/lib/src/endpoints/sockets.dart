@@ -244,7 +244,7 @@ class SocketsEndpoint extends Endpoint {
     g *= 256;
     b *= 256;
 
-    return '${0.toRadixString(16).padLeft(2, '0')}'
+    return '${256.toRadixString(16).padLeft(2, '0')}'
         '${r.floor().toRadixString(16).padLeft(2, '0')}'
         '${g.floor().toRadixString(16).padLeft(2, '0')}'
         '${b.floor().toRadixString(16).padLeft(2, '0')}';
