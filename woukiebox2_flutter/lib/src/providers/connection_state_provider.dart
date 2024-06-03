@@ -1,13 +1,25 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:window_manager/window_manager.dart';
+import 'package:woukiebox2/src/util/assets.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/util/written_message.dart';
+import 'package:windows_notification/notification_message.dart';
+import 'package:windows_notification/windows_notification.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class ConnectionStateProvider extends ChangeNotifier {
   late final StreamingConnectionHandler _connectionHandler;
+
+  final _winNotifyPlugin = WindowsNotification(
+      applicationId:
+          r"{6D809377-6AF0-444B-8957-A3773F02200E}\WoukieBox2\WoukieBox2.exe");
 
   final HashMap<int, User> _users = HashMap<int, User>();
   final List<dynamic> _messages = List.empty(growable: true);
@@ -48,7 +60,7 @@ class ConnectionStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _handleMessage(SerializableEntity message) {
+  Future<void> _handleMessage(SerializableEntity message) async {
     if (message is ChatMessage) {
       User? user = _users[message.sender];
       if (user == null) return; // This will never happen. But who knows?
@@ -63,7 +75,22 @@ class ConnectionStateProvider extends ChangeNotifier {
           user.image,
         ),
       );
+
       notifyListeners();
+      if (!await windowManager.isFocused()) {
+        NotificationMessage notification =
+            NotificationMessage.fromPluginTemplate(
+          "WoukieBox2",
+          user.username,
+          message.message,
+          image: (user.image == ""
+                  ? await getImageFileFromAssets("anonymous-profile.png")
+                  : await DefaultCacheManager().getSingleFile(user.image))
+              .absolute
+              .path,
+        );
+        _winNotifyPlugin.showNotificationPluginTemplate(notification);
+      }
     } else if (message is RoomMembers) {
       _users.forEach((id, user) {
         user.visible = false;
