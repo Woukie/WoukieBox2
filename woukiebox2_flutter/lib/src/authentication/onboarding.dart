@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/authentication/onboarding_app_bar.dart';
-import 'package:woukiebox2/src/providers/joined_anonymously_provider.dart';
+import 'package:woukiebox2/src/authentication/register.dart';
+
+import 'login.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -22,23 +23,13 @@ class OnboardingScreen extends StatelessWidget {
   }
 }
 
-class SignInPage extends StatefulWidget {
+class SignInPage extends StatelessWidget {
   const SignInPage({
     super.key,
   });
 
   @override
-  State<SignInPage> createState() => _SignInPageState();
-}
-
-class _SignInPageState extends State<SignInPage> {
-  final TextEditingController _controllerOutlined = TextEditingController();
-
-  @override
   Widget build(BuildContext context) {
-    final joinedAnonymouslyProvider =
-        Provider.of<JoinedAnonymouslyProvider>(context);
-
     return Flexible(
       fit: FlexFit.loose,
       child: Column(
@@ -49,92 +40,22 @@ class _SignInPageState extends State<SignInPage> {
             children: [
               Card(
                 elevation: 5,
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: const Image(
-                        image: AssetImage('assets/black-gay-vitaligo.jpg'),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 350,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text("Log in to WoukieBox2"),
-                            const Padding(padding: EdgeInsets.all(6)),
-                            const TextField(
-                              decoration: InputDecoration(
-                                labelText: "Email",
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                            const Padding(padding: EdgeInsets.all(6)),
-                            TextField(
-                              decoration: InputDecoration(
-                                suffixIcon: _HideButton(
-                                    controller: _controllerOutlined),
-                                labelText: "Password",
-                                border: const OutlineInputBorder(),
-                              ),
-                            ),
-                            const Padding(padding: EdgeInsets.all(6)),
-                            const Text("Forgot password?"),
-                            const Padding(padding: EdgeInsets.all(6)),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: FilledButton(
-                                    onPressed: () {},
-                                    child: const Text("Log in"),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Padding(padding: EdgeInsets.all(6)),
-                            const Row(
-                              children: [
-                                Expanded(child: Divider()),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 12, right: 12),
-                                  child: Text("Or"),
-                                ),
-                                Expanded(child: Divider()),
-                              ],
-                            ),
-                            const Padding(padding: EdgeInsets.all(6)),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: FilledButton.tonalIcon(
-                                    icon: const Icon(Icons.theater_comedy),
-                                    onPressed: () {
-                                      joinedAnonymouslyProvider.setJoined(true);
-                                    },
-                                    label: const Text("Join Anonymously"),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Padding(padding: EdgeInsets.all(6)),
-                            Row(
-                              children: [
-                                const Text("Don't have an account? "),
-                                TextButton(
-                                  onPressed: () {},
-                                  style: const ButtonStyle(),
-                                  child: const Text("Register Now"),
-                                )
-                              ],
-                            ),
-                          ],
+                child: SizedBox(
+                  height: 400,
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: const Image(
+                          image: AssetImage('assets/black-gay-vitaligo.jpg'),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(
+                        width: 328,
+                        child: RightScreen(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -145,17 +66,22 @@ class _SignInPageState extends State<SignInPage> {
   }
 }
 
-class _HideButton extends StatelessWidget {
-  const _HideButton({required this.controller});
-
-  final TextEditingController controller;
+class RightScreen extends StatelessWidget {
+  const RightScreen({super.key});
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(right: 8.0),
-        child: IconButton(
-          icon: const Icon(Icons.remove_red_eye),
-          onPressed: () => controller.clear(),
+  Widget build(BuildContext context) {
+    return const DefaultTabController(
+      length: 2,
+      child: Padding(
+        padding: EdgeInsets.all(12),
+        child: TabBarView(
+          children: [
+            Login(),
+            Register(),
+          ],
         ),
-      );
+      ),
+    );
+  }
 }
