@@ -21,8 +21,6 @@ class _LoginState extends State<Login> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Log in to WoukieBox2"),
-        const Padding(padding: EdgeInsets.all(6)),
         const TextField(
           decoration: InputDecoration(
             labelText: "Email",
@@ -76,6 +74,9 @@ class _LoginState extends State<Login> {
           ],
         ),
         const Padding(padding: EdgeInsets.all(6)),
+        Expanded(
+          child: Container(),
+        ),
         Row(
           children: [
             const Text("Don't have an account? "),

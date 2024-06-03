@@ -17,8 +17,6 @@ class _RegisterState extends State<Register> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Sign up to WoukieBox2"),
-        const Padding(padding: EdgeInsets.all(6)),
         const TextField(
           decoration: InputDecoration(
             labelText: "Username",
@@ -52,6 +50,9 @@ class _RegisterState extends State<Register> {
           ],
         ),
         const Padding(padding: EdgeInsets.all(6)),
+        Expanded(
+          child: Container(),
+        ),
         Row(
           children: [
             const Text("Already have an account? "),
