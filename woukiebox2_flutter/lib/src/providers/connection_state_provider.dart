@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:woukiebox2/src/app/message.dart';
 import 'package:woukiebox2/src/util/assets.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/main.dart';
@@ -18,8 +19,20 @@ class ConnectionStateProvider extends ChangeNotifier {
       applicationId:
           r"{6D809377-6AF0-444B-8957-A3773F02200E}\WoukieBox2\WoukieBox2.exe");
 
-  final String template =
-      "<toast> <visual> <binding template='ToastGeneric'> <text>Notification text.</text> </binding> </visual> <audio src='ms-appx:///Audio/NotificationSound.mp3'/> </toast>";
+  Future<String> messageNotification(User sender, ChatMessage message) async {
+    return '''
+      <toast>
+        <visual>
+          <binding template="ToastGeneric">
+            <text hint-maxLines="1">${sender.username}</text>
+            <text>${message.message}</text>
+            <image placement='appLogoOverride' src='${(sender.image == "" ? await getImageFileFromAssets("anonymous-profile.png") : await DefaultCacheManager().getSingleFile(sender.image)).absolute.path}'/>
+          </binding>
+        </visual>
+        <audio silent='true'/>
+      </toast>
+    ''';
+  }
 
   final HashMap<int, User> _users = HashMap<int, User>();
   final List<dynamic> _messages = List.empty(growable: true);
@@ -76,25 +89,12 @@ class ConnectionStateProvider extends ChangeNotifier {
         ),
       );
 
-      NotificationMessage a = NotificationMessage.fromCustomTemplate(
-          "notificationid_1",
-          group: "weather_group");
-      _winNotifyPlugin.showNotificationCustomTemplate(a, template);
-
       notifyListeners();
       if (!await windowManager.isFocused()) {
-        NotificationMessage notification =
-            NotificationMessage.fromPluginTemplate(
-          "WoukieBox2",
-          user.username,
-          message.message,
-          image: (user.image == ""
-                  ? await getImageFileFromAssets("anonymous-profile.png")
-                  : await DefaultCacheManager().getSingleFile(user.image))
-              .absolute
-              .path,
-        );
-        _winNotifyPlugin.showNotificationPluginTemplate(notification);
+        NotificationMessage notificationMessage =
+            NotificationMessage.fromCustomTemplate("ToastGeneric");
+        _winNotifyPlugin.showNotificationCustomTemplate(
+            notificationMessage, await messageNotification(user, message));
       }
     } else if (message is RoomMembers) {
       _users.forEach((id, user) {
