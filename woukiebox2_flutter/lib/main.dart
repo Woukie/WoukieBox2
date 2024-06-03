@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:woukiebox2/src/providers/connection_state_provider.dart';
-import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/src/app/app.dart';
 import 'package:woukiebox2/src/authentication/onboarding.dart';
