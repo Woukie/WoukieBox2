@@ -1,3 +1,5 @@
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'package:serverpod/serverpod.dart';
 
 import 'package:woukiebox2_server/src/web/routes/root.dart';
@@ -18,7 +20,25 @@ void run(List<String> args) async {
     maxPasswordLength: 25,
     sendValidationEmail: (session, email, validationCode) async {
       print('Validation code: $validationCode');
-      return true;
+
+      final gmailEmail = session.serverpod.getPassword('gmailEmail')!;
+      final gmailPassword = session.serverpod.getPassword('gmailPassword')!;
+
+      final smtpServer = gmail(gmailEmail, gmailPassword);
+      final message = Message()
+        ..from = Address(gmailEmail, "Woukie's Goon")
+        ..recipients = [email]
+        ..subject = "Verification Code for WoukieBox2"
+        ..html = validationCode;
+
+      try {
+        await send(message, smtpServer);
+        return true;
+      } on MailerException catch (e) {
+        print(e);
+      }
+
+      return false;
     },
     sendPasswordResetEmail: (session, userInfo, validationCode) async {
       print('Validation code: $validationCode');
