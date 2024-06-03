@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:woukiebox2/src/providers/joined_anonymously_provider.dart';
 
 class Register extends StatefulWidget {
   const Register({
@@ -14,8 +12,6 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
-    final joinedAnonymouslyProvider =
-        Provider.of<JoinedAnonymouslyProvider>(context);
     final TabController tabController = DefaultTabController.of(context);
 
     return Column(
