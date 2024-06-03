@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
+import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/providers/joined_anonymously_provider.dart';
 
 class Login extends StatefulWidget {
@@ -12,6 +14,19 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  bool _enabled = true;
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  late final EmailAuthController _emailAuth;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailAuth = EmailAuthController(client.modules.auth);
+  }
+
   @override
   Widget build(BuildContext context) {
     final joinedAnonymouslyProvider =
@@ -23,28 +38,33 @@ class _LoginState extends State<Login> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const TextField(
-            decoration: InputDecoration(
+          TextField(
+            controller: _emailController,
+            enabled: _enabled,
+            decoration: const InputDecoration(
               labelText: "Email",
               border: OutlineInputBorder(),
             ),
           ),
           const Padding(padding: EdgeInsets.all(6)),
-          const TextField(
-            decoration: InputDecoration(
+          TextField(
+            controller: _passwordController,
+            enabled: _enabled,
+            obscureText: true,
+            decoration: const InputDecoration(
               suffixIcon: Icon(Icons.remove_red_eye),
               labelText: "Password",
               border: OutlineInputBorder(),
             ),
           ),
           const Padding(padding: EdgeInsets.all(6)),
-          const Text("Forgot password?"),
+          const Text("Forgot password? well fuck off then"),
           const Padding(padding: EdgeInsets.all(6)),
           Row(
             children: [
               Expanded(
                 child: FilledButton(
-                  onPressed: () {},
+                  onPressed: _enabled ? _signIn : null,
                   child: const Text("Log in"),
                 ),
               ),
@@ -67,9 +87,11 @@ class _LoginState extends State<Login> {
               Expanded(
                 child: FilledButton.tonalIcon(
                   icon: const Icon(Icons.theater_comedy),
-                  onPressed: () {
-                    joinedAnonymouslyProvider.setJoined(true);
-                  },
+                  onPressed: _enabled
+                      ? () {
+                          joinedAnonymouslyProvider.setJoined(true);
+                        }
+                      : null,
                   label: const Text("Join Anonymously"),
                 ),
               ),
@@ -83,9 +105,11 @@ class _LoginState extends State<Login> {
             children: [
               const Text("Don't have an account? "),
               TextButton(
-                onPressed: () {
-                  tabController.index = 1;
-                },
+                onPressed: _enabled
+                    ? () {
+                        tabController.index = 1;
+                      }
+                    : null,
                 style: const ButtonStyle(),
                 child: const Text("Register Now"),
               )
@@ -94,5 +118,20 @@ class _LoginState extends State<Login> {
         ],
       ),
     );
+  }
+
+  Future<void> _signIn() async {
+    setState(() {
+      _enabled = false;
+    });
+
+    var email = _emailController.text.trim().toLowerCase();
+    var password = _passwordController.text;
+
+    await _emailAuth.signIn(email, password);
+
+    setState(() {
+      _enabled = true;
+    });
   }
 }
