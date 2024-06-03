@@ -50,6 +50,8 @@ dev_dependencies:
 inno_bundle:
   id: 64ae4480-7ea3-1006-a7ce-af2185c598a0
   publisher: Woukie
+  name: WoukieBox2
+  installer_icon: assets/installer-icon.ico
 
 flutter_launcher_icons:
   android: "launcher_icon"
