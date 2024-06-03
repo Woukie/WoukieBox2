@@ -89,10 +89,7 @@ class ConnectionStateProvider extends ChangeNotifier {
   void _handleStatus(StreamingConnectionHandlerState message) {
     if (connectionHandler.client.streamingConnectionStatus ==
         StreamingConnectionStatus.disconnected) {
-      _messages.clear();
-      _users.clear();
-      _currentUser = null;
-      _joinedAnonymously = false;
+      closeConnection();
     }
     notifyListeners();
   }
