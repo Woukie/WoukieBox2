@@ -90,9 +90,12 @@ class SocketsEndpoint extends Endpoint {
   }
 
   // Sets and returns the user object and updates connectedUsers. User constructed with database values if authenticated
-  Future<User> initUser(StreamingSession session) async {
+  Future<User?> initUser(StreamingSession session) async {
     if (await session.isUserSignedIn) {
       var userId = await session.auth.authenticatedUserId;
+
+      if (connectedUsers.any((user) => user.id == userId)) return null;
+
       var userInfo = await Users.findUserByUserId(session, userId!);
 
       if (userInfo != null) {
@@ -142,7 +145,9 @@ class SocketsEndpoint extends Endpoint {
 
   @override
   Future<void> streamOpened(StreamingSession session) async {
-    User user = await initUser(session);
+    User? user = await initUser(session);
+
+    if (user == null) return; // Prevent joining with the same ID twice
 
     // Register the session with the global channel
     session.messages.addListener('global', (message) {
