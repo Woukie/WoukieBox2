@@ -240,9 +240,9 @@ class SocketsEndpoint extends Endpoint {
     g = g.abs() / magnitude;
     b = b.abs() / magnitude;
 
-    r *= 32;
-    g *= 32;
-    b *= 32;
+    r *= 256;
+    g *= 256;
+    b *= 256;
 
     String color = 'FF${r.floor().toRadixString(16).padLeft(2, '0')}'
         '${g.floor().toRadixString(16).padLeft(2, '0')}'
