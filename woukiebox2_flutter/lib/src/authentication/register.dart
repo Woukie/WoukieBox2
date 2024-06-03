@@ -14,58 +14,61 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     final TabController tabController = DefaultTabController.of(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const TextField(
-          decoration: InputDecoration(
-            labelText: "Username",
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const Padding(padding: EdgeInsets.all(6)),
-        const TextField(
-          decoration: InputDecoration(
-            labelText: "Email",
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const Padding(padding: EdgeInsets.all(6)),
-        const TextField(
-          decoration: InputDecoration(
-            suffixIcon: Icon(Icons.remove_red_eye),
-            labelText: "Password",
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const Padding(padding: EdgeInsets.all(6)),
-        Row(
-          children: [
-            Expanded(
-              child: FilledButton(
-                onPressed: () {},
-                child: const Text("Sign up"),
-              ),
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const TextField(
+            decoration: InputDecoration(
+              labelText: "Username",
+              border: OutlineInputBorder(),
             ),
-          ],
-        ),
-        const Padding(padding: EdgeInsets.all(6)),
-        Expanded(
-          child: Container(),
-        ),
-        Row(
-          children: [
-            const Text("Already have an account? "),
-            TextButton(
-              onPressed: () {
-                tabController.index = 0;
-              },
-              style: const ButtonStyle(),
-              child: const Text("Login Now"),
-            )
-          ],
-        ),
-      ],
+          ),
+          const Padding(padding: EdgeInsets.all(6)),
+          const TextField(
+            decoration: InputDecoration(
+              labelText: "Email",
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const Padding(padding: EdgeInsets.all(6)),
+          const TextField(
+            decoration: InputDecoration(
+              suffixIcon: Icon(Icons.remove_red_eye),
+              labelText: "Password",
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const Padding(padding: EdgeInsets.all(6)),
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton(
+                  onPressed: () {},
+                  child: const Text("Sign up"),
+                ),
+              ),
+            ],
+          ),
+          const Padding(padding: EdgeInsets.all(6)),
+          Expanded(
+            child: Container(),
+          ),
+          Row(
+            children: [
+              const Text("Already have an account? "),
+              TextButton(
+                onPressed: () {
+                  tabController.index = 0;
+                },
+                style: const ButtonStyle(),
+                child: const Text("Login Now"),
+              )
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

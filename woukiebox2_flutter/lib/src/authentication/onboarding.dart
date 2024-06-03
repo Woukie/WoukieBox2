@@ -73,14 +73,11 @@ class RightScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const DefaultTabController(
       length: 2,
-      child: Padding(
-        padding: EdgeInsets.all(12),
-        child: TabBarView(
-          children: [
-            Login(),
-            Register(),
-          ],
-        ),
+      child: TabBarView(
+        children: [
+          Login(),
+          Register(),
+        ],
       ),
     );
   }
