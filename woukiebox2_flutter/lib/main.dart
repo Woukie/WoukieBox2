@@ -20,8 +20,8 @@ void main() async {
   await windowManager.ensureInitialized();
 
   WindowOptions windowOptions = const WindowOptions(
-    size: Size(600, 450),
-    minimumSize: Size(600, 450),
+    size: Size(610, 456),
+    minimumSize: Size(610, 456),
     center: true,
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
