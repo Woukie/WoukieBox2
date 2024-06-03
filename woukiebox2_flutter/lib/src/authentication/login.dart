@@ -174,17 +174,22 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> _signIn() async {
+    var email = _emailController.text.trim().toLowerCase();
+    var password = _passwordController.text;
+
+    if (!(_validateEmail() && _validatePassword())) return;
+
     setState(() {
       _enabled = false;
     });
 
-    var email = _emailController.text.trim().toLowerCase();
-    var password = _passwordController.text;
-
-    await _emailAuth.signIn(email, password);
-
-    setState(() {
-      _enabled = true;
-    });
+    var result = await _emailAuth.signIn(email, password);
+    if (result == null) {
+      setState(() {
+        _passwordError = 'Incorrect password';
+        _enabled = true;
+      });
+      return;
+    }
   }
 }

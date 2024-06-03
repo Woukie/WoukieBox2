@@ -24,6 +24,7 @@ class _RegisterState extends State<Register> {
   String? _usernameError;
   String? _emailError;
   String? _passwordError;
+  String? _validationCodeError;
 
   late final EmailAuthController _emailAuth;
 
@@ -172,6 +173,22 @@ class _RegisterState extends State<Register> {
     return true;
   }
 
+  bool validateValidationCode() {
+    var code = _validationCodeController.text;
+    if (!RegExp(r"^[0-9]{8}$").hasMatch(code)) {
+      setState(() {
+        _validationCodeError = "Codes are 8 numbers long";
+      });
+
+      return false;
+    }
+
+    setState(() {
+      _validationCodeError = null;
+    });
+    return true;
+  }
+
   Future<void> _createAccount() async {
     var username = _usernameController.text.trim();
     var email = _emailController.text.trim().toLowerCase();
@@ -196,6 +213,8 @@ class _RegisterState extends State<Register> {
 
       if (success) {
         _confirmEmailDialoge(context);
+      } else {
+        _emailError = "Email already in use";
       }
     });
   }
@@ -205,65 +224,73 @@ class _RegisterState extends State<Register> {
       barrierDismissible: false,
       context: context,
       builder: (context) {
-        String? validationCodeError;
-
-        bool validateValidationCode() {
-          var code = _validationCodeController.text;
-          if (!RegExp(r"^[0-9]{8}$").hasMatch(code)) {
-            setState(() {
-              validationCodeError = "Codes are 8 numbers long";
-            });
-
-            return false;
-          }
-
-          setState(() {
-            validationCodeError = null;
-          });
-          return true;
-        }
-
         return StatefulBuilder(
           builder: (context, setState) {
-            return AlertDialog(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-              ),
-              contentPadding: const EdgeInsets.all(8),
-              actionsPadding: const EdgeInsets.only(bottom: 8, right: 8),
-              content: TextField(
-                enabled: _enabled,
-                controller: _validationCodeController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  errorText: validationCodeError,
-                  labelText: 'Verification code',
-                  helperText: 'Enter the code we sent to your inbox',
-                  border: const OutlineInputBorder(),
-                ),
-                onChanged: (_) {
-                  validateValidationCode();
-                  setState(() {});
-                },
-              ),
-              actions: <Widget>[
-                TextButton(
-                  style: TextButton.styleFrom(
-                    textStyle: Theme.of(context).textTheme.labelLarge,
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 300,
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          TextField(
+                            enabled: _enabled,
+                            controller: _validationCodeController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              errorText: _validationCodeError,
+                              labelText: 'Verification code',
+                              helperText:
+                                  'Enter the code we sent to your inbox',
+                              border: const OutlineInputBorder(),
+                            ),
+                            onChanged: (_) {
+                              validateValidationCode();
+                              setState(() {});
+                            },
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  textStyle:
+                                      Theme.of(context).textTheme.labelLarge,
+                                ),
+                                onPressed: _enabled
+                                    ? () {
+                                        Navigator.of(context).pop();
+                                      }
+                                    : null,
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  textStyle:
+                                      Theme.of(context).textTheme.labelLarge,
+                                ),
+                                onPressed: _enabled
+                                    ? () {
+                                        if (validateValidationCode()) {
+                                          _validateAccount(setState);
+                                        }
+                                        setState(() {});
+                                      }
+                                    : null,
+                                child: const Text('Verify'),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
                   ),
-                  onPressed: _enabled
-                      ? () {
-                          Navigator.of(context).pop();
-                        }
-                      : null,
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    textStyle: Theme.of(context).textTheme.labelLarge,
-                  ),
-                  onPressed: _enabled ? _validateAccount : null,
-                  child: const Text('Verify'),
                 ),
               ],
             );
@@ -273,7 +300,7 @@ class _RegisterState extends State<Register> {
     );
   }
 
-  Future<void> _validateAccount() async {
+  Future<void> _validateAccount(StateSetter dialogueStateSetter) async {
     var email = _emailController.text.toLowerCase().trim();
 
     setState(() {
@@ -285,11 +312,22 @@ class _RegisterState extends State<Register> {
       _validationCodeController.text,
     );
 
+    if (userInfo == null) {
+      setState(() {
+        _enabled = true;
+        _validationCodeError = 'Incorrect code';
+      });
+      dialogueStateSetter(() {});
+      return;
+    }
+
     var result = await _emailAuth.signIn(email, _passwordController.text);
     if (result == null) {
       setState(() {
         _enabled = true;
       });
+      dialogueStateSetter(() {});
+      return;
     }
 
     if (mounted) {
