@@ -244,8 +244,7 @@ class SocketsEndpoint extends Endpoint {
     g *= 16;
     b *= 16;
 
-    String color = '${16.toRadixString(16).padLeft(2, '0')}'
-        '${r.floor().toRadixString(16).padLeft(2, '0')}'
+    String color = 'FF${r.floor().toRadixString(16).padLeft(2, '0')}'
         '${g.floor().toRadixString(16).padLeft(2, '0')}'
         '${b.floor().toRadixString(16).padLeft(2, '0')}';
 
