@@ -23,9 +23,17 @@ class ConnectionStateProvider extends ChangeNotifier {
       <toast>
         <visual>
           <binding template="ToastGeneric">
+            <group>
+              <subgroup>
+                <text hint-style="captionSubtle" hint-align="right">#${sender.id}</text>
+              </subgroup>
+            </group>
             <text hint-maxLines="1">${sender.username}</text>
             <text>${message.message}</text>
-            <image placement='appLogoOverride' src='${(sender.image == "" ? await getImageFileFromAssets("anonymous-profile.png") : await DefaultCacheManager().getSingleFile(sender.image)).absolute.path}'/>
+            <image placement='appLogoOverride' src='
+              ${(sender.image == "" ? await getImageFileFromAssets("anonymous-profile.png") : await DefaultCacheManager().getSingleFile(sender.image)).absolute.path}' 
+              ${sender.image != "" ? "hint-crop='circle'" : ""}
+            />
           </binding>
         </visual>
         <audio silent='true'/>
