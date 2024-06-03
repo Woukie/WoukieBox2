@@ -9,6 +9,7 @@
 #include <bitsdojo_window_windows/bitsdojo_window_plugin.h>
 #include <connectivity_plus/connectivity_plus_windows_plugin.h>
 #include <file_selector_windows/file_selector_windows.h>
+#include <windows_notification/windows_notification_plugin_c_api.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   BitsdojoWindowPluginRegisterWithRegistrar(
@@ -17,4 +18,6 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("ConnectivityPlusWindowsPlugin"));
   FileSelectorWindowsRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FileSelectorWindows"));
+  WindowsNotificationPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("WindowsNotificationPluginCApi"));
 }
