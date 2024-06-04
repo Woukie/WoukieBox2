@@ -118,7 +118,13 @@ class LeftButtons extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 4),
           child: Tooltip(
-            message: "Status",
+            message: switch (
+                connectionProvider.connectionHandler.status.status) {
+              StreamingConnectionStatus.connected => "Connected",
+              StreamingConnectionStatus.disconnected => "Disconnected",
+              StreamingConnectionStatus.connecting => "Connecting",
+              StreamingConnectionStatus.waitingToRetry => "Timeout...",
+            },
             child: Icon(
               switch (connectionProvider.connectionHandler.status.status) {
                 StreamingConnectionStatus.connected => Icons.wifi,
