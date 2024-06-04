@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/main.dart';
-import 'package:woukiebox2/src/app/settings_page.dart';
 import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 
 import '../app_bar_buttons.dart';
@@ -69,13 +68,14 @@ class LeftButtons extends StatelessWidget {
             padding: EdgeInsets.zero,
             tooltip: 'Settings',
             onPressed: () {
-              showModalBottomSheet<void>(
-                isScrollControlled: true,
-                context: context,
-                builder: (context) {
-                  return const SettingsPage();
-                },
-              );
+              Navigator.of(context).pushNamed("settings");
+              // showModalBottomSheet<void>(
+              //   isScrollControlled: true,
+              //   context: context,
+              //   builder: (context) {
+              //     return const SettingsPage();
+              //   },
+              // );
             },
           ),
         ),

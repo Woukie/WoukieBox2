@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:woukiebox2/src/app/main_app_bar.dart';
+import 'package:woukiebox2/src/app/settings.dart';
 
 import 'chatroom/chat_room.dart';
 
-class App extends StatefulWidget {
+class App extends StatelessWidget {
   const App({
     super.key,
   });
 
-  @override
-  State<App> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -22,7 +18,15 @@ class _AppState extends State<App> {
       child: const Column(
         children: [
           MainAppBar(),
-          ChatRoom(),
+          DefaultTabController(
+            length: 2,
+            child: TabBarView(
+              children: [
+                ChatRoom(),
+                Settings(),
+              ],
+            ),
+          )
         ],
       ),
     );

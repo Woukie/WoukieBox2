@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/providers/preference_provider.dart';
 
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({
+class Settings extends StatelessWidget {
+  const Settings({
     super.key,
   });
 
