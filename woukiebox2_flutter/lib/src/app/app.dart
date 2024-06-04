@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:woukiebox2/src/app/main_app_bar.dart';
 import 'package:woukiebox2/src/app/settings.dart';
+import 'package:woukiebox2/src/app_bar.dart';
 
 import 'chatroom/chat_room.dart';
 
@@ -26,7 +24,7 @@ class _AppState extends State<App> {
       margin: const EdgeInsets.all(0),
       child: Column(
         children: [
-          const MainAppBar(),
+          const WoukieAppBar(),
           Expanded(
             child: Row(
               children: [
