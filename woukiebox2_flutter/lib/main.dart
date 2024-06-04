@@ -9,7 +9,7 @@ import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/src/app/app.dart';
 import 'package:woukiebox2/src/authentication/onboarding.dart';
-import 'package:woukiebox2/src/providers/theme_data_provider.dart';
+import 'package:woukiebox2/src/providers/preference_provider.dart';
 
 late SessionManager sessionManager;
 late Client client;
@@ -44,7 +44,7 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
-        create: (context) => ThemeDataProvider(),
+        create: (context) => PreferenceProvider(),
       ),
       ChangeNotifierProvider(
         create: (context) => ConnectionStateProvider(),
@@ -84,7 +84,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final themeDataProvider = Provider.of<ThemeDataProvider>(context);
+    final themeDataProvider = Provider.of<PreferenceProvider>(context);
     final connectionStateProvider =
         Provider.of<ConnectionStateProvider>(context);
 

@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ThemeDataProvider extends ChangeNotifier {
+enum DesktopNotificationMode { all, mentions, none }
+
+class PreferenceProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.dark;
+  DesktopNotificationMode _desktopNotificationMode =
+      DesktopNotificationMode.mentions;
   Color _color = Colors.blue;
 
-  ThemeDataProvider() {
+  PreferenceProvider() {
     _loadPreferences();
   }
 
   ThemeMode get themeMode => _themeMode;
+  DesktopNotificationMode get desktopNotificationMode =>
+      _desktopNotificationMode;
   Color get color => _color;
 
   void toggleThemeMode() {
@@ -25,10 +31,22 @@ class ThemeDataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateDesktopNotificationMode(DesktopNotificationMode mode) {
+    _desktopNotificationMode = mode;
+    _savePreferences();
+    notifyListeners();
+  }
+
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     final themeModeString = prefs.getString('themeMode');
     final colorString = prefs.getString('themeColor');
+    _desktopNotificationMode =
+        switch (prefs.getString('desktopNotificationMode')) {
+      'all' => DesktopNotificationMode.all,
+      'none' => DesktopNotificationMode.none,
+      _ => DesktopNotificationMode.mentions,
+    };
 
     if (themeModeString != null) {
       _themeMode = ThemeMode.values[int.parse(themeModeString)];
@@ -45,5 +63,6 @@ class ThemeDataProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('themeMode', _themeMode.index.toString());
     prefs.setString('themeColor', _color.value.toString());
+    prefs.setString('desktopNotificationMode', _desktopNotificationMode.name);
   }
 }

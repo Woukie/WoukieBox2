@@ -1,7 +1,7 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:woukiebox2/src/providers/theme_data_provider.dart';
+import 'package:woukiebox2/src/providers/preference_provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({
@@ -10,12 +10,12 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeDataProvider = Provider.of<ThemeDataProvider>(context);
+    final preferenceProvider = Provider.of<PreferenceProvider>(context);
 
     return Wrap(
       children: [
         Container(
-          width: 250,
+          width: 500,
           padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,9 +28,9 @@ class SettingsPage extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: Switch(
-                        value: themeDataProvider.themeMode == ThemeMode.dark,
-                        onChanged: (value) =>
-                            themeDataProvider.toggleThemeMode(), // Toggle theme
+                        value: preferenceProvider.themeMode == ThemeMode.dark,
+                        onChanged: (value) => preferenceProvider
+                            .toggleThemeMode(), // Toggle theme
                       ),
                     ),
                     const Text("Dark Mode"),
@@ -43,10 +43,10 @@ class SettingsPage extends StatelessWidget {
                     child: FilledButton.tonalIcon(
                       icon: const Icon(Icons.edit),
                       onPressed: () async {
-                        themeDataProvider.updateSelectedColor(
+                        preferenceProvider.updateSelectedColor(
                           await showColorPickerDialog(
                             context,
-                            themeDataProvider.color,
+                            preferenceProvider.color,
                             pickersEnabled: <ColorPickerType, bool>{
                               ColorPickerType.accent: false,
                               ColorPickerType.primary: true,
