@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:windows_taskbar/windows_taskbar.dart';
 import 'package:woukiebox2/src/util/assets.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/main.dart';
@@ -110,6 +111,10 @@ class ConnectionStateProvider extends ChangeNotifier {
 
       notifyListeners();
       if (!await windowManager.isFocused()) {
+        WindowsTaskbar.setFlashTaskbarAppIcon(
+          mode: TaskbarFlashMode.all | TaskbarFlashMode.timernofg,
+          timeout: const Duration(milliseconds: 500),
+        );
         NotificationMessage notificationMessage =
             NotificationMessage.fromCustomTemplate("ToastGeneric");
         _winNotifyPlugin.showNotificationCustomTemplate(
