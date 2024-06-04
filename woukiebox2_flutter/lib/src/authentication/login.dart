@@ -16,6 +16,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   bool _enabled = true;
+  bool _passwordObscured = true;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -58,10 +59,22 @@ class _LoginState extends State<Login> {
           TextField(
             controller: _passwordController,
             enabled: _enabled,
-            obscureText: true,
+            obscureText: _passwordObscured,
             decoration: InputDecoration(
               errorText: _passwordError,
-              suffixIcon: const Icon(Icons.remove_red_eye),
+              suffixIcon: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: IconButton(
+                  icon: _passwordObscured
+                      ? const Icon(Icons.visibility_off)
+                      : const Icon(Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      _passwordObscured = !_passwordObscured;
+                    });
+                  },
+                ),
+              ),
               labelText: "Password",
               border: const OutlineInputBorder(),
             ),

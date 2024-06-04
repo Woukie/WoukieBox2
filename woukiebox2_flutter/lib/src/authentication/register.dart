@@ -16,6 +16,7 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   bool _enabled = true;
+  bool _passwordObscured = true;
 
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -72,12 +73,24 @@ class _RegisterState extends State<Register> {
           ),
           const Padding(padding: EdgeInsets.all(6)),
           TextField(
-            enabled: _enabled,
-            obscureText: true,
             controller: _passwordController,
+            enabled: _enabled,
+            obscureText: _passwordObscured,
             decoration: InputDecoration(
               errorText: _passwordError,
-              suffixIcon: const Icon(Icons.remove_red_eye),
+              suffixIcon: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: IconButton(
+                  icon: _passwordObscured
+                      ? const Icon(Icons.visibility_off)
+                      : const Icon(Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      _passwordObscured = !_passwordObscured;
+                    });
+                  },
+                ),
+              ),
               labelText: "Password",
               border: const OutlineInputBorder(),
             ),
