@@ -186,11 +186,15 @@ class SocketsEndpoint extends Endpoint {
     print(message);
 
     if (message is ChatMessage) {
+      String trimmedMessage = message.message.trim();
+
+      if (trimmedMessage.isEmpty) return;
+
       session.messages.postMessage(
         'global',
         ChatMessage(
           sender: getUserObject(session).id,
-          message: message.message,
+          message: trimmedMessage,
         ),
       );
     } else if (message is UpdateProfile) {
