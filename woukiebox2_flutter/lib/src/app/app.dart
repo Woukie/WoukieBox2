@@ -15,18 +15,29 @@ class App extends StatelessWidget {
       elevation: 0.5,
       shape: Border.all(width: 0, color: Colors.transparent),
       margin: const EdgeInsets.all(0),
-      child: const Column(
+      child: Column(
         children: [
-          MainAppBar(),
+          const MainAppBar(),
           Expanded(
-            child: DefaultTabController(
-              length: 2,
-              child: TabBarView(
-                children: [
-                  ChatRoom(),
-                  Settings(),
-                ],
-              ),
+            child: Navigator(
+              initialRoute: "chatroom",
+              onGenerateRoute: (RouteSettings settings) {
+                WidgetBuilder builder;
+
+                switch (settings.name) {
+                  case 'chatroom':
+                    builder = (BuildContext context) => const ChatRoom();
+                  case 'settings':
+                    builder = (BuildContext context) => const Settings();
+                  default:
+                    throw Exception('Invalid route: ${settings.name}');
+                }
+
+                return MaterialPageRoute<void>(
+                  builder: builder,
+                  settings: settings,
+                );
+              },
             ),
           )
         ],

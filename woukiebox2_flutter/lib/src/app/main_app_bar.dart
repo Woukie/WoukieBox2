@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
-import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 
 import '../app_bar_buttons.dart';
@@ -59,71 +58,30 @@ class LeftButtons extends StatelessWidget {
 
     return Row(
       children: [
-        AspectRatio(
-          aspectRatio: 1,
-          child: IconButton(
-            icon: const Icon(
-              Icons.settings,
-            ),
-            padding: EdgeInsets.zero,
-            tooltip: 'Settings',
-            onPressed: () {
-              Navigator.of(context).pushNamed("settings");
-              // showModalBottomSheet<void>(
-              //   isScrollControlled: true,
-              //   context: context,
-              //   builder: (context) {
-              //     return const SettingsPage();
-              //   },
-              // );
+        Tooltip(
+          message: switch (connectionProvider.connectionHandler.status.status) {
+            StreamingConnectionStatus.connected => "Connected",
+            StreamingConnectionStatus.disconnected => "Disconnected",
+            StreamingConnectionStatus.connecting => "Connecting",
+            StreamingConnectionStatus.waitingToRetry => "Timeout...",
+          },
+          child: Icon(
+            switch (connectionProvider.connectionHandler.status.status) {
+              StreamingConnectionStatus.connected => Icons.wifi,
+              StreamingConnectionStatus.disconnected => Icons.wifi_off,
+              StreamingConnectionStatus.connecting => Icons.wifi_2_bar,
+              StreamingConnectionStatus.waitingToRetry => Icons.timer,
             },
-          ),
-        ),
-        AspectRatio(
-          aspectRatio: 1,
-          child: IconButton(
-            icon: const Icon(
-              Icons.logout,
-            ),
-            padding: EdgeInsets.zero,
-            tooltip: 'Log Out',
-            color: Theme.of(context).colorScheme.error,
-            onPressed: () {
-              sessionManager.signOut();
-              connectionProvider.closeConnection();
+            color: switch (connectionProvider.connectionHandler.status.status) {
+              StreamingConnectionStatus.connected =>
+                Theme.of(context).colorScheme.onSurfaceVariant,
+              StreamingConnectionStatus.disconnected =>
+                Theme.of(context).colorScheme.error,
+              StreamingConnectionStatus.connecting =>
+                Theme.of(context).colorScheme.secondary,
+              StreamingConnectionStatus.waitingToRetry =>
+                Theme.of(context).colorScheme.secondary,
             },
-          ),
-        ),
-        const VerticalDivider(),
-        Padding(
-          padding: const EdgeInsets.only(left: 4),
-          child: Tooltip(
-            message: switch (
-                connectionProvider.connectionHandler.status.status) {
-              StreamingConnectionStatus.connected => "Connected",
-              StreamingConnectionStatus.disconnected => "Disconnected",
-              StreamingConnectionStatus.connecting => "Connecting",
-              StreamingConnectionStatus.waitingToRetry => "Timeout...",
-            },
-            child: Icon(
-              switch (connectionProvider.connectionHandler.status.status) {
-                StreamingConnectionStatus.connected => Icons.wifi,
-                StreamingConnectionStatus.disconnected => Icons.wifi_off,
-                StreamingConnectionStatus.connecting => Icons.wifi_2_bar,
-                StreamingConnectionStatus.waitingToRetry => Icons.timer,
-              },
-              color: switch (
-                  connectionProvider.connectionHandler.status.status) {
-                StreamingConnectionStatus.connected =>
-                  Theme.of(context).colorScheme.onSurfaceVariant,
-                StreamingConnectionStatus.disconnected =>
-                  Theme.of(context).colorScheme.error,
-                StreamingConnectionStatus.connecting =>
-                  Theme.of(context).colorScheme.secondary,
-                StreamingConnectionStatus.waitingToRetry =>
-                  Theme.of(context).colorScheme.secondary,
-              },
-            ),
           ),
         ),
         Text(

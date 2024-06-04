@@ -39,8 +39,7 @@ class Settings extends StatelessWidget {
               ),
               FilledButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Container()));
+                    Navigator.of(context).pop();
                   },
                   child: const Text("push")),
               Row(
