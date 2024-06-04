@@ -111,8 +111,7 @@ class _MyAppState extends State<MyApp> {
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
-            return (sessionManager.isSignedIn ||
-                    connectionStateProvider.joinedAnonymously)
+            return (connectionStateProvider.currentUser != null)
                 ? const App()
                 : const OnboardingScreen();
           }

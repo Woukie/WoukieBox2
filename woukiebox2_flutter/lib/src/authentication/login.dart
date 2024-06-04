@@ -76,7 +76,11 @@ class _LoginState extends State<Login> {
             children: [
               Expanded(
                 child: FilledButton(
-                  onPressed: _enabled ? _signIn : null,
+                  onPressed: _enabled
+                      ? () {
+                          _signIn(connectionStateProvider);
+                        }
+                      : null,
                   child: const Text("Log in"),
                 ),
               ),
@@ -101,7 +105,7 @@ class _LoginState extends State<Login> {
                   icon: const Icon(Icons.theater_comedy),
                   onPressed: _enabled
                       ? () {
-                          connectionStateProvider.setJoinedAnonymously(true);
+                          connectionStateProvider.openConnection();
                         }
                       : null,
                   label: const Text("Join Anonymously"),
@@ -173,7 +177,7 @@ class _LoginState extends State<Login> {
     return true;
   }
 
-  Future<void> _signIn() async {
+  Future<void> _signIn(ConnectionStateProvider connectionStateProvider) async {
     var email = _emailController.text.trim().toLowerCase();
     var password = _passwordController.text;
 
@@ -191,5 +195,7 @@ class _LoginState extends State<Login> {
       });
       return;
     }
+
+    connectionStateProvider.openConnection();
   }
 }

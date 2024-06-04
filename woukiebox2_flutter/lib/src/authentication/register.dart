@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:woukiebox2/main.dart';
+import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 
 class Register extends StatefulWidget {
   const Register({
@@ -278,7 +280,12 @@ class _RegisterState extends State<Register> {
                                 onPressed: _enabled
                                     ? () {
                                         if (validateValidationCode()) {
-                                          _validateAccount(setState);
+                                          _validateAccount(
+                                            setState,
+                                            Provider.of<
+                                                    ConnectionStateProvider>(
+                                                context),
+                                          );
                                         }
                                         setState(() {});
                                       }
@@ -300,7 +307,8 @@ class _RegisterState extends State<Register> {
     );
   }
 
-  Future<void> _validateAccount(StateSetter dialogueStateSetter) async {
+  Future<void> _validateAccount(StateSetter dialogueStateSetter,
+      ConnectionStateProvider connectionStateProvider) async {
     var email = _emailController.text.toLowerCase().trim();
 
     setState(() {
@@ -333,5 +341,7 @@ class _RegisterState extends State<Register> {
     if (mounted) {
       Navigator.of(context).pop();
     }
+
+    connectionStateProvider.openConnection();
   }
 }
