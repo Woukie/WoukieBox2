@@ -1,9 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:woukiebox2_client/woukiebox2_client.dart';
-import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 
 import '../app_bar_buttons.dart';
 
@@ -23,7 +20,6 @@ class MainAppBar extends StatelessWidget {
             padding: const EdgeInsets.only(left: 12, right: 12),
             child: Row(
               children: [
-                const LeftButtons(),
                 Expanded(
                   child: DragToMoveArea(
                     child: Container(),
@@ -44,50 +40,5 @@ class TitleBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(height: 30, child: child ?? Container());
-  }
-}
-
-class LeftButtons extends StatelessWidget {
-  const LeftButtons({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final connectionProvider = Provider.of<ConnectionStateProvider>(context);
-
-    return Row(
-      children: [
-        Tooltip(
-          message: switch (connectionProvider.connectionHandler.status.status) {
-            StreamingConnectionStatus.connected => "Connected",
-            StreamingConnectionStatus.disconnected => "Disconnected",
-            StreamingConnectionStatus.connecting => "Connecting",
-            StreamingConnectionStatus.waitingToRetry => "Timeout...",
-          },
-          child: Icon(
-            switch (connectionProvider.connectionHandler.status.status) {
-              StreamingConnectionStatus.connected => Icons.wifi,
-              StreamingConnectionStatus.disconnected => Icons.wifi_off,
-              StreamingConnectionStatus.connecting => Icons.wifi_2_bar,
-              StreamingConnectionStatus.waitingToRetry => Icons.timer,
-            },
-            color: switch (connectionProvider.connectionHandler.status.status) {
-              StreamingConnectionStatus.connected =>
-                Theme.of(context).colorScheme.onSurfaceVariant,
-              StreamingConnectionStatus.disconnected =>
-                Theme.of(context).colorScheme.error,
-              StreamingConnectionStatus.connecting =>
-                Theme.of(context).colorScheme.secondary,
-              StreamingConnectionStatus.waitingToRetry =>
-                Theme.of(context).colorScheme.secondary,
-            },
-          ),
-        ),
-        Text(
-          "${connectionProvider.connectionHandler.status.retryInSeconds ?? ""}",
-        ),
-      ],
-    );
   }
 }
