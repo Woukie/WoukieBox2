@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
-import 'package:woukiebox2/src/app/profile_pic.dart';
+import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 
 // Wraps a child in a gesture detector that opens the profile editor when clicked on

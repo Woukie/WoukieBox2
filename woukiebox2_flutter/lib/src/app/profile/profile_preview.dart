@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
-import 'package:woukiebox2/src/app/profile_pic.dart';
+import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 
 // Wraps a child in a gesture detector that opens the profile preview when clicked on

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
-import 'package:woukiebox2/src/app/profile_pic.dart';
-import 'package:woukiebox2/src/app/profile_preview.dart';
+import 'package:woukiebox2/src/app/profile/profile_pic.dart';
+import 'package:woukiebox2/src/app/profile/profile_preview.dart';
 import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 import 'package:woukiebox2/src/util/written_message.dart';
