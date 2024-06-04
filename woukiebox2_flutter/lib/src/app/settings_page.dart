@@ -37,6 +37,12 @@ class SettingsPage extends StatelessWidget {
                   ],
                 ),
               ),
+              FilledButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Container()));
+                  },
+                  child: const Text("push")),
               Row(
                 children: [
                   Expanded(
