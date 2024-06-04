@@ -18,13 +18,15 @@ class App extends StatelessWidget {
       child: const Column(
         children: [
           MainAppBar(),
-          DefaultTabController(
-            length: 2,
-            child: TabBarView(
-              children: [
-                ChatRoom(),
-                Settings(),
-              ],
+          Expanded(
+            child: DefaultTabController(
+              length: 2,
+              child: TabBarView(
+                children: [
+                  ChatRoom(),
+                  Settings(),
+                ],
+              ),
             ),
           )
         ],
