@@ -167,18 +167,25 @@ class _EditorWidgetState extends State<EditorWidget> {
                   margin: EdgeInsets.zero,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8, right: 8),
-                    child: TextField(
-                      style: textStyle,
-                      // So the save button can enable itself
-                      onChanged: (_) {
-                        setState(() {});
-                      },
-                      controller: bioController,
-                      maxLines: null,
-                      decoration: const InputDecoration(
-                        hintText: "Bio...",
-                        border: InputBorder.none,
-                      ),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            scrollPadding: EdgeInsets.zero,
+                            style: textStyle,
+                            // So the save button can enable itself
+                            onChanged: (_) {
+                              setState(() {});
+                            },
+                            controller: bioController,
+                            maxLines: 10,
+                            decoration: const InputDecoration(
+                              hintText: "Bio...",
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
