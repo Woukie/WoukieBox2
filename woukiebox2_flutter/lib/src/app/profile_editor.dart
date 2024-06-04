@@ -174,7 +174,7 @@ class _EditorWidgetState extends State<EditorWidget> {
                         setState(() {});
                       },
                       controller: bioController,
-                      maxLines: 5,
+                      maxLines: null,
                       decoration: const InputDecoration(
                         hintText: "Bio...",
                         border: InputBorder.none,
