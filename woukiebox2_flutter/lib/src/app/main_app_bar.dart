@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/main.dart';
-import 'package:woukiebox2/src/app/profile_page.dart';
 import 'package:woukiebox2/src/app/settings_page.dart';
 import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 
@@ -61,25 +60,6 @@ class LeftButtons extends StatelessWidget {
 
     return Row(
       children: [
-        AspectRatio(
-          aspectRatio: 1,
-          child: IconButton(
-            icon: const Icon(
-              Icons.account_circle_outlined,
-            ),
-            padding: EdgeInsets.zero,
-            tooltip: 'Profile',
-            onPressed: () {
-              showModalBottomSheet<void>(
-                isScrollControlled: true,
-                context: context,
-                builder: (context) {
-                  return const ProfilePage();
-                },
-              );
-            },
-          ),
-        ),
         AspectRatio(
           aspectRatio: 1,
           child: IconButton(

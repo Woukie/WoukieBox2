@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/main_app_bar.dart';
+import 'package:woukiebox2/src/app/profile_editor.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/profile_pic.dart';
@@ -180,6 +181,7 @@ class Users extends StatelessWidget {
         Provider.of<ConnectionStateProvider>(context);
     final users = connectionStateProvider.users;
     final List<User> userList = users.values.toList();
+    // app only renders if user passes null check
     final User localUser = users[connectionStateProvider.currentUser]!;
     userList
         .removeWhere((user) => !(user.visible ?? true) || user == localUser);
@@ -190,8 +192,7 @@ class Users extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: ProfilePreview(
-              // chatbox only renders in there is a user thus the user is not null
+            child: ProfileEditor(
               user: localUser,
               child: Card(
                 margin: EdgeInsets.zero,
