@@ -61,14 +61,10 @@ class _ChatBoxState extends State<ChatBox> {
                       ),
                     ),
                   ),
-                  Card(
-                    elevation: 0,
-                    margin: const EdgeInsets.only(left: 12),
-                    child: Container(
-                      width: 200,
-                      alignment: Alignment.topLeft,
-                      child: const Users(),
-                    ),
+                  Container(
+                    width: 200,
+                    alignment: Alignment.topLeft,
+                    child: const Users(),
                   ),
                 ],
               ),
@@ -169,31 +165,64 @@ class Users extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final users = Provider.of<ConnectionStateProvider>(context).users;
+    final connectionStateProvider =
+        Provider.of<ConnectionStateProvider>(context);
+    final users = connectionStateProvider.users;
     final List<User> userList = users.values.toList();
-    userList.removeWhere((user) => !(user.visible ?? true));
+    final User localUser = users[connectionStateProvider.currentUser]!;
+    userList
+        .removeWhere((user) => !(user.visible ?? true) || user == localUser);
 
-    return ListView.builder(
-      itemCount: userList.length,
-      itemBuilder: (context, index) {
-        Color color = HexColor.fromHex(userList[index].colour);
-        User user = userList[index];
-
-        return ProfilePreview(
-          user: user,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              margin: EdgeInsets.zero,
-              child: UserItem(
-                colour: color,
-                image: user.image,
-                username: user.username,
+    return Padding(
+      padding: const EdgeInsets.only(left: 12),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: ProfilePreview(
+              // chatbox only renders in there is a user thus the user is not null
+              user: localUser,
+              child: Card(
+                margin: EdgeInsets.zero,
+                child: UserItem(
+                  colour: HexColor.fromHex(localUser.colour),
+                  image: localUser.image,
+                  username: localUser.username,
+                ),
               ),
             ),
           ),
-        );
-      },
+          Expanded(
+            child: Card(
+              margin: EdgeInsets.zero,
+              elevation: 0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: userList.length,
+                      itemBuilder: (context, index) {
+                        Color color = HexColor.fromHex(userList[index].colour);
+                        User user = userList[index];
+
+                        return ProfilePreview(
+                          user: user,
+                          child: UserItem(
+                            colour: color,
+                            image: user.image,
+                            username: user.username,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
