@@ -18,7 +18,8 @@ class ProfilePreview extends StatelessWidget {
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).primaryTextTheme.bodyMedium!;
 
-    return GestureDetector(
+    return InkWell(
+      borderRadius: const BorderRadius.all(Radius.circular(12)),
       onTapDown: (TapDownDetails details) async {
         final screenSize = MediaQuery.of(context).size;
         Offset offset = details.globalPosition;

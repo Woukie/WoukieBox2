@@ -227,7 +227,7 @@ class Users extends StatelessWidget {
   }
 }
 
-class UserItem extends StatelessWidget {
+class UserItem extends StatefulWidget {
   const UserItem({
     super.key,
     required this.username,
@@ -240,13 +240,18 @@ class UserItem extends StatelessWidget {
   final Color colour;
 
   @override
+  State<UserItem> createState() => _UserItemState();
+}
+
+class _UserItemState extends State<UserItem> {
+  @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: ProfilePic(
-            url: image,
+            url: widget.image,
           ),
         ),
         Expanded(
@@ -256,9 +261,9 @@ class UserItem extends StatelessWidget {
               softWrap: false,
               overflow: TextOverflow.fade,
               maxLines: 1,
-              username,
+              widget.username,
               style: TextStyle(
-                color: colour,
+                color: widget.colour,
               ),
             ),
           ),
