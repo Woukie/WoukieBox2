@@ -172,7 +172,7 @@ class _EditorWidgetState extends State<EditorWidget> {
                         Expanded(
                           child: TextField(
                             scrollPadding: EdgeInsets.zero,
-                            style: textStyle,
+                            style: TextStyle(fontSize: textStyle.fontSize),
                             // So the save button can enable itself
                             onChanged: (_) {
                               setState(() {});
