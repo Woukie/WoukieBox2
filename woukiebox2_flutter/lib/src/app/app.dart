@@ -30,6 +30,7 @@ class _AppState extends State<App> {
             child: Row(
               children: [
                 NavigationRail(
+                  elevation: 2,
                   selectedIndex: _selectedIndex,
                   labelType: NavigationRailLabelType.selected,
                   onDestinationSelected: (int index) {
