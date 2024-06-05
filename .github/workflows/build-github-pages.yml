@@ -29,7 +29,7 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_file: 'build/web'
+          source_file: 'woukiebox2_flutter/build/web'
           destination_repo: 'Woukie/WoukieBox2-Distributing'
           destination_folder: 'app'
           user_email: 'lucaseldon@live.com'
