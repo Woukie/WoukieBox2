@@ -153,17 +153,31 @@ class Settings extends StatelessWidget {
                         style: TextStyle(fontSize: 22),
                       ),
 
-                      FilledButton(
-                          onPressed: () {
-                            connectionStateProvider.closeConnection();
-                          },
-                          child: const Text("Log out")),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text("Log out"),
+                          FilledButton(
+                              onPressed: () {
+                                connectionStateProvider.closeConnection();
+                              },
+                              child: const Text("Log out")),
+                        ],
+                      ),
+                      const Divider(),
 
-                      FilledButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text("Fuck my whole shit up")),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text("idfk"),
+                          FilledButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("Fuck my whole shit up")),
+                        ],
+                      ),
+                      const Divider(),
                     ],
                   ),
                 ),
