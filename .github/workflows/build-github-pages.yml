@@ -31,7 +31,7 @@ jobs:
         with:
           source_file: 'build/env/'
           destination_repo: 'woukie/WoukieBox2-Distributing '
-          destination_folder: 'app'
+          destination_folder: 'app/'
           user_email: 'lucaseldon@live.com'
           user_name: 'woukie'
           commit_message: 'Bot push for web app deploy'
