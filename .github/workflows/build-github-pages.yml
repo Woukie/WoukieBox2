@@ -25,8 +25,7 @@ jobs:
       - run: flutter build web --release
       
       - run: |
-          git clone https://.:${{ secrets.API_TOKEN_GITHUB }}@github.com/WoukieBox2-Distributing target
-          copy source\files target
+          git clone https://.:${{ secrets.API_TOKEN_GITHUB }}@github.com/Woukie/WoukieBox2-Distributing target
           cd target
           git add ./build/web
           git diff-index --quiet HEAD || git commit -m "Automatic publish from github.com/project"
