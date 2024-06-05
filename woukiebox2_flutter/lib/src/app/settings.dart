@@ -1,6 +1,5 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2/src/providers/preference_provider.dart';
@@ -85,16 +84,46 @@ class Settings extends StatelessWidget {
                         style: TextStyle(fontSize: 22),
                       ),
 
+                      // Message Sound Mode
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text("Message Sounds"),
+                          DropdownButton<MessageSoundMode>(
+                            value: preferenceProvider.messageSoundMode,
+                            items: const [
+                              DropdownMenuItem(
+                                value: MessageSoundMode.all,
+                                child: Text("All"),
+                              ),
+                              DropdownMenuItem(
+                                value: MessageSoundMode.unfocussed,
+                                child: Text("Unfocussed"),
+                              ),
+                              DropdownMenuItem(
+                                value: MessageSoundMode.none,
+                                child: Text("None"),
+                              )
+                            ],
+                            onChanged: (MessageSoundMode? value) {
+                              preferenceProvider.updateMessageSoundMode(value!);
+                            },
+                          )
+                        ],
+                      ),
+                      const Text(
+                          "Choose when to play message sounds. (Setting to unfocussed plays message sounds only when the app is not active)"),
+                      const Divider(),
+
                       // Toggle Desktop Notifications
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text("Desktop Notifications"),
                           Switch(
-                            value:
-                                preferenceProvider.themeMode == ThemeMode.dark,
+                            value: preferenceProvider.desktopNotifications,
                             onChanged: (value) => preferenceProvider
-                                .toggleThemeMode(), // Toggle theme
+                                .updateDesktopNotifications(value),
                           ),
                         ],
                       ),
@@ -102,16 +131,15 @@ class Settings extends StatelessWidget {
                           "Enable desktop notifications for unread messages"),
                       const Divider(),
 
-                      // Toggle Desktop Notifications
+                      // Toggle Taskbar Flashing
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text("Taskbar Flashing"),
                           Switch(
-                            value:
-                                preferenceProvider.themeMode == ThemeMode.dark,
-                            onChanged: (value) => preferenceProvider
-                                .toggleThemeMode(), // Toggle theme
+                            value: preferenceProvider.taskbarFlashing,
+                            onChanged: (value) =>
+                                preferenceProvider.updateTaskbarFlashing(value),
                           ),
                         ],
                       ),

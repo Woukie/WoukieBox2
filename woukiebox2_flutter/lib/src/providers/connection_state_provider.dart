@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:windows_taskbar/windows_taskbar.dart';
+import 'package:woukiebox2/src/providers/preference_provider.dart';
 import 'package:woukiebox2/src/util/assets.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/main.dart';
@@ -14,12 +17,24 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 class ConnectionStateProvider extends ChangeNotifier {
-  late final StreamingConnectionHandler _connectionHandler;
-  final player = AudioPlayer();
+  final HashMap<int, User> _users = HashMap<int, User>();
+  final List<dynamic> _messages = List.empty(growable: true);
+  int? _currentUser;
+  StreamSubscription? _streamSubscription;
 
+  late final StreamingConnectionHandler _connectionHandler;
+  late final PreferenceProvider _preferenceProvider;
+
+  final player = AudioPlayer();
   final _winNotifyPlugin = WindowsNotification(
-      applicationId:
-          r"{6D809377-6AF0-444B-8957-A3773F02200E}\WoukieBox2\WoukieBox2.exe");
+    applicationId:
+        r"{6D809377-6AF0-444B-8957-A3773F02200E}\WoukieBox2\WoukieBox2.exe",
+  );
+
+  StreamingConnectionHandler get connectionHandler => _connectionHandler;
+  HashMap<int, User> get users => _users;
+  List<dynamic> get messages => _messages;
+  int? get currentUser => _currentUser;
 
   Future<String> messageNotification(User sender, ChatMessage message) async {
     return '''
@@ -44,18 +59,9 @@ class ConnectionStateProvider extends ChangeNotifier {
     ''';
   }
 
-  final HashMap<int, User> _users = HashMap<int, User>();
-  final List<dynamic> _messages = List.empty(growable: true);
-  int? _currentUser;
-
-  StreamingConnectionHandler get connectionHandler => _connectionHandler;
-  HashMap<int, User> get users => _users;
-  List<dynamic> get messages => _messages;
-  int? get currentUser => _currentUser;
-
-  StreamSubscription? _streamSubscription;
-
-  ConnectionStateProvider() {
+  ConnectionStateProvider(BuildContext context) {
+    _preferenceProvider =
+        Provider.of<PreferenceProvider>(context, listen: false);
     _connectionHandler = StreamingConnectionHandler(
       client: client,
       listener: _handleStatus,
@@ -110,16 +116,30 @@ class ConnectionStateProvider extends ChangeNotifier {
       );
 
       notifyListeners();
-      if (!await windowManager.isFocused()) {
+
+      // No notifications from your own messages
+      if (message.sender == currentUser) return;
+
+      bool windowFocused = await windowManager.isFocused();
+
+      MessageSoundMode soundMode = _preferenceProvider.messageSoundMode;
+      if (soundMode == MessageSoundMode.all ||
+          (soundMode == MessageSoundMode.unfocussed && !windowFocused)) {
+        await player.play(AssetSource("audio/recieve-message.mp3"));
+      }
+
+      if (_preferenceProvider.taskbarFlashing) {
         WindowsTaskbar.setFlashTaskbarAppIcon(
           mode: TaskbarFlashMode.all | TaskbarFlashMode.timernofg,
           timeout: const Duration(milliseconds: 500),
         );
+      }
+
+      if (!windowFocused && _preferenceProvider.desktopNotifications) {
         NotificationMessage notificationMessage =
             NotificationMessage.fromCustomTemplate("ToastGeneric");
         _winNotifyPlugin.showNotificationCustomTemplate(
             notificationMessage, await messageNotification(user, message));
-        await player.play(AssetSource("audio/recieve-message.mp3"));
       }
     } else if (message is RoomMembers) {
       _users.forEach((id, user) {

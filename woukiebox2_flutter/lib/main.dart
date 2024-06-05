@@ -47,7 +47,7 @@ void main() async {
         create: (context) => PreferenceProvider(),
       ),
       ChangeNotifierProvider(
-        create: (context) => ConnectionStateProvider(),
+        create: (context) => ConnectionStateProvider(context),
       ),
     ],
     child: MyApp(
