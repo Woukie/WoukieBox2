@@ -1,0 +1,37 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    # Update branch according from where you will be pushing the code
+    branches: [ main ]
+
+defaults:
+  run:
+    working-directory: woukiebox2_flutter
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_REPO: https://github.com/Woukie/WoukieBox2-Distributing.git  
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter clean
+      - run: flutter pub get
+      - run: flutter build web --release
+      
+      - name: Pushes build
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: 'woukiebox2_flutter/build/web'
+          destination_repo: 'Woukie/WoukieBox2-Distributing'
+          destination_folder: 'app'
+          user_email: 'lucaseldon@live.com'
+          user_name: 'Woukie'
+          commit_message: 'Bot woukiebox github pages deploy'
