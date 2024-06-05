@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:woukiebox2/src/app/settings.dart';
 import 'package:woukiebox2/src/app_bar.dart';
@@ -54,7 +55,8 @@ class _AppState extends State<App> {
                     duration: const Duration(milliseconds: 100),
                     transitionBuilder:
                         (Widget child, Animation<double> animation) {
-                      return FadeTransition(opacity: animation, child: child);
+                      return FadeScaleTransition(
+                          animation: animation, child: child);
                     },
                     child: switch (_selectedIndex) {
                       0 => const ChatRoom(),
