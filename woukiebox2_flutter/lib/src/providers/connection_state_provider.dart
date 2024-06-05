@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -120,7 +121,7 @@ class ConnectionStateProvider extends ChangeNotifier {
       // No notifications from your own messages
       if (message.sender == currentUser) return;
 
-      bool windowFocused = await windowManager.isFocused();
+      bool windowFocused = kIsWeb || await windowManager.isFocused();
 
       MessageSoundMode soundMode = _preferenceProvider.messageSoundMode;
       if (soundMode == MessageSoundMode.all ||
@@ -128,14 +129,16 @@ class ConnectionStateProvider extends ChangeNotifier {
         await player.play(AssetSource("audio/recieve-message.mp3"));
       }
 
-      if (_preferenceProvider.taskbarFlashing) {
+      if (!kIsWeb && _preferenceProvider.taskbarFlashing) {
         WindowsTaskbar.setFlashTaskbarAppIcon(
           mode: TaskbarFlashMode.all | TaskbarFlashMode.timernofg,
           timeout: const Duration(milliseconds: 500),
         );
       }
 
-      if (!windowFocused && _preferenceProvider.desktopNotifications) {
+      if (!kIsWeb &&
+          !windowFocused &&
+          _preferenceProvider.desktopNotifications) {
         NotificationMessage notificationMessage =
             NotificationMessage.fromCustomTemplate("ToastGeneric");
         _winNotifyPlugin.showNotificationCustomTemplate(
