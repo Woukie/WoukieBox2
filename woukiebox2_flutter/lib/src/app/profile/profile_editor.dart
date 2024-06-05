@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:file_selector/file_selector.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
@@ -95,8 +94,8 @@ class _EditorWidgetState extends State<EditorWidget> {
                 GestureDetector(
                   onTap: user.verified ? chooseProfilePicture : null,
                   child: ProfilePic(
-                    url: newImage == "" ? user.image : newImage,
-                    local: newImage != "",
+                    url: newImage == "" ? user.image : (newImage),
+                    local: !kIsWeb && newImage != "",
                   ),
                 ),
                 Expanded(
@@ -223,7 +222,7 @@ class _EditorWidgetState extends State<EditorWidget> {
   void uploadPfp(String path) async {
     var uploadDescription = await client.sockets.getUploadDescription();
 
-    var file = File(path);
+    var file = XFile(path);
     final uint8list = await file.readAsBytes();
     final byteData = uint8list.buffer.asByteData();
 
