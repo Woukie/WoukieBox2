@@ -12,8 +12,8 @@ jobs:
       my_secret: ${{secrets.ACCESS_TOKEN}}
 
     steps:
-      - run: cd woukiebox2_flutter
       - uses: actions/checkout@v3
+      - run: cd woukiebox2_flutter
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
