@@ -24,14 +24,10 @@ jobs:
       - run: flutter pub get
       - run: flutter build web --release
       
-      - name: Push a file to another repository
-        uses: dmnemec/copy_file_to_another_repo_action@v1.1.1
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        with:
-          source_file: 'build/env/'
-          destination_repo: 'woukie/WoukieBox2-Distributing '
-          destination_folder: 'app/'
-          user_email: 'lucaseldon@live.com'
-          user_name: 'woukie'
-          commit_message: 'Bot push for web app deploy'
+      - run: |
+          git clone https://.:${{ secrets.API_TOKEN_GITHUB }}@github.com/WoukieBox2-Distributing target
+          copy source\files target
+          cd target
+          git add ./build/web
+          git diff-index --quiet HEAD || git commit -m "Automatic publish from github.com/project"
+          git push target main
