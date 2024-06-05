@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:woukiebox2/src/app_bar.dart';
 import 'package:woukiebox2/src/authentication/register.dart';
 
 import 'login.dart';
@@ -15,7 +14,6 @@ class OnboardingScreen extends StatelessWidget {
       margin: const EdgeInsets.all(0),
       child: const Column(
         children: [
-          WoukieAppBar(),
           SignInPage(),
         ],
       ),

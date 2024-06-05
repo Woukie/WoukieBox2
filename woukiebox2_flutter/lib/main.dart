@@ -5,6 +5,7 @@ import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:woukiebox2/src/app_bar.dart';
 import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/src/app/app.dart';
@@ -111,9 +112,23 @@ class _MyAppState extends State<MyApp> {
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
-            return (connectionStateProvider.currentUser != null)
-                ? const App()
-                : const OnboardingScreen();
+            return Column(
+              children: [
+                const WoukieAppBar(),
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 100),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                    child: (connectionStateProvider.currentUser != null)
+                        ? const App()
+                        : const OnboardingScreen(),
+                  ),
+                ),
+              ],
+            );
           }
         },
       ),
