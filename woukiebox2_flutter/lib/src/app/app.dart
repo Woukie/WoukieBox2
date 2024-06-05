@@ -30,6 +30,7 @@ class _AppState extends State<App> {
               children: [
                 NavigationRail(
                   selectedIndex: _selectedIndex,
+                  labelType: NavigationRailLabelType.selected,
                   onDestinationSelected: (int index) {
                     setState(() {
                       _selectedIndex = index;
@@ -39,12 +40,12 @@ class _AppState extends State<App> {
                     NavigationRailDestination(
                       icon: Icon(Icons.chat_bubble_outline),
                       selectedIcon: Icon(Icons.chat_bubble),
-                      label: Text('First'),
+                      label: Text('Chat'),
                     ),
                     NavigationRailDestination(
                       icon: Icon(Icons.settings_outlined),
                       selectedIcon: Icon(Icons.settings),
-                      label: Text('First'),
+                      label: Text('Settings'),
                     ),
                   ],
                 ),
