@@ -17,6 +17,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+      - run: cd woukiebox2_flutter
       - run: flutter clean
       - run: flutter pub get
       - run: flutter build web --release
