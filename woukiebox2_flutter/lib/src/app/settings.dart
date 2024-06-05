@@ -1,4 +1,5 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/providers/connection_state_provider.dart';
@@ -122,8 +123,10 @@ class Settings extends StatelessWidget {
                           const Text("Desktop Notifications"),
                           Switch(
                             value: preferenceProvider.desktopNotifications,
-                            onChanged: (value) => preferenceProvider
-                                .updateDesktopNotifications(value),
+                            onChanged: kIsWeb
+                                ? null
+                                : (value) => preferenceProvider
+                                    .updateDesktopNotifications(value),
                           ),
                         ],
                       ),
@@ -138,8 +141,10 @@ class Settings extends StatelessWidget {
                           const Text("Taskbar Flashing"),
                           Switch(
                             value: preferenceProvider.taskbarFlashing,
-                            onChanged: (value) =>
-                                preferenceProvider.updateTaskbarFlashing(value),
+                            onChanged: kIsWeb
+                                ? null
+                                : (value) => preferenceProvider
+                                    .updateTaskbarFlashing(value),
                           ),
                         ],
                       ),
