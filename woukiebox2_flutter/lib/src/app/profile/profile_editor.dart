@@ -220,7 +220,7 @@ class _EditorWidgetState extends State<EditorWidget> {
   }
 
   void uploadPfp(String path) async {
-    var uploadDescription = await client.sockets.getUploadDescription();
+    var uploadDescription = await client.profilePicture.getUploadDescription();
 
     var file = XFile(path);
     final uint8list = await file.readAsBytes();
@@ -230,7 +230,7 @@ class _EditorWidgetState extends State<EditorWidget> {
       var uploader = FileUploader(uploadDescription);
 
       await uploader.uploadByteData(byteData);
-      await client.sockets.verifyUpload();
+      await client.profilePicture.verifyUpload();
     }
   }
 

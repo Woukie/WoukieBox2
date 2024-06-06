@@ -19,6 +19,9 @@ abstract class UserPersistent extends _i1.SerializableEntity {
     required this.color,
     required this.bio,
     required this.image,
+    required this.friends,
+    required this.outgoingFriendRequests,
+    required this.incomingFriendRequests,
   });
 
   factory UserPersistent({
@@ -28,6 +31,9 @@ abstract class UserPersistent extends _i1.SerializableEntity {
     required String color,
     required String bio,
     required String image,
+    required List<int> friends,
+    required List<int> outgoingFriendRequests,
+    required List<int> incomingFriendRequests,
   }) = _UserPersistentImpl;
 
   factory UserPersistent.fromJson(
@@ -45,6 +51,12 @@ abstract class UserPersistent extends _i1.SerializableEntity {
       bio: serializationManager.deserialize<String>(jsonSerialization['bio']),
       image:
           serializationManager.deserialize<String>(jsonSerialization['image']),
+      friends: serializationManager
+          .deserialize<List<int>>(jsonSerialization['friends']),
+      outgoingFriendRequests: serializationManager
+          .deserialize<List<int>>(jsonSerialization['outgoingFriendRequests']),
+      incomingFriendRequests: serializationManager
+          .deserialize<List<int>>(jsonSerialization['incomingFriendRequests']),
     );
   }
 
@@ -63,6 +75,12 @@ abstract class UserPersistent extends _i1.SerializableEntity {
 
   String image;
 
+  List<int> friends;
+
+  List<int> outgoingFriendRequests;
+
+  List<int> incomingFriendRequests;
+
   UserPersistent copyWith({
     int? id,
     int? userInfoId,
@@ -70,6 +88,9 @@ abstract class UserPersistent extends _i1.SerializableEntity {
     String? color,
     String? bio,
     String? image,
+    List<int>? friends,
+    List<int>? outgoingFriendRequests,
+    List<int>? incomingFriendRequests,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -80,6 +101,9 @@ abstract class UserPersistent extends _i1.SerializableEntity {
       'color': color,
       'bio': bio,
       'image': image,
+      'friends': friends.toJson(),
+      'outgoingFriendRequests': outgoingFriendRequests.toJson(),
+      'incomingFriendRequests': incomingFriendRequests.toJson(),
     };
   }
 }
@@ -94,6 +118,9 @@ class _UserPersistentImpl extends UserPersistent {
     required String color,
     required String bio,
     required String image,
+    required List<int> friends,
+    required List<int> outgoingFriendRequests,
+    required List<int> incomingFriendRequests,
   }) : super._(
           id: id,
           userInfoId: userInfoId,
@@ -101,6 +128,9 @@ class _UserPersistentImpl extends UserPersistent {
           color: color,
           bio: bio,
           image: image,
+          friends: friends,
+          outgoingFriendRequests: outgoingFriendRequests,
+          incomingFriendRequests: incomingFriendRequests,
         );
 
   @override
@@ -111,6 +141,9 @@ class _UserPersistentImpl extends UserPersistent {
     String? color,
     String? bio,
     String? image,
+    List<int>? friends,
+    List<int>? outgoingFriendRequests,
+    List<int>? incomingFriendRequests,
   }) {
     return UserPersistent(
       id: id is int? ? id : this.id,
@@ -120,6 +153,11 @@ class _UserPersistentImpl extends UserPersistent {
       color: color ?? this.color,
       bio: bio ?? this.bio,
       image: image ?? this.image,
+      friends: friends ?? this.friends.clone(),
+      outgoingFriendRequests:
+          outgoingFriendRequests ?? this.outgoingFriendRequests.clone(),
+      incomingFriendRequests:
+          incomingFriendRequests ?? this.incomingFriendRequests.clone(),
     );
   }
 }

@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/module.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class UserPersistent extends _i1.TableRow {
   UserPersistent._({
@@ -19,6 +20,9 @@ abstract class UserPersistent extends _i1.TableRow {
     required this.color,
     required this.bio,
     required this.image,
+    required this.friends,
+    required this.outgoingFriendRequests,
+    required this.incomingFriendRequests,
   }) : super(id);
 
   factory UserPersistent({
@@ -28,6 +32,9 @@ abstract class UserPersistent extends _i1.TableRow {
     required String color,
     required String bio,
     required String image,
+    required List<int> friends,
+    required List<int> outgoingFriendRequests,
+    required List<int> incomingFriendRequests,
   }) = _UserPersistentImpl;
 
   factory UserPersistent.fromJson(
@@ -45,6 +52,12 @@ abstract class UserPersistent extends _i1.TableRow {
       bio: serializationManager.deserialize<String>(jsonSerialization['bio']),
       image:
           serializationManager.deserialize<String>(jsonSerialization['image']),
+      friends: serializationManager
+          .deserialize<List<int>>(jsonSerialization['friends']),
+      outgoingFriendRequests: serializationManager
+          .deserialize<List<int>>(jsonSerialization['outgoingFriendRequests']),
+      incomingFriendRequests: serializationManager
+          .deserialize<List<int>>(jsonSerialization['incomingFriendRequests']),
     );
   }
 
@@ -62,6 +75,12 @@ abstract class UserPersistent extends _i1.TableRow {
 
   String image;
 
+  List<int> friends;
+
+  List<int> outgoingFriendRequests;
+
+  List<int> incomingFriendRequests;
+
   @override
   _i1.Table get table => t;
 
@@ -72,6 +91,9 @@ abstract class UserPersistent extends _i1.TableRow {
     String? color,
     String? bio,
     String? image,
+    List<int>? friends,
+    List<int>? outgoingFriendRequests,
+    List<int>? incomingFriendRequests,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -82,6 +104,9 @@ abstract class UserPersistent extends _i1.TableRow {
       'color': color,
       'bio': bio,
       'image': image,
+      'friends': friends.toJson(),
+      'outgoingFriendRequests': outgoingFriendRequests.toJson(),
+      'incomingFriendRequests': incomingFriendRequests.toJson(),
     };
   }
 
@@ -94,6 +119,9 @@ abstract class UserPersistent extends _i1.TableRow {
       'color': color,
       'bio': bio,
       'image': image,
+      'friends': friends,
+      'outgoingFriendRequests': outgoingFriendRequests,
+      'incomingFriendRequests': incomingFriendRequests,
     };
   }
 
@@ -106,6 +134,9 @@ abstract class UserPersistent extends _i1.TableRow {
       'color': color,
       'bio': bio,
       'image': image,
+      'friends': friends.toJson(),
+      'outgoingFriendRequests': outgoingFriendRequests.toJson(),
+      'incomingFriendRequests': incomingFriendRequests.toJson(),
     };
   }
 
@@ -130,6 +161,15 @@ abstract class UserPersistent extends _i1.TableRow {
         return;
       case 'image':
         image = value;
+        return;
+      case 'friends':
+        friends = value;
+        return;
+      case 'outgoingFriendRequests':
+        outgoingFriendRequests = value;
+        return;
+      case 'incomingFriendRequests':
+        incomingFriendRequests = value;
         return;
       default:
         throw UnimplementedError();
@@ -296,6 +336,9 @@ class _UserPersistentImpl extends UserPersistent {
     required String color,
     required String bio,
     required String image,
+    required List<int> friends,
+    required List<int> outgoingFriendRequests,
+    required List<int> incomingFriendRequests,
   }) : super._(
           id: id,
           userInfoId: userInfoId,
@@ -303,6 +346,9 @@ class _UserPersistentImpl extends UserPersistent {
           color: color,
           bio: bio,
           image: image,
+          friends: friends,
+          outgoingFriendRequests: outgoingFriendRequests,
+          incomingFriendRequests: incomingFriendRequests,
         );
 
   @override
@@ -313,6 +359,9 @@ class _UserPersistentImpl extends UserPersistent {
     String? color,
     String? bio,
     String? image,
+    List<int>? friends,
+    List<int>? outgoingFriendRequests,
+    List<int>? incomingFriendRequests,
   }) {
     return UserPersistent(
       id: id is int? ? id : this.id,
@@ -322,6 +371,11 @@ class _UserPersistentImpl extends UserPersistent {
       color: color ?? this.color,
       bio: bio ?? this.bio,
       image: image ?? this.image,
+      friends: friends ?? this.friends.clone(),
+      outgoingFriendRequests:
+          outgoingFriendRequests ?? this.outgoingFriendRequests.clone(),
+      incomingFriendRequests:
+          incomingFriendRequests ?? this.incomingFriendRequests.clone(),
     );
   }
 }
@@ -345,6 +399,18 @@ class UserPersistentTable extends _i1.Table {
       'image',
       this,
     );
+    friends = _i1.ColumnSerializable(
+      'friends',
+      this,
+    );
+    outgoingFriendRequests = _i1.ColumnSerializable(
+      'outgoingFriendRequests',
+      this,
+    );
+    incomingFriendRequests = _i1.ColumnSerializable(
+      'incomingFriendRequests',
+      this,
+    );
   }
 
   late final _i1.ColumnInt userInfoId;
@@ -356,6 +422,12 @@ class UserPersistentTable extends _i1.Table {
   late final _i1.ColumnString bio;
 
   late final _i1.ColumnString image;
+
+  late final _i1.ColumnSerializable friends;
+
+  late final _i1.ColumnSerializable outgoingFriendRequests;
+
+  late final _i1.ColumnSerializable incomingFriendRequests;
 
   _i2.UserInfoTable get userInfo {
     if (_userInfo != null) return _userInfo!;
@@ -377,6 +449,9 @@ class UserPersistentTable extends _i1.Table {
         color,
         bio,
         image,
+        friends,
+        outgoingFriendRequests,
+        incomingFriendRequests,
       ];
 
   @override

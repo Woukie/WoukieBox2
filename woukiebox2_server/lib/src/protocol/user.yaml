@@ -7,4 +7,4 @@ fields:
   colour: String
   image: String
   verified: bool
-  visible: bool?
+  visible: bool? # < Client only

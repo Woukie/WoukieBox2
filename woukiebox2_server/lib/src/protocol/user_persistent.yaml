@@ -6,6 +6,9 @@ fields:
   color: String
   bio: String
   image: String
+  friends: List<int>
+  outgoingFriendRequests: List<int>
+  incomingFriendRequests: List<int>
 indexes:
   user_info_id_unique_idx:
     fields: userInfoId

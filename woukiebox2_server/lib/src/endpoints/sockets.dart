@@ -3,6 +3,8 @@ import 'dart:core';
 
 import 'package:serverpod_auth_server/module.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
+import 'package:woukiebox2_server/src/socket_messages.dart';
+import 'package:woukiebox2_server/src/util.dart';
 import 'package:serverpod/serverpod.dart';
 
 class SocketsEndpoint extends Endpoint {
@@ -10,148 +12,19 @@ class SocketsEndpoint extends Endpoint {
   final Set<User> connectedUsers = {};
   final Random random = Random();
 
-  // Profile image uploading. Can't use default as I need control over the naming scheme
-  Future<String?> getUploadDescription(Session session) async {
-    if (!await session.isUserSignedIn) {
-      throw 'Could not upload image. User not authenticated';
-    }
-
-    var userId = await session.auth.authenticatedUserId;
-    UserPersistent extraUserData = await getPersistentData(session, userId);
-
-    String filePath = "${userId}_${random.nextInt(100000000)}";
-
-    await session.storage.deleteFile(
-      storageId: 'public',
-      path: extraUserData.image,
-    );
-
-    final uploadDescription =
-        await session.storage.createDirectFileUploadDescription(
-      storageId: 'public',
-      path: filePath,
-    );
-
-    extraUserData.image = filePath;
-    await UserPersistent.db.updateRow(session, extraUserData);
-
-    return uploadDescription;
-  }
-
-  Future<bool> verifyUpload(Session session) async {
-    if (!await session.isUserSignedIn) {
-      throw 'Could not verify upload. User not authenticated';
-    }
-
-    var userId = await session.auth.authenticatedUserId;
-    UserPersistent extraUserData = await getPersistentData(session, userId);
-
-    var successful = await session.storage.verifyDirectFileUpload(
-      storageId: 'public',
-      path: extraUserData.image,
-    );
-
-    Uri? imageUri = await session.storage.getPublicUrl(
-      storageId: 'public',
-      path: extraUserData.image,
-    );
-
-    // Update everyone with image change
-    if (successful) {
-      session.messages.postMessage(
-        'global',
-        UpdateProfile(
-          sender: userId,
-          image: imageUri.toString(),
-        ),
-      );
-    }
-
-    return successful;
-  }
-
-  // Sockets
-  Future<UserPersistent> getPersistentData(session, userId) async {
-    UserPersistent? extraUserData = await UserPersistent.db.findFirstRow(
-      session,
-      where: (record) => record.userInfoId.equals(userId),
-    );
-
-    extraUserData ??= await UserPersistent.db.insertRow(
-      session,
-      UserPersistent(
-        userInfoId: userId,
-        color: randomColour(),
-        image: "",
-        bio: "",
-      ),
-    );
-
-    return extraUserData;
-  }
-
-  // Sets and returns the user object and updates connectedUsers. User constructed with database values if authenticated
-  Future<User?> initUser(StreamingSession session) async {
-    if (await session.isUserSignedIn) {
-      var userId = await session.auth.authenticatedUserId;
-
-      if (connectedUsers.any((user) => user.id == userId)) return null;
-
-      var userInfo = await Users.findUserByUserId(session, userId!);
-
-      if (userInfo != null) {
-        UserPersistent extraUserData = await getPersistentData(session, userId);
-
-        Uri? imageUri = await session.storage.getPublicUrl(
-          storageId: 'public',
-          path: extraUserData.image,
-        );
-
-        User user = User(
-          id: userId,
-          colour: extraUserData.color,
-          username: userInfo.userName,
-          image: imageUri.toString(),
-          bio: extraUserData.bio,
-          verified: true,
-          visible: true,
-        );
-
-        connectedUsers.add(user);
-        setUserObject(session, (id: user.id));
-
-        print("Authenticated user joined!");
-
-        return user;
-      }
-    }
-
-    User user = User(
-      id: 1111000000000 + random.nextInt(100000000),
-      colour: randomColour(),
-      username: "Anonymous",
-      image: "",
-      bio: "",
-      verified: false,
-      visible: true,
-    );
-
-    connectedUsers.add(user);
-    setUserObject(session, (id: user.id));
-
-    print("Anonymous user joined!");
-
-    return user;
-  }
-
   @override
   Future<void> streamOpened(StreamingSession session) async {
-    User? user = await initUser(session);
+    User? user = await Util.initUser(session, connectedUsers, setUserObject);
 
     if (user == null) return; // Prevent joining with the same ID twice
 
     // Register the session with the global channel
     session.messages.addListener('global', (message) {
+      sendStreamMessage(session, message);
+    });
+
+    // Register the session with their own channel (i.e. dms and friend requests)
+    session.messages.addListener(user.id.toString(), (message) {
       sendStreamMessage(session, message);
     });
 
@@ -163,6 +36,22 @@ class SocketsEndpoint extends Endpoint {
 
     // Broadcast to everyone that a new person has entered the room
     session.messages.postMessage("global", JoinMessage(user: user));
+
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+
+    // Give them their friend list
+    if (senderInfo != null) {
+      UserPersistent userPersistent = (await Util.getPersistentData(session))!;
+
+      sendStreamMessage(
+        session,
+        FriendList(
+          friends: userPersistent.friends,
+          incomingFriendRequests: userPersistent.incomingFriendRequests,
+          outgoingFriendRequests: userPersistent.outgoingFriendRequests,
+        ),
+      );
+    }
   }
 
   // Remove the disconnecting user from the users list and broadcast to others that they have left
@@ -185,75 +74,22 @@ class SocketsEndpoint extends Endpoint {
     print("Recieved stream message from a client!");
     print(message);
 
+    // Believe it or not, a switch/case would be worse.
     if (message is ChatMessage) {
-      String trimmedMessage = message.message.trim();
-
-      if (trimmedMessage.isEmpty) return;
-
-      session.messages.postMessage(
-        'global',
-        ChatMessage(
-          sender: getUserObject(session).id,
-          message: trimmedMessage,
-        ),
+      HandleSocketMessage.chatMessage(
+        session,
+        message,
+        getUserObject,
       );
     } else if (message is UpdateProfile) {
-      // Update the users profile on the database, also note that profile pics are neither cached or updated in UpdateProfile.
-      var userId = await session.auth.authenticatedUserId;
-      if (userId != null) {
-        UserPersistent extraUserData = await getPersistentData(session, userId);
-
-        extraUserData.bio = message.bio ?? extraUserData.bio;
-        extraUserData.color = message.colour ?? extraUserData.color;
-
-        await UserPersistent.db.updateRow(session, extraUserData);
-
-        if (message.username != null) {
-          Users.changeUserName(session, userId, message.username!);
-        }
-      }
-
-      var unauthedID = getUserObject(session).id;
-      // Also update the cached user as some users are anonymous
-      User user = connectedUsers.firstWhere((user) => user.id == unauthedID);
-      user.bio = message.bio ?? user.bio;
-      user.username = message.username ?? user.username;
-      user.colour = message.colour ?? user.colour;
-
-      // Tell everyone about the profile change
-      session.messages.postMessage(
-        'global',
-        UpdateProfile(
-          sender: unauthedID,
-          username: message.username,
-          bio: message.bio,
-          colour: message.colour,
-        ),
+      HandleSocketMessage.updateProfile(
+        session,
+        message,
+        getUserObject,
+        connectedUsers,
       );
+    } else if (message is FriendRequest) {
+      HandleSocketMessage.friendRequest(session, message);
     }
-  }
-
-  String randomColour() {
-    double r = Random().nextDouble();
-    double g = Random().nextDouble();
-    double b = Random().nextDouble();
-
-    final double magnitude = sqrt(r * r + g * g + b * b);
-
-    r = r.abs() / magnitude;
-    g = g.abs() / magnitude;
-    b = b.abs() / magnitude;
-
-    r *= 256;
-    g *= 256;
-    b *= 256;
-
-    String color = 'FF${r.floor().toRadixString(16).padLeft(2, '0')}'
-        '${g.floor().toRadixString(16).padLeft(2, '0')}'
-        '${b.floor().toRadixString(16).padLeft(2, '0')}';
-
-    print(color);
-
-    return color;
   }
 }

@@ -1,3 +1,6 @@
-sockets:
+crud:
+  - getUser:
+profilePicture:
   - getUploadDescription:
   - verifyUpload:
+sockets:

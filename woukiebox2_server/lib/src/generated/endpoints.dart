@@ -9,23 +9,61 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/sockets.dart' as _i2;
-import 'package:serverpod_auth_server/module.dart' as _i3;
+import '../endpoints/crud.dart' as _i2;
+import '../endpoints/profile_picture.dart' as _i3;
+import '../endpoints/sockets.dart' as _i4;
+import 'package:serverpod_auth_server/module.dart' as _i5;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     var endpoints = <String, _i1.Endpoint>{
-      'sockets': _i2.SocketsEndpoint()
+      'crud': _i2.CrudEndpoint()
+        ..initialize(
+          server,
+          'crud',
+          null,
+        ),
+      'profilePicture': _i3.ProfilePictureEndpoint()
+        ..initialize(
+          server,
+          'profilePicture',
+          null,
+        ),
+      'sockets': _i4.SocketsEndpoint()
         ..initialize(
           server,
           'sockets',
           null,
-        )
+        ),
     };
-    connectors['sockets'] = _i1.EndpointConnector(
-      name: 'sockets',
-      endpoint: endpoints['sockets']!,
+    connectors['crud'] = _i1.EndpointConnector(
+      name: 'crud',
+      endpoint: endpoints['crud']!,
+      methodConnectors: {
+        'getUser': _i1.MethodConnector(
+          name: 'getUser',
+          params: {
+            'targetId': _i1.ParameterDescription(
+              name: 'targetId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['crud'] as _i2.CrudEndpoint).getUser(
+            session,
+            params['targetId'],
+          ),
+        )
+      },
+    );
+    connectors['profilePicture'] = _i1.EndpointConnector(
+      name: 'profilePicture',
+      endpoint: endpoints['profilePicture']!,
       methodConnectors: {
         'getUploadDescription': _i1.MethodConnector(
           name: 'getUploadDescription',
@@ -34,7 +72,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['sockets'] as _i2.SocketsEndpoint)
+              (endpoints['profilePicture'] as _i3.ProfilePictureEndpoint)
                   .getUploadDescription(session),
         ),
         'verifyUpload': _i1.MethodConnector(
@@ -44,11 +82,16 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['sockets'] as _i2.SocketsEndpoint)
+              (endpoints['profilePicture'] as _i3.ProfilePictureEndpoint)
                   .verifyUpload(session),
         ),
       },
     );
-    modules['serverpod_auth'] = _i3.Endpoints()..initializeEndpoints(server);
+    connectors['sockets'] = _i1.EndpointConnector(
+      name: 'sockets',
+      endpoint: endpoints['sockets']!,
+      methodConnectors: {},
+    );
+    modules['serverpod_auth'] = _i5.Endpoints()..initializeEndpoints(server);
   }
 }
