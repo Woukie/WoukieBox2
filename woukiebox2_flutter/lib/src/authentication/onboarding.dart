@@ -8,15 +8,10 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0.5,
-      shape: Border.all(width: 0, color: Colors.transparent),
-      margin: const EdgeInsets.all(0),
-      child: const Column(
-        children: [
-          SignInPage(),
-        ],
-      ),
+    return const Column(
+      children: [
+        SignInPage(),
+      ],
     );
   }
 }
