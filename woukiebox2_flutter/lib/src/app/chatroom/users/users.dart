@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/profile/profile_editor.dart';
 import 'package:woukiebox2/src/app/profile/profile_preview.dart';
-import 'package:woukiebox2/src/providers/connection_state_provider.dart';
+import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
@@ -15,12 +15,11 @@ class Users extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final connectionStateProvider =
-        Provider.of<ConnectionStateProvider>(context);
-    final users = connectionStateProvider.users;
+    final appStateProvider = Provider.of<AppStateProvider>(context);
+    final users = appStateProvider.users;
     final List<User> userList = users.values.toList();
     // app only renders if user passes null check
-    final User localUser = users[connectionStateProvider.currentUser]!;
+    final User localUser = users[appStateProvider.currentUser]!;
     userList
         .removeWhere((user) => !(user.visible ?? true) || user == localUser);
 

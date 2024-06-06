@@ -1,14 +1,13 @@
 import 'dart:async';
 
-import 'package:animations/animations.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:woukiebox2/src/app_bar.dart';
+import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/src/app/app.dart';
@@ -52,6 +51,11 @@ void main() async {
       ChangeNotifierProvider(
         create: (context) => PreferenceProvider(),
       ),
+      // Needs preferences
+      ChangeNotifierProvider(
+        create: (context) => AppStateProvider(context),
+      ),
+      // Needs app state
       ChangeNotifierProvider(
         create: (context) => ConnectionStateProvider(context),
       ),
@@ -91,8 +95,6 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final themeDataProvider = Provider.of<PreferenceProvider>(context);
-    final connectionStateProvider =
-        Provider.of<ConnectionStateProvider>(context);
 
     return MaterialApp(
       title: 'WoukieBox 2',
@@ -117,7 +119,7 @@ class _MyAppState extends State<MyApp> {
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
-            return AppRoot(connectionStateProvider: connectionStateProvider);
+            return const AppRoot();
           }
         },
       ),
@@ -125,21 +127,13 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class AppRoot extends StatefulWidget {
-  const AppRoot({
-    super.key,
-    required this.connectionStateProvider,
-  });
+class AppRoot extends StatelessWidget {
+  const AppRoot({super.key});
 
-  final ConnectionStateProvider connectionStateProvider;
-
-  @override
-  State<AppRoot> createState() => _AppRootState();
-}
-
-class _AppRootState extends State<AppRoot> {
   @override
   Widget build(BuildContext context) {
+    final appStateProvider = Provider.of<AppStateProvider>(context);
+
     return Card(
       elevation: 0.5,
       shape: Border.all(width: 0, color: Colors.transparent),
@@ -176,7 +170,7 @@ class _AppRootState extends State<AppRoot> {
                   child: child,
                 );
               },
-              child: (widget.connectionStateProvider.currentUser != null)
+              child: (appStateProvider.currentUser != null)
                   ? const App()
                   : const OnboardingScreen(),
             ),

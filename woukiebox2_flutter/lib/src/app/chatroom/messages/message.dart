@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/app/profile/profile_preview.dart';
-import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 import 'package:woukiebox2/src/util/written_message.dart';
 
@@ -147,7 +147,7 @@ class HeadMessage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 12, right: 12),
             child: ProfilePreview(
-              user: Provider.of<ConnectionStateProvider>(context)
+              user: Provider.of<AppStateProvider>(context)
                   .users[message.senderId]!,
               child: ProfilePic(
                 url: message.image,
