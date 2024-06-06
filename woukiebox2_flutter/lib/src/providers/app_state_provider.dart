@@ -26,6 +26,9 @@ class AppStateProvider extends ChangeNotifier {
 
   HashMap<int, User> get users => _users;
   List<dynamic> get messages => _messages;
+  Set<int> get friends => _friends;
+  Set<int> get outgoingFriendRequests => _outgoingFriendRequests;
+  Set<int> get incomingFriendRequests => _incomingFriendRequests;
   int? get currentUser => _currentUser;
 
   final player = AudioPlayer();
