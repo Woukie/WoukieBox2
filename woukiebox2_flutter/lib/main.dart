@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:animations/animations.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:flutter/material.dart';
@@ -115,25 +117,71 @@ class _MyAppState extends State<MyApp> {
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
-            return Column(
-              children: [
-                const WoukieAppBar(),
-                Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 100),
-                    transitionBuilder:
-                        (Widget child, Animation<double> animation) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                    child: (connectionStateProvider.currentUser != null)
-                        ? const App()
-                        : const OnboardingScreen(),
-                  ),
-                ),
-              ],
-            );
+            return AppRoot(connectionStateProvider: connectionStateProvider);
           }
         },
+      ),
+    );
+  }
+}
+
+class AppRoot extends StatefulWidget {
+  const AppRoot({
+    super.key,
+    required this.connectionStateProvider,
+  });
+
+  final ConnectionStateProvider connectionStateProvider;
+
+  @override
+  State<AppRoot> createState() => _AppRootState();
+}
+
+class _AppRootState extends State<AppRoot> {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0.5,
+      shape: Border.all(width: 0, color: Colors.transparent),
+      margin: const EdgeInsets.all(0),
+      child: Column(
+        children: [
+          const WoukieAppBar(),
+          Expanded(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              switchInCurve: Curves.elasticOut,
+              switchOutCurve: Curves.elasticIn,
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return DualTransitionBuilder(
+                  reverseBuilder: (context, animation, child) {
+                    return SlideTransition(
+                      position: Tween(
+                        begin: const Offset(0.0, 0.0),
+                        end: const Offset(-1.1, 0.0),
+                      ).animate(animation),
+                      child: child,
+                    );
+                  },
+                  forwardBuilder: (context, animation, child) {
+                    return SlideTransition(
+                      position: Tween(
+                        begin: const Offset(1.1, 0.0),
+                        end: const Offset(0.0, 0.0),
+                      ).animate(animation),
+                      child: child,
+                    );
+                  },
+                  animation: animation,
+                  child: child,
+                );
+              },
+              child: (widget.connectionStateProvider.currentUser != null)
+                  ? const App()
+                  : const OnboardingScreen(),
+            ),
+          ),
+        ],
       ),
     );
   }

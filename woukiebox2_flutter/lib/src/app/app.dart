@@ -18,49 +18,44 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0.5,
-      shape: Border.all(width: 0, color: Colors.transparent),
-      margin: const EdgeInsets.all(0),
-      child: Row(
-        children: [
-          NavigationRail(
-            elevation: 2,
-            selectedIndex: _selectedIndex,
-            labelType: NavigationRailLabelType.selected,
-            onDestinationSelected: (int index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-            destinations: const <NavigationRailDestination>[
-              NavigationRailDestination(
-                icon: Icon(Icons.chat_bubble_outline),
-                selectedIcon: Icon(Icons.chat_bubble),
-                label: Text('Chat'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.settings_outlined),
-                selectedIcon: Icon(Icons.settings),
-                label: Text('Settings'),
-              ),
-            ],
-          ),
-          Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 100),
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                return FadeScaleTransition(animation: animation, child: child);
-              },
-              child: switch (_selectedIndex) {
-                0 => const ChatRoom(),
-                1 => const Settings(),
-                _ => Container(),
-              },
+    return Row(
+      children: [
+        NavigationRail(
+          elevation: 2,
+          selectedIndex: _selectedIndex,
+          labelType: NavigationRailLabelType.selected,
+          onDestinationSelected: (int index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          destinations: const <NavigationRailDestination>[
+            NavigationRailDestination(
+              icon: Icon(Icons.chat_bubble_outline),
+              selectedIcon: Icon(Icons.chat_bubble),
+              label: Text('Chat'),
             ),
+            NavigationRailDestination(
+              icon: Icon(Icons.settings_outlined),
+              selectedIcon: Icon(Icons.settings),
+              label: Text('Settings'),
+            ),
+          ],
+        ),
+        Expanded(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 100),
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return FadeScaleTransition(animation: animation, child: child);
+            },
+            child: switch (_selectedIndex) {
+              0 => const ChatRoom(),
+              1 => const Settings(),
+              _ => Container(),
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
