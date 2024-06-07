@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:woukiebox2/src/providers/app_state_provider.dart';
 
 class ProfileMoreDropdown extends StatelessWidget {
   const ProfileMoreDropdown(
@@ -10,6 +12,8 @@ class ProfileMoreDropdown extends StatelessWidget {
   // Wraps an element in an InkWell that opens the more dropdown on secondarry input
   @override
   Widget build(BuildContext context) {
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       child: child,
@@ -25,22 +29,41 @@ class ProfileMoreDropdown extends StatelessWidget {
             screenSize.width - offset.dx,
             screenSize.height - offset.dy,
           ),
-          items: getDropdownElements(userId),
+          items: getDropdownElements(
+            context,
+            userId,
+            appStateProvider.friends,
+            appStateProvider.outgoingFriendRequests,
+            appStateProvider.incomingFriendRequests,
+          ),
         );
       },
     );
   }
 
-  static getDropdownElements(int userId) {
+  static List<PopupMenuItem> getDropdownElements(
+      BuildContext context,
+      int userId,
+      List<int> friends,
+      List<int> outgoingFriendRequests,
+      List<int> incomingFriendRequests) {
     return [
-      const PopupMenuItem(
+      PopupMenuItem(
         child: Row(
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(right: 12),
               child: Icon(Icons.person_add),
             ),
-            Text('Add Friend'),
+            Text(
+              friends.contains(userId)
+                  ? "Remove Friend"
+                  : outgoingFriendRequests.contains(userId)
+                      ? "Cancel Friend Request"
+                      : incomingFriendRequests.contains(userId)
+                          ? "Reject Friend Request"
+                          : "Send Friend Request",
+            ),
           ],
         ),
       ),

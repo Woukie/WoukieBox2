@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/profile/profile_more_dropdown.dart';
+import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
@@ -18,6 +20,7 @@ class ProfilePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).primaryTextTheme.bodyMedium!;
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
 
     return InkWell(
       hoverColor: Colors.transparent,
@@ -67,7 +70,12 @@ class ProfilePreview extends StatelessWidget {
                             tooltip: "More",
                             itemBuilder: (BuildContext context) =>
                                 ProfileMoreDropdown.getDropdownElements(
-                                    user.id),
+                              context,
+                              user.id,
+                              appStateProvider.friends,
+                              appStateProvider.outgoingFriendRequests,
+                              appStateProvider.incomingFriendRequests,
+                            ),
                             icon: const Icon(Icons.more_horiz),
                           ),
                         ],
