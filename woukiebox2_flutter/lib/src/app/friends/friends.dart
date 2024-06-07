@@ -154,6 +154,7 @@ class Friend extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 12, top: 12),
       child: Card(
+        color: Theme.of(context).colorScheme.surfaceContainer,
         elevation: .5,
         margin: EdgeInsets.zero,
         child: Row(
