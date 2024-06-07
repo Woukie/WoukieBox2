@@ -18,21 +18,9 @@ class AppStateProvider extends ChangeNotifier {
   int? _currentUser;
   final HashMap<int, User> _users = HashMap<int, User>();
   final List<dynamic> _messages = List.empty(growable: true);
-  final List<int> _friends = List.generate(
-    10000,
-    (a) => a,
-    growable: true,
-  );
-  final List<int> _outgoingFriendRequests = List.generate(
-    10000,
-    (a) => a,
-    growable: true,
-  );
-  final List<int> _incomingFriendRequests = List.generate(
-    10000,
-    (a) => a,
-    growable: true,
-  );
+  final List<int> _friends = List.empty(growable: true);
+  final List<int> _outgoingFriendRequests = List.empty(growable: true);
+  final List<int> _incomingFriendRequests = List.empty(growable: true);
 
   late final PreferenceProvider _preferenceProvider;
 
