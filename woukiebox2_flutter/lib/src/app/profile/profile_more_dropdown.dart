@@ -6,38 +6,44 @@ import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class ProfileMoreDropdown extends StatelessWidget {
   const ProfileMoreDropdown(
-      {super.key, required this.child, required this.userId});
+      {super.key,
+      required this.child,
+      required this.userId,
+      this.enabled = true});
 
   final Widget child;
   final int userId;
+  final bool enabled;
 
   // Wraps an element in an InkWell that opens the more dropdown on secondarry input
   @override
   Widget build(BuildContext context) {
     AppStateProvider appData = Provider.of<AppStateProvider>(context);
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(12),
-      child: child,
-      onSecondaryTapDown: (details) {
-        final screenSize = MediaQuery.of(context).size;
-        Offset offset = details.globalPosition;
+    return enabled
+        ? InkWell(
+            borderRadius: BorderRadius.circular(12),
+            child: child,
+            onSecondaryTapDown: (details) {
+              final screenSize = MediaQuery.of(context).size;
+              Offset offset = details.globalPosition;
 
-        showMenu(
-          context: context,
-          position: RelativeRect.fromLTRB(
-            offset.dx,
-            offset.dy,
-            screenSize.width - offset.dx,
-            screenSize.height - offset.dy,
-          ),
-          items: getDropdownElements(
-            appData,
-            userId,
-          ),
-        );
-      },
-    );
+              showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(
+                  offset.dx,
+                  offset.dy,
+                  screenSize.width - offset.dx,
+                  screenSize.height - offset.dy,
+                ),
+                items: getDropdownElements(
+                  appData,
+                  userId,
+                ),
+              );
+            },
+          )
+        : Container(child: child);
   }
 
   static List<PopupMenuItem> getDropdownElements(
@@ -49,10 +55,12 @@ class ProfileMoreDropdown extends StatelessWidget {
     bool incoming = appStateProvider.incomingFriendRequests.contains(userId);
 
     User currentUser = appStateProvider.users[appStateProvider.currentUser]!;
-    User targetUser = appStateProvider.users[userId]!;
+    User? targetUser = appStateProvider.users[userId];
 
-    bool showFriendButtons =
-        currentUser.id != userId && currentUser.verified && targetUser.verified;
+    bool showFriendButtons = currentUser.id != userId &&
+        currentUser.verified &&
+        targetUser != null &&
+        targetUser.verified;
 
     List<PopupMenuItem> items = List.empty(growable: true);
 
@@ -72,7 +80,7 @@ class ProfileMoreDropdown extends StatelessWidget {
         items.add(getButton(
             "Accept Friend Request", Icons.person_add, () => friend(true)));
         items.add(getButton(
-            "Send Friend Request", Icons.person_add, () => friend(true)));
+            "Reject Friend Request", Icons.person_off, () => friend(false)));
       } else {
         items.add(getButton(
             "Send Friend Request", Icons.outgoing_mail, () => friend(true)));
