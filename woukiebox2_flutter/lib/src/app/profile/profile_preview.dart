@@ -70,13 +70,8 @@ class ProfilePreview extends StatelessWidget {
                             tooltip: "More",
                             itemBuilder: (BuildContext context) =>
                                 ProfileMoreDropdown.getDropdownElements(
-                              context,
+                              appdata,
                               user.id,
-                              appdata.friends,
-                              appdata.outgoingFriendRequests,
-                              appdata.incomingFriendRequests,
-                              appdata.currentUser == user.id ||
-                                  !appdata.users[appdata.currentUser]!.verified,
                             ),
                             icon: const Icon(Icons.more_horiz),
                           ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class ProfileMoreDropdown extends StatelessWidget {
   const ProfileMoreDropdown(
@@ -30,13 +32,8 @@ class ProfileMoreDropdown extends StatelessWidget {
             screenSize.height - offset.dy,
           ),
           items: getDropdownElements(
-            context,
+            appData,
             userId,
-            appData.friends,
-            appData.outgoingFriendRequests,
-            appData.incomingFriendRequests,
-            appData.currentUser == userId ||
-                !appData.users[appData.currentUser]!.verified,
           ),
         );
       },
@@ -44,29 +41,41 @@ class ProfileMoreDropdown extends StatelessWidget {
   }
 
   static List<PopupMenuItem> getDropdownElements(
-    BuildContext context,
+    AppStateProvider appStateProvider,
     int userId,
-    List<int> friends,
-    List<int> outgoingFriendRequests,
-    List<int> incomingFriendRequests,
-    bool showFriendButtons,
   ) {
-    bool friendly = friends.contains(userId);
-    bool outgoing = outgoingFriendRequests.contains(userId);
-    bool incoming = incomingFriendRequests.contains(userId);
+    bool friendly = appStateProvider.friends.contains(userId);
+    bool outgoing = appStateProvider.outgoingFriendRequests.contains(userId);
+    bool incoming = appStateProvider.incomingFriendRequests.contains(userId);
+
+    User currentUser = appStateProvider.users[appStateProvider.currentUser]!;
+    User targetUser = appStateProvider.users[userId]!;
+
+    bool showFriendButtons =
+        currentUser.id != userId && currentUser.verified && targetUser.verified;
 
     List<PopupMenuItem> items = List.empty(growable: true);
 
-    if (!showFriendButtons) {
+    friend(bool positive) {
+      client.sockets
+          .sendStreamMessage(FriendRequest(target: userId, positive: positive));
+    }
+
+    if (showFriendButtons) {
       if (friendly) {
-        items.add(getButton("Remove Friend", Icons.person_remove, null));
+        items.add(getButton(
+            "Remove Friend", Icons.person_remove, () => friend(false)));
       } else if (outgoing) {
-        items.add(getButton("Cancel Friend Request", Icons.close, null));
+        items.add(getButton(
+            "Cancel Friend Request", Icons.close, () => friend(false)));
       } else if (incoming) {
-        items.add(getButton("Accept Friend Request", Icons.person_add, null));
-        items.add(getButton("Send Friend Request", Icons.person_add, null));
+        items.add(getButton(
+            "Accept Friend Request", Icons.person_add, () => friend(true)));
+        items.add(getButton(
+            "Send Friend Request", Icons.person_add, () => friend(true)));
       } else {
-        items.add(getButton("Send Friend Request", Icons.outgoing_mail, null));
+        items.add(getButton(
+            "Send Friend Request", Icons.outgoing_mail, () => friend(true)));
       }
     }
 
