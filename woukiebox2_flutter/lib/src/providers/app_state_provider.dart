@@ -202,4 +202,19 @@ class AppStateProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  void friendList(FriendList message) {
+    print(message);
+
+    _friends.clear();
+    _friends.addAll(message.friends);
+
+    _outgoingFriendRequests.clear();
+    _outgoingFriendRequests.addAll(message.outgoingFriendRequests);
+
+    _incomingFriendRequests.clear();
+    _incomingFriendRequests.addAll(message.incomingFriendRequests);
+
+    notifyListeners();
+  }
 }
