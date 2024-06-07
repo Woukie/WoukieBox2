@@ -69,34 +69,20 @@ class _FriendsState extends State<Friends> {
                 0 => FriendList(
                     key: const Key("friends"),
                     userIds: appStateProvider.friends,
-                    negativeCallback: (userId) {
-                      client.sockets.sendStreamMessage(
-                        FriendRequest(target: userId, positive: false),
-                      );
-                    },
+                    showNegative: true,
                   ),
                 1 => FriendList(
                     key: const Key("outgoingFriendRequests"),
                     userIds: appStateProvider.outgoingFriendRequests,
-                    negativeCallback: (userId) {
-                      client.sockets.sendStreamMessage(
-                        FriendRequest(target: userId, positive: false),
-                      );
-                    },
+                    showNegative: true,
+                    negativeIcon: Icons.close,
                   ),
                 2 => FriendList(
                     key: const Key("incomingFriendRequests"),
                     userIds: appStateProvider.incomingFriendRequests,
-                    positiveCallback: (userId) {
-                      client.sockets.sendStreamMessage(
-                        FriendRequest(target: userId, positive: true),
-                      );
-                    },
-                    negativeCallback: (userId) {
-                      client.sockets.sendStreamMessage(
-                        FriendRequest(target: userId, positive: false),
-                      );
-                    },
+                    showPositive: true,
+                    showNegative: true,
+                    negativeIcon: Icons.person_off,
                   ),
                 _ => Container(),
               },
@@ -112,25 +98,32 @@ class FriendList extends StatelessWidget {
   const FriendList({
     super.key,
     required this.userIds,
-    this.positiveCallback,
-    this.negativeCallback,
+    this.showNegative = false,
+    this.showPositive = false,
+    this.positiveIcon = Icons.person_add,
+    this.negativeIcon = Icons.person_remove,
   });
 
-  final Function(int userId)? positiveCallback;
-  final Function(int userId)? negativeCallback;
+  final bool showNegative;
+  final bool showPositive;
+  final IconData positiveIcon;
+  final IconData negativeIcon;
+
   final List<int> userIds;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      prototypeItem: const Friend(userId: 1),
+      prototypeItem: const Friend(userId: -1),
       padding: const EdgeInsets.only(bottom: 12),
       itemCount: userIds.length,
       itemBuilder: (context, index) {
         return Friend(
           userId: userIds[index],
-          positiveCallback: positiveCallback,
-          negativeCallback: negativeCallback,
+          showNegative: showNegative,
+          showPositive: showPositive,
+          positiveIcon: positiveIcon,
+          negativeIcon: negativeIcon,
         );
       },
     );
@@ -138,15 +131,19 @@ class FriendList extends StatelessWidget {
 }
 
 class Friend extends StatelessWidget {
-  const Friend(
-      {super.key,
-      required this.userId,
-      this.positiveCallback,
-      this.negativeCallback});
+  const Friend({
+    super.key,
+    required this.userId,
+    this.showNegative = true,
+    this.showPositive = true,
+    this.positiveIcon = Icons.person_add,
+    this.negativeIcon = Icons.person_remove,
+  });
 
-  final Function(int userId)? positiveCallback;
-  final Function(int userId)? negativeCallback;
-
+  final bool showNegative;
+  final bool showPositive;
+  final IconData positiveIcon;
+  final IconData negativeIcon;
   final int userId;
 
   @override
@@ -172,25 +169,29 @@ class Friend extends StatelessWidget {
                 overflow: TextOverflow.fade,
               ),
             ),
-            negativeCallback != null
+            showNegative
                 ? Padding(
                     padding: const EdgeInsets.only(left: 12),
                     child: IconButton.filledTonal(
                       onPressed: () {
-                        negativeCallback!(userId);
+                        client.sockets.sendStreamMessage(
+                          FriendRequest(target: userId, positive: false),
+                        );
                       },
-                      icon: const Icon(Icons.close),
+                      icon: Icon(negativeIcon),
                     ),
                   )
                 : Container(),
-            positiveCallback != null
+            showPositive
                 ? Padding(
                     padding: const EdgeInsets.only(left: 12),
                     child: IconButton.filled(
                       onPressed: () {
-                        positiveCallback!(userId);
+                        client.sockets.sendStreamMessage(
+                          FriendRequest(target: userId, positive: true),
+                        );
                       },
-                      icon: const Icon(Icons.check),
+                      icon: Icon(positiveIcon),
                     ),
                   )
                 : Container(),

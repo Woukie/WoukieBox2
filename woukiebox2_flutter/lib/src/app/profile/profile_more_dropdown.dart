@@ -72,7 +72,7 @@ class ProfileMoreDropdown extends StatelessWidget {
         items.add(getButton(
             "Accept Friend Request", Icons.person_add, () => friend(true)));
         items.add(getButton(
-            "Reject Friend Request", Icons.close, () => friend(false)));
+            "Reject Friend Request", Icons.person_off, () => friend(false)));
       } else {
         items.add(getButton(
             "Send Friend Request", Icons.outgoing_mail, () => friend(true)));
