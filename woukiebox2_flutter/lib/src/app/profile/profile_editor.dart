@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
-import 'package:woukiebox2/src/providers/connection_state_provider.dart';
+import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
@@ -72,9 +72,9 @@ class _EditorWidgetState extends State<EditorWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final connectionProvider = Provider.of<ConnectionStateProvider>(context);
+    final appStateProvider = Provider.of<AppStateProvider>(context);
     // User is never null as app is conditionally rendered based on user null check
-    final User user = connectionProvider.users[connectionProvider.currentUser]!;
+    final User user = appStateProvider.users[appStateProvider.currentUser]!;
 
     nameController ??= TextEditingController(text: user.username);
     bioController ??= TextEditingController(text: user.bio);
