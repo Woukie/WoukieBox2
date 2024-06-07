@@ -37,6 +37,7 @@ class Users extends StatelessWidget {
                   colour: HexColor.fromHex(localUser.colour),
                   image: localUser.image,
                   username: localUser.username,
+                  userId: localUser.id,
                 ),
               ),
             ),
@@ -61,6 +62,7 @@ class Users extends StatelessWidget {
                             colour: color,
                             image: user.image,
                             username: user.username,
+                            userId: user.id,
                           ),
                         );
                       },
