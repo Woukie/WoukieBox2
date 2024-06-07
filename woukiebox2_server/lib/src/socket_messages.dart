@@ -72,7 +72,7 @@ class HandleSocketMessage {
     UserInfo? senderInfo = await Util.getAuthUser(session);
     if (senderInfo == null) return;
 
-    UserInfo? targetInfo = await Util.getAuthUser(session);
+    UserInfo? targetInfo = await Util.getAuthUser(session, message.target);
     if (targetInfo == null) return;
 
     // Breaking usual naming scheme for the sake of readability
