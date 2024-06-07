@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:woukiebox2/src/app/profile/profile_more_dropdown.dart';
+import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 
-// Wraps a child in a gesture detector that opens the profile preview when clicked on
+// Wraps a child in an InkWell that opens the profile preview when clicked on
 class ProfilePreview extends StatelessWidget {
   const ProfilePreview({
     super.key,
@@ -17,9 +20,10 @@ class ProfilePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).primaryTextTheme.bodyMedium!;
+    AppStateProvider appdata = Provider.of<AppStateProvider>(context);
 
     return InkWell(
-      borderRadius: const BorderRadius.all(Radius.circular(12)),
+      hoverColor: Colors.transparent,
       onTapDown: (TapDownDetails details) async {
         final screenSize = MediaQuery.of(context).size;
         Offset offset = details.globalPosition;
@@ -58,6 +62,18 @@ class ProfilePreview extends StatelessWidget {
                                 user.username,
                               ),
                             ),
+                          ),
+                          PopupMenuButton(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHigh,
+                            tooltip: "More",
+                            itemBuilder: (BuildContext context) =>
+                                ProfileMoreDropdown.getDropdownElements(
+                              appdata,
+                              user.id,
+                            ),
+                            icon: const Icon(Icons.more_horiz),
                           ),
                         ],
                       ),
