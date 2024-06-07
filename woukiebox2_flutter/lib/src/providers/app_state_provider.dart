@@ -215,6 +215,8 @@ class AppStateProvider extends ChangeNotifier {
     _incomingFriendRequests.clear();
     _incomingFriendRequests.addAll(message.incomingFriendRequests);
 
+    // TODO: fetch unknown users
+
     notifyListeners();
   }
 }
