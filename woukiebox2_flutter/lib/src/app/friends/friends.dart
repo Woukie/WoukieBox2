@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class Friends extends StatefulWidget {
   const Friends({
@@ -65,24 +67,32 @@ class _FriendsState extends State<Friends> {
                     key: const Key("friends"),
                     userIds: appStateProvider.friends,
                     negativeCallback: (userId) {
-                      print(userId);
+                      client.sockets.sendStreamMessage(
+                        FriendRequest(target: userId, positive: false),
+                      );
                     },
                   ),
                 1 => FriendList(
                     key: const Key("outgoingFriendRequests"),
                     userIds: appStateProvider.outgoingFriendRequests,
                     negativeCallback: (userId) {
-                      print(userId);
+                      client.sockets.sendStreamMessage(
+                        FriendRequest(target: userId, positive: false),
+                      );
                     },
                   ),
                 2 => FriendList(
                     key: const Key("incomingFriendRequests"),
                     userIds: appStateProvider.incomingFriendRequests,
                     positiveCallback: (userId) {
-                      print(userId);
+                      client.sockets.sendStreamMessage(
+                        FriendRequest(target: userId, positive: true),
+                      );
                     },
                     negativeCallback: (userId) {
-                      print(userId);
+                      client.sockets.sendStreamMessage(
+                        FriendRequest(target: userId, positive: false),
+                      );
                     },
                   ),
                 _ => Container(),
