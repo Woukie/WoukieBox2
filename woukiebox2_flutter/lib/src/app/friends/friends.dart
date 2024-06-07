@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 
 class Friends extends StatefulWidget {
@@ -27,6 +28,7 @@ class _FriendsState extends State<Friends> {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: NavigationRail(
+              labelType: NavigationRailLabelType.none,
               selectedIndex: _selectedIndex,
               extended: true,
               onDestinationSelected: (int index) {
@@ -54,31 +56,26 @@ class _FriendsState extends State<Friends> {
             ),
           ),
           Expanded(
-            child: Column(
-              children: [
-                Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 100),
-                    transitionBuilder:
-                        (Widget child, Animation<double> animation) {
-                      return FadeScaleTransition(
-                          animation: animation, child: child);
-                    },
-                    child: switch (_selectedIndex) {
-                      0 => FriendList(
-                          userIds: appStateProvider.friends,
-                        ),
-                      1 => FriendList(
-                          userIds: appStateProvider.outgoingFriendRequests,
-                        ),
-                      2 => FriendList(
-                          userIds: appStateProvider.incomingFriendRequests,
-                        ),
-                      _ => Container(),
-                    },
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 100),
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              child: switch (_selectedIndex) {
+                0 => FriendList(
+                    key: const Key("friends"),
+                    userIds: appStateProvider.friends,
                   ),
-                ),
-              ],
+                1 => FriendList(
+                    key: const Key("outgoingFriendRequests"),
+                    userIds: appStateProvider.outgoingFriendRequests,
+                  ),
+                2 => FriendList(
+                    key: const Key("incomingFriendRequests"),
+                    userIds: appStateProvider.incomingFriendRequests,
+                  ),
+                _ => Container(),
+              },
             ),
           ),
         ],
@@ -98,8 +95,8 @@ class FriendList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      prototypeItem: const Friend(userId: -1),
       padding: const EdgeInsets.only(bottom: 12),
-      shrinkWrap: true,
       itemCount: userIds.length,
       itemBuilder: (context, index) {
         return Friend(userId: userIds[index]);
@@ -115,6 +112,24 @@ class Friend extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text("$userId");
+    return Padding(
+      padding: const EdgeInsets.only(right: 12, top: 12),
+      child: Card(
+        elevation: .5,
+        margin: EdgeInsets.zero,
+        child: Row(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(12),
+              child: ProfilePic(
+                url:
+                    "https://www.gannett-cdn.com/-mm-/968b2fdbf02baeb86111b3ffda77ca1822b5d9ba/c=0-875-1854-2269&r=x513&c=680x510/local/-/media/USATODAY/USATODAY/2014/09/09/1410265931002-911aniv14_002.jpg",
+              ),
+            ),
+            Text("$userId"),
+          ],
+        ),
+      ),
+    );
   }
 }
