@@ -75,6 +75,7 @@ class ProfilePreview extends StatelessWidget {
                               appStateProvider.friends,
                               appStateProvider.outgoingFriendRequests,
                               appStateProvider.incomingFriendRequests,
+                              appStateProvider.currentUser == user.id,
                             ),
                             icon: const Icon(Icons.more_horiz),
                           ),

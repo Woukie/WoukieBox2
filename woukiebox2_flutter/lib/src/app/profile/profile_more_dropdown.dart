@@ -35,6 +35,7 @@ class ProfileMoreDropdown extends StatelessWidget {
             appStateProvider.friends,
             appStateProvider.outgoingFriendRequests,
             appStateProvider.incomingFriendRequests,
+            appStateProvider.currentUser == userId,
           ),
         );
       },
@@ -42,31 +43,33 @@ class ProfileMoreDropdown extends StatelessWidget {
   }
 
   static List<PopupMenuItem> getDropdownElements(
-      BuildContext context,
-      int userId,
-      List<int> friends,
-      List<int> outgoingFriendRequests,
-      List<int> incomingFriendRequests) {
-    return [
-      PopupMenuItem(
-        child: Row(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(right: 12),
-              child: Icon(Icons.person_add),
-            ),
-            Text(
-              friends.contains(userId)
-                  ? "Remove Friend"
-                  : outgoingFriendRequests.contains(userId)
-                      ? "Cancel Friend Request"
-                      : incomingFriendRequests.contains(userId)
-                          ? "Reject Friend Request"
-                          : "Send Friend Request",
-            ),
-          ],
-        ),
-      ),
+    BuildContext context,
+    int userId,
+    List<int> friends,
+    List<int> outgoingFriendRequests,
+    List<int> incomingFriendRequests,
+    bool showFriendButtons,
+  ) {
+    bool friendly = friends.contains(userId);
+    bool outgoing = outgoingFriendRequests.contains(userId);
+    bool incoming = incomingFriendRequests.contains(userId);
+
+    List<PopupMenuItem> items = List.empty(growable: true);
+
+    if (!showFriendButtons) {
+      if (friendly) {
+        items.add(getButton("Remove Friend", Icons.person_remove, null));
+      } else if (outgoing) {
+        items.add(getButton("Cancel Friend Request", Icons.close, null));
+      } else if (incoming) {
+        items.add(getButton("Accept Friend Request", Icons.person_add, null));
+        items.add(getButton("Send Friend Request", Icons.person_add, null));
+      } else {
+        items.add(getButton("Send Friend Request", Icons.outgoing_mail, null));
+      }
+    }
+
+    items.add(
       const PopupMenuItem(
         child: Row(
           children: [
@@ -78,6 +81,23 @@ class ProfileMoreDropdown extends StatelessWidget {
           ],
         ),
       ),
-    ];
+    );
+
+    return items;
+  }
+
+  static getButton(String text, IconData iconData, void Function()? callback) {
+    return PopupMenuItem(
+      onTap: callback,
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Icon(iconData),
+          ),
+          Text(text),
+        ],
+      ),
+    );
   }
 }
