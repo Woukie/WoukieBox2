@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:windows_notification/notification_message.dart';
 import 'package:windows_notification/windows_notification.dart';
+import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/providers/preference_provider.dart';
 import 'package:woukiebox2/src/util/assets.dart';
 import 'package:woukiebox2/src/util/written_message.dart';
@@ -21,6 +22,9 @@ class AppStateProvider extends ChangeNotifier {
   final List<int> _friends = List.empty(growable: true);
   final List<int> _outgoingFriendRequests = List.empty(growable: true);
   final List<int> _incomingFriendRequests = List.empty(growable: true);
+
+  // Used when loading users, to make sure we don't trigger loading a user when one is already being loaded
+  final Set<int> _loadingUsers = <int>{};
 
   late final PreferenceProvider _preferenceProvider;
 
@@ -63,6 +67,7 @@ class AppStateProvider extends ChangeNotifier {
   resetData() {
     _currentUser = null;
     _messages.clear();
+    _loadingUsers.clear();
     _users.clear();
     _friends.clear();
     _incomingFriendRequests.clear();
@@ -192,8 +197,6 @@ class AppStateProvider extends ChangeNotifier {
   }
 
   void friendList(FriendList message) {
-    print(message);
-
     _friends.clear();
     _friends.addAll(message.friends);
 
@@ -203,8 +206,24 @@ class AppStateProvider extends ChangeNotifier {
     _incomingFriendRequests.clear();
     _incomingFriendRequests.addAll(message.incomingFriendRequests);
 
-    // TODO: fetch unknown users
-
     notifyListeners();
+  }
+
+  Future<void> scheduleGetUser(int userId) async {
+    if (_loadingUsers.contains(userId)) return;
+    _loadingUsers.add(userId);
+
+    User? user = await client.crud.getUser(userId);
+    print(user);
+
+    // We double check the loading users array in case we have logged out, which clears the set
+    if (_loadingUsers.contains(userId)) {
+      if (user != null) {
+        _users[userId] = user;
+        notifyListeners();
+      }
+
+      _loadingUsers.remove(userId);
+    }
   }
 }

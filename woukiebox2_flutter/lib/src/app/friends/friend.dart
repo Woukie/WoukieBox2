@@ -43,6 +43,10 @@ class Friend extends StatelessWidget {
           verified: true,
         );
 
+    if (loading) {
+      appStateProvider.scheduleGetUser(userId);
+    }
+
     return Padding(
       padding: const EdgeInsets.only(right: 12, top: 12),
       child: ProfileMoreDropdown(
