@@ -214,11 +214,11 @@ class AppStateProvider extends ChangeNotifier {
     _loadingUsers.add(userId);
 
     User? user = await client.crud.getUser(userId);
-    print(user);
 
     // We double check the loading users array in case we have logged out, which clears the set
     if (_loadingUsers.contains(userId)) {
       if (user != null) {
+        user.visible = _users[userId]?.visible ?? false;
         _users[userId] = user;
         notifyListeners();
       }
