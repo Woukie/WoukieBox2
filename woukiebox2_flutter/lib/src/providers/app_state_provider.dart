@@ -18,17 +18,17 @@ class AppStateProvider extends ChangeNotifier {
   int? _currentUser;
   final HashMap<int, User> _users = HashMap<int, User>();
   final List<dynamic> _messages = List.empty(growable: true);
-  final Set<int> _friends = <int>{};
-  final Set<int> _outgoingFriendRequests = <int>{};
-  final Set<int> _incomingFriendRequests = <int>{};
+  final List<int> _friends = List.empty(growable: true);
+  final List<int> _outgoingFriendRequests = List.empty(growable: true);
+  final List<int> _incomingFriendRequests = List.empty(growable: true);
 
   late final PreferenceProvider _preferenceProvider;
 
   HashMap<int, User> get users => _users;
   List<dynamic> get messages => _messages;
-  Set<int> get friends => _friends;
-  Set<int> get outgoingFriendRequests => _outgoingFriendRequests;
-  Set<int> get incomingFriendRequests => _incomingFriendRequests;
+  List<int> get friends => _friends;
+  List<int> get outgoingFriendRequests => _outgoingFriendRequests;
+  List<int> get incomingFriendRequests => _incomingFriendRequests;
   int? get currentUser => _currentUser;
 
   final player = AudioPlayer();

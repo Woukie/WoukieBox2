@@ -1,14 +1,19 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
-import 'package:woukiebox2/src/providers/preference_provider.dart';
-import 'package:woukiebox2_client/woukiebox2_client.dart';
 
-class Friends extends StatelessWidget {
+class Friends extends StatefulWidget {
   const Friends({
     super.key,
   });
+
+  @override
+  State<Friends> createState() => _FriendsState();
+}
+
+class _FriendsState extends State<Friends> {
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -19,38 +24,57 @@ class Friends extends StatelessWidget {
       elevation: 0,
       child: Row(
         children: [
-          NavigationRail(
-            backgroundColor: Theme.of(context).cardColor,
-            selectedIndex: 0,
-            extended: true,
-            destinations: const <NavigationRailDestination>[
-              NavigationRailDestination(
-                icon: Icon(Icons.person_outline),
-                selectedIcon: Icon(Icons.person),
-                label: Text('Friends'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.outbox_outlined),
-                selectedIcon: Icon(Icons.outbox),
-                label: Text("Outgoing"),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.inbox_outlined),
-                selectedIcon: Icon(Icons.inbox),
-                label: Text("Incoming"),
-              ),
-            ],
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: NavigationRail(
+              selectedIndex: _selectedIndex,
+              extended: true,
+              onDestinationSelected: (int index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+              destinations: const <NavigationRailDestination>[
+                NavigationRailDestination(
+                  icon: Icon(Icons.person_outline),
+                  selectedIcon: Icon(Icons.person),
+                  label: Text('Friends'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.outbox_outlined),
+                  selectedIcon: Icon(Icons.outbox),
+                  label: Text("Outgoing"),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.inbox_outlined),
+                  selectedIcon: Icon(Icons.inbox),
+                  label: Text("Incoming"),
+                ),
+              ],
+            ),
           ),
           Expanded(
             child: Column(
               children: [
                 Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    shrinkWrap: true,
-                    itemCount: appStateProvider.friends.length,
-                    itemBuilder: (context, index) {
-                      return Friend(friendId: index);
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 100),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return FadeScaleTransition(
+                          animation: animation, child: child);
+                    },
+                    child: switch (_selectedIndex) {
+                      0 => FriendList(
+                          userIds: appStateProvider.friends,
+                        ),
+                      1 => FriendList(
+                          userIds: appStateProvider.outgoingFriendRequests,
+                        ),
+                      2 => FriendList(
+                          userIds: appStateProvider.incomingFriendRequests,
+                        ),
+                      _ => Container(),
                     },
                   ),
                 ),
@@ -63,15 +87,34 @@ class Friends extends StatelessWidget {
   }
 }
 
-class Friend extends StatelessWidget {
-  const Friend({super.key, required this.friendId});
+class FriendList extends StatelessWidget {
+  const FriendList({
+    super.key,
+    required this.userIds,
+  });
 
-  final int friendId;
+  final List<int> userIds;
 
   @override
   Widget build(BuildContext context) {
-    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+    return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 12),
+      shrinkWrap: true,
+      itemCount: userIds.length,
+      itemBuilder: (context, index) {
+        return Friend(userId: userIds[index]);
+      },
+    );
+  }
+}
 
-    return Text("$friendId");
+class Friend extends StatelessWidget {
+  const Friend({super.key, required this.userId});
+
+  final int userId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text("$userId");
   }
 }
