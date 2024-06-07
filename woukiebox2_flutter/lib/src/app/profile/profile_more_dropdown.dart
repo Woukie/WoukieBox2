@@ -12,7 +12,7 @@ class ProfileMoreDropdown extends StatelessWidget {
   // Wraps an element in an InkWell that opens the more dropdown on secondarry input
   @override
   Widget build(BuildContext context) {
-    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+    AppStateProvider appData = Provider.of<AppStateProvider>(context);
 
     return InkWell(
       borderRadius: BorderRadius.circular(12),
@@ -32,10 +32,11 @@ class ProfileMoreDropdown extends StatelessWidget {
           items: getDropdownElements(
             context,
             userId,
-            appStateProvider.friends,
-            appStateProvider.outgoingFriendRequests,
-            appStateProvider.incomingFriendRequests,
-            appStateProvider.currentUser == userId,
+            appData.friends,
+            appData.outgoingFriendRequests,
+            appData.incomingFriendRequests,
+            appData.currentUser == userId ||
+                !appData.users[appData.currentUser]!.verified,
           ),
         );
       },

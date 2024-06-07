@@ -20,7 +20,7 @@ class ProfilePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).primaryTextTheme.bodyMedium!;
-    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+    AppStateProvider appdata = Provider.of<AppStateProvider>(context);
 
     return InkWell(
       hoverColor: Colors.transparent,
@@ -72,10 +72,11 @@ class ProfilePreview extends StatelessWidget {
                                 ProfileMoreDropdown.getDropdownElements(
                               context,
                               user.id,
-                              appStateProvider.friends,
-                              appStateProvider.outgoingFriendRequests,
-                              appStateProvider.incomingFriendRequests,
-                              appStateProvider.currentUser == user.id,
+                              appdata.friends,
+                              appdata.outgoingFriendRequests,
+                              appdata.incomingFriendRequests,
+                              appdata.currentUser == user.id ||
+                                  !appdata.users[appdata.currentUser]!.verified,
                             ),
                             icon: const Icon(Icons.more_horiz),
                           ),
