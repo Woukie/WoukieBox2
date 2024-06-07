@@ -22,6 +22,7 @@ class _AppState extends State<App> {
     return Row(
       children: [
         NavigationRail(
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
           elevation: 2,
           selectedIndex: _selectedIndex,
           labelType: NavigationRailLabelType.selected,

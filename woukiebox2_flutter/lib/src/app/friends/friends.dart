@@ -23,12 +23,15 @@ class _FriendsState extends State<Friends> {
 
     return Card(
       margin: const EdgeInsets.all(12),
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
       elevation: 0,
       child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: NavigationRail(
+              backgroundColor:
+                  Theme.of(context).colorScheme.surfaceContainerLow,
               labelType: NavigationRailLabelType.none,
               selectedIndex: _selectedIndex,
               extended: true,

@@ -115,6 +115,7 @@ class SystemMessageWrapper extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(top: 12, left: 8, right: 8),
         child: Card(
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
           child: Padding(
             padding: const EdgeInsets.only(left: 8, right: 8),
             child: RichText(

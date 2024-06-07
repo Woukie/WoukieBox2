@@ -11,6 +11,7 @@ class WoukieAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (kIsWeb) return Container();
     return Card(
+      color: Theme.of(context).colorScheme.surfaceContainerHigh,
       margin: EdgeInsets.zero,
       elevation: 2,
       shape: Border.all(color: Colors.transparent, width: 0),

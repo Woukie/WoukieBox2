@@ -136,6 +136,7 @@ class AppRoot extends StatelessWidget {
 
     return Card(
       elevation: 0.5,
+      color: Theme.of(context).colorScheme.surfaceContainer,
       shape: Border.all(width: 0, color: Colors.transparent),
       margin: const EdgeInsets.all(0),
       child: Column(
