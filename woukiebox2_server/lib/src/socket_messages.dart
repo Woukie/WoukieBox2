@@ -1,7 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:woukiebox2_server/src/friend_manager.dart';
-import 'package:woukiebox2_server/src/generated/friend_list.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 import 'package:woukiebox2_server/src/util.dart';
 

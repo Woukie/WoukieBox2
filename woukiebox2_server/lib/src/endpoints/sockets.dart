@@ -9,7 +9,7 @@ import 'package:serverpod/serverpod.dart';
 
 class SocketsEndpoint extends Endpoint {
   // setUserData is basically fucking useless because you can't get a list of all active sessions. We now have to manually keep track of users while STILL having to use userData to store the session id's
-  final Set<User> connectedUsers = {};
+  static Set<User> connectedUsers = {};
   final Random random = Random();
 
   @override

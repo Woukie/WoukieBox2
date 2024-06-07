@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:core';
 
 import 'package:serverpod_auth_server/module.dart';
+import 'package:woukiebox2_server/src/endpoints/sockets.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 import 'package:woukiebox2_server/src/util.dart';
 import 'package:serverpod/serverpod.dart';
@@ -32,6 +33,10 @@ class ProfilePictureEndpoint extends Endpoint {
 
     extraUserData.image = filePath;
     await UserPersistent.db.updateRow(session, extraUserData);
+
+    SocketsEndpoint.connectedUsers
+        .firstWhere((user) => user.id == senderInfo.id)
+        .image = filePath;
 
     return uploadDescription;
   }
