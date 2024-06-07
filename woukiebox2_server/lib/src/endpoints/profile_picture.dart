@@ -34,10 +34,6 @@ class ProfilePictureEndpoint extends Endpoint {
     extraUserData.image = filePath;
     await UserPersistent.db.updateRow(session, extraUserData);
 
-    SocketsEndpoint.connectedUsers
-        .firstWhere((user) => user.id == senderInfo.id)
-        .image = filePath;
-
     return uploadDescription;
   }
 
@@ -67,6 +63,10 @@ class ProfilePictureEndpoint extends Endpoint {
           image: imageUri.toString(),
         ),
       );
+
+      SocketsEndpoint.connectedUsers
+          .firstWhere((user) => user.id == senderInfo.id)
+          .image = imageUri.toString();
     }
 
     return successful;
