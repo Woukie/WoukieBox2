@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
@@ -18,6 +19,8 @@ import 'package:windows_taskbar/windows_taskbar.dart';
 class AppStateProvider extends ChangeNotifier {
   int? _currentUser;
   final HashMap<int, User> _users = HashMap<int, User>();
+  final HashMap<int, List<dynamic>> _groupChats = HashMap<int, List<dynamic>>();
+
   final List<dynamic> _messages = List.empty(growable: true);
   final List<int> _friends = List.empty(growable: true);
   final List<int> _outgoingFriendRequests = List.empty(growable: true);
@@ -29,6 +32,8 @@ class AppStateProvider extends ChangeNotifier {
   late final PreferenceProvider _preferenceProvider;
 
   HashMap<int, User> get users => _users;
+  HashMap<int, List<dynamic>> get groupChats => _groupChats;
+
   List<dynamic> get messages => _messages;
   List<int> get friends => _friends;
   List<int> get outgoingFriendRequests => _outgoingFriendRequests;
@@ -68,6 +73,7 @@ class AppStateProvider extends ChangeNotifier {
     _currentUser = null;
     _messages.clear();
     _loadingUsers.clear();
+    _groupChats.clear();
     _users.clear();
     _friends.clear();
     _incomingFriendRequests.clear();
@@ -75,6 +81,9 @@ class AppStateProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  // TODO: Recieve group chats from the server on joining
+  initGroupChats() async {}
 
   chatMessage(ChatMessage message) async {
     User? user = _users[message.sender];

@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:woukiebox2/src/app/direct_messages/direct_messages.dart';
 import 'package:woukiebox2/src/app/friends/friends.dart';
 import 'package:woukiebox2/src/app/settings.dart';
 
@@ -33,9 +36,17 @@ class _AppState extends State<App> {
           },
           destinations: const <NavigationRailDestination>[
             NavigationRailDestination(
+              icon: Icon(Icons.public_outlined),
+              selectedIcon: Icon(Icons.public),
+              label: Text('Global'),
+            ),
+            NavigationRailDestination(
               icon: Icon(Icons.chat_bubble_outline),
               selectedIcon: Icon(Icons.chat_bubble),
-              label: Text('Chat'),
+              label: Text(
+                'Messages',
+                overflow: TextOverflow.fade,
+              ),
             ),
             NavigationRailDestination(
               icon: Icon(Icons.group_outlined),
@@ -57,8 +68,9 @@ class _AppState extends State<App> {
             },
             child: switch (_selectedIndex) {
               0 => const ChatRoom(),
-              1 => const Friends(),
-              2 => const Settings(),
+              1 => const DirectMessages(),
+              2 => const Friends(),
+              3 => const Settings(),
               _ => Container(),
             },
           ),
