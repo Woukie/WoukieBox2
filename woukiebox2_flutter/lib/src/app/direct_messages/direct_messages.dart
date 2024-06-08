@@ -33,7 +33,7 @@ class _DirectMessagesState extends State<DirectMessages> {
             margin: const EdgeInsets.only(right: 12),
             color: Theme.of(context).colorScheme.surfaceContainerLow,
             child: SizedBox(
-              width: 256, // Same as minWidth of extended navigation rails
+              width: 200, // Same as minWidth of extended navigation rails
               child: ListView.builder(
                 padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
                 itemCount: groupChats.length,
