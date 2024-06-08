@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -12,6 +13,7 @@ import 'package:windows_notification/windows_notification.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/providers/preference_provider.dart';
 import 'package:woukiebox2/src/util/assets.dart';
+import 'package:woukiebox2/src/util/group_chat.dart';
 import 'package:woukiebox2/src/util/written_message.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:windows_taskbar/windows_taskbar.dart';
@@ -19,7 +21,7 @@ import 'package:windows_taskbar/windows_taskbar.dart';
 class AppStateProvider extends ChangeNotifier {
   int? _currentUser;
   final HashMap<int, User> _users = HashMap<int, User>();
-  final Map<int, List<dynamic>> _groupChats = <int, List<dynamic>>{};
+  final HashMap<int, GroupChat> _groupChats = HashMap<int, GroupChat>();
 
   final List<dynamic> _messages = List.empty(growable: true);
   final List<int> _friends = List.empty(growable: true);
@@ -32,7 +34,7 @@ class AppStateProvider extends ChangeNotifier {
   late final PreferenceProvider _preferenceProvider;
 
   HashMap<int, User> get users => _users;
-  Map<int, List<dynamic>> get groupChats => _groupChats;
+  HashMap<int, GroupChat> get groupChats => _groupChats;
 
   List<dynamic> get messages => _messages;
   List<int> get friends => _friends;
@@ -65,15 +67,24 @@ class AppStateProvider extends ChangeNotifier {
   }
 
   AppStateProvider(BuildContext context) {
-    for (var groupChatID = 0; groupChatID < 8; groupChatID++) {
+    for (var groupChatID = 0; groupChatID < 16; groupChatID++) {
       var messageCount = Random().nextInt(10000);
-      List<dynamic> messages = List.empty(growable: true);
+      List<WrittenMessage> messages = List.empty(growable: true);
 
       for (var message = 0; message < messageCount; message++) {
-        messages.add(Random().nextInt(10000));
+        messages.add(
+          WrittenMessage(
+            1,
+            "${Random().nextInt(200)}",
+            "${Random().nextInt(200)}",
+            Colors.red.hex,
+            "",
+          ),
+        );
       }
 
-      _groupChats[groupChatID] = messages;
+      _groupChats[groupChatID] = GroupChat(groupChatID, "$groupChatID");
+      _groupChats[groupChatID]!.messages.addAll(messages);
     }
 
     _preferenceProvider =
