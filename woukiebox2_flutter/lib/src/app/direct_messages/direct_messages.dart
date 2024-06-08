@@ -14,7 +14,7 @@ class DirectMessages extends StatefulWidget {
 }
 
 class _DirectMessagesState extends State<DirectMessages> {
-  int? selectedGroup;
+  int? _selectedGroup;
 
   @override
   Widget build(BuildContext context) {
@@ -36,35 +36,47 @@ class _DirectMessagesState extends State<DirectMessages> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
                   itemCount: groupChats.length,
                   itemBuilder: (context, index) {
                     GroupChat groupChat = groupChats[index];
+                    bool selected = groupChat.id == _selectedGroup;
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 4),
                       child: Card(
                         margin: EdgeInsets.zero,
-                        color: Theme.of(context).colorScheme.surfaceContainer,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          child: Row(
-                            children: [
-                              ProfilePic(url: groupChat.image),
-                              const Padding(
-                                padding: EdgeInsets.only(right: 12),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  softWrap: false,
-                                  groupChat.name,
-                                  overflow: TextOverflow.fade,
+                        elevation: selected ? 1 : 0,
+                        color: selected
+                            ? Theme.of(context).colorScheme.surfaceContainer
+                            : null,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () {
+                            setState(() {
+                              _selectedGroup = groupChat.id;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            child: Row(
+                              children: [
+                                ProfilePic(url: groupChat.image),
+                                const Padding(
+                                  padding: EdgeInsets.only(right: 12),
                                 ),
-                              ),
-                            ],
+                                Expanded(
+                                  child: Text(
+                                    softWrap: false,
+                                    groupChat.name,
+                                    overflow: TextOverflow.fade,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
