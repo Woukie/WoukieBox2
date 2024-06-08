@@ -20,6 +20,7 @@ class HandleSocketMessage {
       ChatMessage(
         sender: getUserObject(session).id,
         message: trimmedMessage,
+        target: 0,
       ),
     );
   }

@@ -13,11 +13,13 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 abstract class ChatMessage extends _i1.SerializableEntity {
   ChatMessage._({
     this.sender,
+    required this.target,
     required this.message,
   });
 
   factory ChatMessage({
     int? sender,
+    required int target,
     required String message,
   }) = _ChatMessageImpl;
 
@@ -28,6 +30,8 @@ abstract class ChatMessage extends _i1.SerializableEntity {
     return ChatMessage(
       sender:
           serializationManager.deserialize<int?>(jsonSerialization['sender']),
+      target:
+          serializationManager.deserialize<int>(jsonSerialization['target']),
       message: serializationManager
           .deserialize<String>(jsonSerialization['message']),
     );
@@ -35,16 +39,20 @@ abstract class ChatMessage extends _i1.SerializableEntity {
 
   int? sender;
 
+  int target;
+
   String message;
 
   ChatMessage copyWith({
     int? sender,
+    int? target,
     String? message,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (sender != null) 'sender': sender,
+      'target': target,
       'message': message,
     };
   }
@@ -55,19 +63,23 @@ class _Undefined {}
 class _ChatMessageImpl extends ChatMessage {
   _ChatMessageImpl({
     int? sender,
+    required int target,
     required String message,
   }) : super._(
           sender: sender,
+          target: target,
           message: message,
         );
 
   @override
   ChatMessage copyWith({
     Object? sender = _Undefined,
+    int? target,
     String? message,
   }) {
     return ChatMessage(
       sender: sender is int? ? sender : this.sender,
+      target: target ?? this.target,
       message: message ?? this.message,
     );
   }

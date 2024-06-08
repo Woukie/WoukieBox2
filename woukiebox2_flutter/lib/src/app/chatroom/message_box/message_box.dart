@@ -6,7 +6,10 @@ import 'package:woukiebox2_client/woukiebox2_client.dart';
 class MessageBox extends StatefulWidget {
   const MessageBox({
     super.key,
+    this.target = 0,
   });
+
+  final int target;
 
   @override
   State<MessageBox> createState() => _MessageBoxState();
@@ -20,7 +23,7 @@ class _MessageBoxState extends State<MessageBox> {
       if (event is KeyDownEvent &&
           event.logicalKey.keyLabel == "Enter" &&
           !HardwareKeyboard.instance.isShiftPressed) {
-        sendMessage(_controller.text);
+        sendMessage(_controller.text, widget.target);
         _controller.clear();
         return KeyEventResult.handled;
       }
@@ -45,7 +48,7 @@ class _MessageBoxState extends State<MessageBox> {
             hintText: "Send Message...",
           ),
           onSubmitted: (value) {
-            sendMessage(_controller.text);
+            sendMessage(_controller.text, widget.target);
             _controller.clear();
           },
           focusNode: _focusNode,
@@ -55,6 +58,11 @@ class _MessageBoxState extends State<MessageBox> {
   }
 }
 
-void sendMessage(String message) {
-  client.sockets.sendStreamMessage(ChatMessage(message: message));
+void sendMessage(String message, int target) {
+  client.sockets.sendStreamMessage(
+    ChatMessage(
+      message: message,
+      target: target,
+    ),
+  );
 }
