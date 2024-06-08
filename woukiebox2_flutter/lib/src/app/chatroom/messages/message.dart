@@ -26,7 +26,8 @@ class Message extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final message = messages[index];
-    final parentMessage = index != 0 ? messages[index - 1] : null;
+    final parentMessage =
+        index != messages.length - 1 ? messages[index + 1] : null;
 
     if (message is WrittenMessage) {
       bool typeMatch = parentMessage is WrittenMessage;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:woukiebox2/src/app/chatroom/messages/messages.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
@@ -87,14 +88,24 @@ class _DirectMessagesState extends State<DirectMessages> {
             ),
           ),
           Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 100),
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-              child: Text(
-                "${appStateProvider.currentUser}",
-                overflow: TextOverflow.fade,
+            child: Card(
+              color: Theme.of(context).colorScheme.surfaceContainerLow,
+              margin: EdgeInsets.zero,
+              elevation: 1,
+              child: Column(
+                children: [
+                  _selectedGroup == null
+                      ? Container()
+                      : Expanded(
+                          child: Messages(
+                            messages: groupChats[_selectedGroup!].messages,
+                          ),
+                        ),
+                  Text(
+                    "${_selectedGroup}",
+                    overflow: TextOverflow.fade,
+                  ),
+                ],
               ),
             ),
           ),
