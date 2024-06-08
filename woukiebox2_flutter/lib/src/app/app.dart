@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:woukiebox2/src/app/direct_messages/direct_messages.dart';
@@ -43,10 +41,7 @@ class _AppState extends State<App> {
             NavigationRailDestination(
               icon: Icon(Icons.chat_bubble_outline),
               selectedIcon: Icon(Icons.chat_bubble),
-              label: Text(
-                'Messages',
-                overflow: TextOverflow.fade,
-              ),
+              label: Text('Messages'),
             ),
             NavigationRailDestination(
               icon: Icon(Icons.group_outlined),
