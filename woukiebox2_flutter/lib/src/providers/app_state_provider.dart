@@ -225,7 +225,7 @@ class AppStateProvider extends ChangeNotifier {
     if (message.username != null || message.colour != null) {
       _messages.add(
         WrittenProfileMessage(
-          message.sender!,
+          message.sender,
           user.username,
           user.colour,
           message.username,
@@ -235,7 +235,7 @@ class AppStateProvider extends ChangeNotifier {
     }
 
     _users.update(
-      message.sender!, // We know there's a user with this id
+      message.sender,
       (user) => user.copyWith(
         bio: message.bio,
         colour: message.colour,
