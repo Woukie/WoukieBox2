@@ -15,12 +15,14 @@ abstract class Chat extends _i1.TableRow {
   Chat._({
     int? id,
     required this.users,
+    required this.name,
     required this.owner,
   }) : super(id);
 
   factory Chat({
     int? id,
     required List<int> users,
+    required String name,
     required int owner,
   }) = _ChatImpl;
 
@@ -32,6 +34,7 @@ abstract class Chat extends _i1.TableRow {
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       users: serializationManager
           .deserialize<List<int>>(jsonSerialization['users']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
       owner: serializationManager.deserialize<int>(jsonSerialization['owner']),
     );
   }
@@ -42,6 +45,8 @@ abstract class Chat extends _i1.TableRow {
 
   List<int> users;
 
+  String name;
+
   int owner;
 
   @override
@@ -50,6 +55,7 @@ abstract class Chat extends _i1.TableRow {
   Chat copyWith({
     int? id,
     List<int>? users,
+    String? name,
     int? owner,
   });
   @override
@@ -57,6 +63,7 @@ abstract class Chat extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'users': users.toJson(),
+      'name': name,
       'owner': owner,
     };
   }
@@ -67,6 +74,7 @@ abstract class Chat extends _i1.TableRow {
     return {
       'id': id,
       'users': users,
+      'name': name,
       'owner': owner,
     };
   }
@@ -76,6 +84,7 @@ abstract class Chat extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'users': users.toJson(),
+      'name': name,
       'owner': owner,
     };
   }
@@ -92,6 +101,9 @@ abstract class Chat extends _i1.TableRow {
         return;
       case 'users':
         users = value;
+        return;
+      case 'name':
+        name = value;
         return;
       case 'owner':
         owner = value;
@@ -249,10 +261,12 @@ class _ChatImpl extends Chat {
   _ChatImpl({
     int? id,
     required List<int> users,
+    required String name,
     required int owner,
   }) : super._(
           id: id,
           users: users,
+          name: name,
           owner: owner,
         );
 
@@ -260,11 +274,13 @@ class _ChatImpl extends Chat {
   Chat copyWith({
     Object? id = _Undefined,
     List<int>? users,
+    String? name,
     int? owner,
   }) {
     return Chat(
       id: id is int? ? id : this.id,
       users: users ?? this.users.clone(),
+      name: name ?? this.name,
       owner: owner ?? this.owner,
     );
   }
@@ -276,6 +292,10 @@ class ChatTable extends _i1.Table {
       'users',
       this,
     );
+    name = _i1.ColumnString(
+      'name',
+      this,
+    );
     owner = _i1.ColumnInt(
       'owner',
       this,
@@ -284,12 +304,15 @@ class ChatTable extends _i1.Table {
 
   late final _i1.ColumnSerializable users;
 
+  late final _i1.ColumnString name;
+
   late final _i1.ColumnInt owner;
 
   @override
   List<_i1.Column> get columns => [
         id,
         users,
+        name,
         owner,
       ];
 }

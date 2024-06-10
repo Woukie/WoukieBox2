@@ -14,12 +14,14 @@ abstract class Chat extends _i1.SerializableEntity {
   Chat._({
     this.id,
     required this.users,
+    required this.name,
     required this.owner,
   });
 
   factory Chat({
     int? id,
     required List<int> users,
+    required String name,
     required int owner,
   }) = _ChatImpl;
 
@@ -31,6 +33,7 @@ abstract class Chat extends _i1.SerializableEntity {
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       users: serializationManager
           .deserialize<List<int>>(jsonSerialization['users']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
       owner: serializationManager.deserialize<int>(jsonSerialization['owner']),
     );
   }
@@ -42,11 +45,14 @@ abstract class Chat extends _i1.SerializableEntity {
 
   List<int> users;
 
+  String name;
+
   int owner;
 
   Chat copyWith({
     int? id,
     List<int>? users,
+    String? name,
     int? owner,
   });
   @override
@@ -54,6 +60,7 @@ abstract class Chat extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'users': users.toJson(),
+      'name': name,
       'owner': owner,
     };
   }
@@ -65,10 +72,12 @@ class _ChatImpl extends Chat {
   _ChatImpl({
     int? id,
     required List<int> users,
+    required String name,
     required int owner,
   }) : super._(
           id: id,
           users: users,
+          name: name,
           owner: owner,
         );
 
@@ -76,11 +85,13 @@ class _ChatImpl extends Chat {
   Chat copyWith({
     Object? id = _Undefined,
     List<int>? users,
+    String? name,
     int? owner,
   }) {
     return Chat(
       id: id is int? ? id : this.id,
       users: users ?? this.users.clone(),
+      name: name ?? this.name,
       owner: owner ?? this.owner,
     );
   }

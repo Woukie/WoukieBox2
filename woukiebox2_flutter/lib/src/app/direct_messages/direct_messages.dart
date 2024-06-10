@@ -63,7 +63,7 @@ class _DirectMessagesState extends State<DirectMessages> {
                           ),
                           child: Row(
                             children: [
-                              ProfilePic(url: groupChat.image),
+                              const ProfilePic(url: ""),
                               const Padding(
                                 padding: EdgeInsets.only(right: 12),
                               ),

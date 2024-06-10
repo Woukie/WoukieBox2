@@ -86,7 +86,12 @@ class AppStateProvider extends ChangeNotifier {
         );
       }
 
-      _groupChats[groupChatID] = GroupChat(groupChatID, "$groupChatID");
+      _groupChats[groupChatID] = GroupChat(
+        groupChatID,
+        List.empty(),
+        "name",
+        1,
+      );
       _groupChats[groupChatID]!.messages.addAll(messages);
     }
 
@@ -107,8 +112,18 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // TODO: Recieve group chats from the server on joining
-  initGroupChats() async {}
+  initGroupChats(ChatsServer message) async {
+    for (Chat chat in message.chats) {
+      if (chat.id == null) continue;
+
+      _groupChats[chat.id!] = GroupChat(
+        chat.id!,
+        chat.users,
+        chat.name,
+        chat.owner,
+      );
+    }
+  }
 
   chatMessage(ChatMessageServer message) async {
     UserClient? user = _users[message.sender];

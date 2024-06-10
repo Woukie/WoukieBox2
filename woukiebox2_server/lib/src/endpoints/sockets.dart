@@ -54,10 +54,16 @@ class SocketsEndpoint extends Endpoint {
     if (senderInfo != null) {
       UserPersistent userPersistent = (await Util.getPersistentData(session))!;
 
+      List<Chat> chats = List.empty(growable: true);
+      for (int chatId in userPersistent.chats) {
+        Chat? chat = await Chat.db.findById(session, chatId);
+        if (chat != null) chats.add(chat);
+      }
+
       sendStreamMessage(
         session,
         ChatsServer(
-          chats: userPersistent.chats,
+          chats: chats,
         ),
       );
 

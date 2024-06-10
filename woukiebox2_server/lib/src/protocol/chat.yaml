@@ -3,4 +3,5 @@ class: Chat
 table: chat
 fields:
   users: List<int>
+  name: String
   owner: int

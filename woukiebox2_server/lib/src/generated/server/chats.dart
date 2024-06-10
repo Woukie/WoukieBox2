@@ -9,12 +9,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ChatsServer extends _i1.SerializableEntity {
   ChatsServer._({required this.chats});
 
-  factory ChatsServer({required List<int> chats}) = _ChatsServerImpl;
+  factory ChatsServer({required List<_i2.Chat> chats}) = _ChatsServerImpl;
 
   factory ChatsServer.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -22,28 +23,28 @@ abstract class ChatsServer extends _i1.SerializableEntity {
   ) {
     return ChatsServer(
         chats: serializationManager
-            .deserialize<List<int>>(jsonSerialization['chats']));
+            .deserialize<List<_i2.Chat>>(jsonSerialization['chats']));
   }
 
-  List<int> chats;
+  List<_i2.Chat> chats;
 
-  ChatsServer copyWith({List<int>? chats});
+  ChatsServer copyWith({List<_i2.Chat>? chats});
   @override
   Map<String, dynamic> toJson() {
-    return {'chats': chats.toJson()};
+    return {'chats': chats.toJson(valueToJson: (v) => v.toJson())};
   }
 
   @override
   Map<String, dynamic> allToJson() {
-    return {'chats': chats.toJson()};
+    return {'chats': chats.toJson(valueToJson: (v) => v.allToJson())};
   }
 }
 
 class _ChatsServerImpl extends ChatsServer {
-  _ChatsServerImpl({required List<int> chats}) : super._(chats: chats);
+  _ChatsServerImpl({required List<_i2.Chat> chats}) : super._(chats: chats);
 
   @override
-  ChatsServer copyWith({List<int>? chats}) {
+  ChatsServer copyWith({List<_i2.Chat>? chats}) {
     return ChatsServer(chats: chats ?? this.chats.clone());
   }
 }

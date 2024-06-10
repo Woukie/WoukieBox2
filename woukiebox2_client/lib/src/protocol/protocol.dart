@@ -197,6 +197,10 @@ class Protocol extends _i1.SerializationManager {
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
     }
+    if (t == List<_i20.Chat>) {
+      return (data as List).map((e) => deserialize<_i20.Chat>(e)).toList()
+          as dynamic;
+    }
     if (t == List<_i20.UserServer>) {
       return (data as List).map((e) => deserialize<_i20.UserServer>(e)).toList()
           as dynamic;

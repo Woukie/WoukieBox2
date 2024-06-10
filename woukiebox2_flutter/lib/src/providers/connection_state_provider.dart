@@ -66,6 +66,8 @@ class ConnectionStateProvider extends ChangeNotifier {
       _appStateProvider.selfIdentifier(message);
     } else if (message is UpdateProfileServer) {
       _appStateProvider.updateProfile(message);
+    } else if (message is ChatsServer) {
+      _appStateProvider.initGroupChats(message);
     } else if (message is FriendListServer) {
       _appStateProvider.friendList(message);
     }
