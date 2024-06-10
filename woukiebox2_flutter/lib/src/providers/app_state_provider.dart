@@ -275,4 +275,14 @@ class AppStateProvider extends ChangeNotifier {
       _loadingUsers.remove(userId);
     }
   }
+
+  Future<void> createChat(CreateChatServer message) async {
+    _chats[message.chat.id!] = GroupChat(
+      message.chat.id!,
+      message.chat.users,
+      message.chat.name,
+      message.chat.owner,
+    );
+    notifyListeners();
+  }
 }

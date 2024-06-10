@@ -60,6 +60,7 @@ class SocketsEndpoint extends Endpoint {
         if (chat != null) chats.add(chat);
       }
 
+      print(chats);
       sendStreamMessage(
         session,
         ChatsServer(
@@ -116,6 +117,8 @@ class SocketsEndpoint extends Endpoint {
       );
     } else if (message is FriendRequestClient) {
       HandleSocketMessage.friendRequest(session, message);
+    } else if (message is CreateChatClient) {
+      HandleSocketMessage.createChat(session, message);
     }
   }
 }

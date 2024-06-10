@@ -126,4 +126,47 @@ class HandleSocketMessage {
       ),
     );
   }
+
+  static Future<void> createChat(
+      StreamingSession session, CreateChatClient message) async {
+    // Must be authenticated
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return;
+
+    UserPersistent senderPersistent =
+        (await Util.getPersistentData(session, senderInfo.id))!;
+
+    // Can only create a group with friends
+    for (var target in message.users) {
+      if (!senderPersistent.friends.contains(target)) return;
+    }
+
+    Chat chat = await Chat.db.insertRow(
+      session,
+      Chat(
+        users: message.users,
+        name: "New Group",
+        owner: senderInfo.id!,
+      ),
+    );
+
+    message.users.add(senderInfo.id!);
+    for (int target in message.users) {
+      UserPersistent? targetPersistent = await Util.getPersistentData(
+        session,
+        target,
+      );
+
+      // Will be null if user was deleted but not removed from their friend's friend lists
+      if (targetPersistent == null) continue;
+
+      targetPersistent.chats.add(chat.id!);
+      await UserPersistent.db.updateRow(session, targetPersistent);
+
+      session.messages.postMessage(
+        target.toString(),
+        CreateChatServer(chat: chat),
+      );
+    }
+  }
 }

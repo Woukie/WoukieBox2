@@ -54,6 +54,8 @@ class ConnectionStateProvider extends ChangeNotifier {
   }
 
   Future<void> _handleMessage(SerializableEntity message) async {
+    print("${message.runtimeType} | $message");
+
     if (message is ChatMessageServer) {
       _appStateProvider.chatMessage(message);
     } else if (message is RoomMembersServer) {
@@ -70,6 +72,8 @@ class ConnectionStateProvider extends ChangeNotifier {
       _appStateProvider.initGroupChats(message);
     } else if (message is FriendListServer) {
       _appStateProvider.friendList(message);
+    } else if (message is CreateChatServer) {
+      _appStateProvider.createChat(message);
     }
   }
 }
