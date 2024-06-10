@@ -12,7 +12,8 @@ class ChatRoom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<dynamic> messages = Provider.of<AppStateProvider>(context).messages;
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+    List<dynamic> messages = appStateProvider.messages;
 
     return Padding(
       padding: const EdgeInsets.all(12),
@@ -38,7 +39,10 @@ class ChatRoom extends StatelessWidget {
                 Container(
                   width: 200,
                   alignment: Alignment.topLeft,
-                  child: const Users(),
+                  child: Users(
+                    userIds: List.of(appStateProvider.users.keys),
+                    showInvisible: false,
+                  ),
                 ),
               ],
             ),

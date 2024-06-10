@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/chatroom/message_box/message_box.dart';
 import 'package:woukiebox2/src/app/chatroom/messages/messages.dart';
+import 'package:woukiebox2/src/app/chatroom/users/users.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
@@ -67,16 +68,33 @@ class _DirectMessagesState extends State<DirectMessages> {
               child: Column(
                 children: [
                   Expanded(
-                    child: Card(
-                      color: Theme.of(context).colorScheme.surfaceContainerLow,
-                      margin: EdgeInsets.zero,
-                      elevation: 1,
-                      child: _selectedGroup == null
-                          ? Container()
-                          : Messages(
-                              messages: appStateProvider
-                                  .chats[_selectedGroup]!.messages,
-                            ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Card(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerLow,
+                            margin: EdgeInsets.zero,
+                            elevation: 1,
+                            child: _selectedGroup == null
+                                ? Container()
+                                : Messages(
+                                    messages: appStateProvider
+                                        .chats[_selectedGroup]!.messages,
+                                  ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 200,
+                          child: Users(
+                            userIds:
+                                appStateProvider.chats[_selectedGroup]?.users ??
+                                    [],
+                            showInvisible: true,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   MessageBox(target: _selectedGroup ?? 0)
