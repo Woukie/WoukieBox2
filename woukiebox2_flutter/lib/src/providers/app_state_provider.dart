@@ -70,31 +70,6 @@ class AppStateProvider extends ChangeNotifier {
   }
 
   AppStateProvider(BuildContext context) {
-    for (var groupChatID = 0; groupChatID < 16; groupChatID++) {
-      var messageCount = Random().nextInt(10000);
-      List<WrittenMessage> messages = List.empty(growable: true);
-
-      for (var message = 0; message < messageCount; message++) {
-        messages.add(
-          WrittenMessage(
-            1,
-            "${Random().nextInt(200)}",
-            "${Random().nextInt(200)}",
-            Colors.red.hex,
-            "",
-          ),
-        );
-      }
-
-      _chats[groupChatID] = GroupChat(
-        groupChatID,
-        List.empty(),
-        "name",
-        1,
-      );
-      _chats[groupChatID]!.messages.addAll(messages);
-    }
-
     _preferenceProvider =
         Provider.of<PreferenceProvider>(context, listen: false);
   }
@@ -113,6 +88,8 @@ class AppStateProvider extends ChangeNotifier {
   }
 
   initGroupChats(ChatsServer message) async {
+    _chats.clear();
+
     for (Chat chat in message.chats) {
       if (chat.id == null) continue;
 
