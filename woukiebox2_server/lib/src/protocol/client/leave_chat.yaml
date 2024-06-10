@@ -1,0 +1,4 @@
+class: LeaveChatClient
+
+fields:
+  chat: int

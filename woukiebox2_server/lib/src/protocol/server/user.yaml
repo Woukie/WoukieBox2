@@ -1,0 +1,9 @@
+class: UserServer
+
+fields:
+  id: int
+  username: String
+  bio: String
+  colour: String
+  image: String
+  verified: bool

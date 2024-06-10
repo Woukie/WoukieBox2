@@ -54,19 +54,19 @@ class ConnectionStateProvider extends ChangeNotifier {
   }
 
   Future<void> _handleMessage(SerializableEntity message) async {
-    if (message is ChatMessage) {
+    if (message is ChatMessageServer) {
       _appStateProvider.chatMessage(message);
-    } else if (message is RoomMembers) {
+    } else if (message is RoomMembersServer) {
       _appStateProvider.roomMembers(message);
-    } else if (message is LeaveMessage) {
+    } else if (message is LeaveChatServer) {
       _appStateProvider.leaveMessage(message);
-    } else if (message is JoinMessage) {
+    } else if (message is JoinChatServer) {
       _appStateProvider.joinMessage(message);
-    } else if (message is SelfIdentifier) {
+    } else if (message is SelfIdentifierServer) {
       _appStateProvider.selfIdentifier(message);
-    } else if (message is UpdateProfile) {
+    } else if (message is UpdateProfileServer) {
       _appStateProvider.updateProfile(message);
-    } else if (message is FriendList) {
+    } else if (message is FriendListServer) {
       _appStateProvider.friendList(message);
     }
   }

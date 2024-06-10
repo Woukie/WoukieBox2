@@ -1,4 +1,0 @@
-class: SelfIdentifier
-
-fields:
-  id: int

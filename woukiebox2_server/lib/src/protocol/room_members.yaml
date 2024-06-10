@@ -1,4 +1,0 @@
-class: RoomMembers
-
-fields:
-  users: List<User>

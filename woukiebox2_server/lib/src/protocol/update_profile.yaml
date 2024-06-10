@@ -1,8 +1,0 @@
-class: UpdateProfile
-
-fields:
-  sender: int?
-  username: String?
-  bio: String?
-  colour: String?
-  image: String?

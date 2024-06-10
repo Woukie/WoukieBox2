@@ -1,0 +1,6 @@
+class: Chat
+
+table: chat
+fields:
+  users: List<int>
+  owner: int

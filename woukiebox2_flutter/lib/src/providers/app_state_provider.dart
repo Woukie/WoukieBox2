@@ -20,7 +20,7 @@ import 'package:windows_taskbar/windows_taskbar.dart';
 
 class AppStateProvider extends ChangeNotifier {
   int? _currentUser;
-  final HashMap<int, User> _users = HashMap<int, User>();
+  final HashMap<int, UserClient> _users = HashMap<int, UserClient>();
   final HashMap<int, GroupChat> _groupChats = HashMap<int, GroupChat>();
 
   final List<dynamic> _messages = List.empty(growable: true);
@@ -33,7 +33,7 @@ class AppStateProvider extends ChangeNotifier {
 
   late final PreferenceProvider _preferenceProvider;
 
-  HashMap<int, User> get users => _users;
+  HashMap<int, UserClient> get users => _users;
   HashMap<int, GroupChat> get groupChats => _groupChats;
 
   List<dynamic> get messages => _messages;
@@ -48,7 +48,10 @@ class AppStateProvider extends ChangeNotifier {
         r"{6D809377-6AF0-444B-8957-A3773F02200E}\WoukieBox2\WoukieBox2.exe",
   );
 
-  Future<String> messageNotification(User sender, ChatMessage message) async {
+  Future<String> messageNotification(
+    UserClient sender,
+    ChatMessageServer message,
+  ) async {
     return '''
       <toast>
         <visual>
@@ -107,8 +110,8 @@ class AppStateProvider extends ChangeNotifier {
   // TODO: Recieve group chats from the server on joining
   initGroupChats() async {}
 
-  chatMessage(ChatMessage message) async {
-    User? user = _users[message.sender];
+  chatMessage(ChatMessageServer message) async {
+    UserClient? user = _users[message.sender];
     if (user == null) return; // This will never happen. But who knows?
 
     // We do this to preserve the details at the time of the message. If we only have a reference to the user.id, then sender and color would update
@@ -150,54 +153,71 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  roomMembers(RoomMembers message) {
+  roomMembers(RoomMembersServer message) {
     _users.forEach((id, user) {
       user.visible = false;
     });
 
-    for (User user in message.users) {
-      _users[user.id] = user;
+    for (UserServer user in message.users) {
+      _users[user.id] = UserClient(
+        id: user.id,
+        username: user.username,
+        bio: user.bio,
+        colour: user.colour,
+        image: user.image,
+        verified: user.verified,
+        visible: true,
+      );
     }
 
     notifyListeners();
   }
 
-  leaveMessage(LeaveMessage message) {
-    User? user = _users[message.id];
+  leaveMessage(LeaveChatServer message) {
+    UserClient? user = _users[message.sender];
     if (user == null) return; // This will never happen. But who knows?
 
     _messages.add(
       WrittenLeaveMessage(
-        message.id,
+        message.sender,
         user.username,
         user.colour,
       ),
     );
 
-    _users[message.id]?.visible = false;
+    _users[message.sender]?.visible = false;
     notifyListeners();
   }
 
-  joinMessage(JoinMessage message) {
+  joinMessage(JoinChatServer message) {
     _messages.add(
       WrittenJoinMessage(
-        message.user.id,
-        message.user.username,
-        message.user.colour,
+        message.sender.id,
+        message.sender.username,
+        message.sender.colour,
       ),
     );
 
-    _users[message.user.id] = message.user;
+    _users[message.sender.id] = UserClient(
+      id: message.sender.id,
+      username: message.sender.username,
+      bio: message.sender.bio,
+      colour: message.sender.colour,
+      image: message.sender.image,
+      verified: message.sender.verified,
+      visible: true,
+    );
+
     notifyListeners();
   }
 
-  selfIdentifier(SelfIdentifier message) {
+  selfIdentifier(SelfIdentifierServer message) {
     _currentUser = message.id;
     notifyListeners();
   }
 
-  updateProfile(UpdateProfile message) {
-    User? user = _users[message.sender];
+  updateProfile(UpdateProfileServer message) {
+    UserClient? user = _users[message.sender];
     // The server never sends a null sender, and all users are tracked. But who knows?
     if (user == null) return;
 
@@ -227,7 +247,7 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void friendList(FriendList message) {
+  void friendList(FriendListServer message) {
     _friends.clear();
     _friends.addAll(message.friends);
 
@@ -244,13 +264,21 @@ class AppStateProvider extends ChangeNotifier {
     if (_loadingUsers.contains(userId)) return;
     _loadingUsers.add(userId);
 
-    User? user = await client.crud.getUser(userId);
+    UserServer? user = await client.crud.getUser(userId);
 
     // We double check the loading users array in case we have logged out, which clears the set
     if (_loadingUsers.contains(userId)) {
       if (user != null) {
-        user.visible = _users[userId]?.visible ?? false;
-        _users[userId] = user;
+        _users[userId] = UserClient(
+          id: user.id,
+          username: user.username,
+          bio: user.bio,
+          colour: user.colour,
+          image: user.image,
+          verified: user.verified,
+          visible: _users[userId]?.visible ?? false,
+        );
+
         notifyListeners();
       }
 

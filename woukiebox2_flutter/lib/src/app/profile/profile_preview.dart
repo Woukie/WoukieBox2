@@ -15,7 +15,7 @@ class ProfilePreview extends StatelessWidget {
     this.enabled = true,
   });
 
-  final User user;
+  final UserClient user;
   final Widget child;
   final bool enabled;
 

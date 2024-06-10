@@ -1,0 +1,5 @@
+class: SelfIdentifierServer
+
+# Sent to a client once (on joining global chat) so they know who they are
+fields:
+  id: int

@@ -1,0 +1,5 @@
+class: LeaveChatServer
+
+fields:
+  sender: int
+  chat: int

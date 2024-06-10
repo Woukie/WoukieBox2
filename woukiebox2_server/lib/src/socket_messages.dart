@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
+import 'package:woukiebox2_server/src/endpoints/sockets.dart';
 import 'package:woukiebox2_server/src/friend_manager.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 import 'package:woukiebox2_server/src/util.dart';
@@ -8,7 +9,7 @@ import 'package:woukiebox2_server/src/util.dart';
 class HandleSocketMessage {
   static chatMessage(
     Session session,
-    ChatMessage message,
+    ChatMessageClient message,
     Function getUserObject,
   ) {
     String trimmedMessage = message.message.trim();
@@ -17,19 +18,18 @@ class HandleSocketMessage {
 
     session.messages.postMessage(
       'global',
-      ChatMessage(
+      ChatMessageServer(
         sender: getUserObject(session).id,
+        chat: 0,
         message: trimmedMessage,
-        target: 0,
       ),
     );
   }
 
   static Future<void> updateProfile(
     StreamingSession session,
-    UpdateProfile message,
+    UpdateProfileClient message,
     Function(Session session) getUserObject,
-    Set<User> connectedUsers,
   ) async {
     // Update the users profile on the database, also note that profile pics are neither cached or updated in UpdateProfile.
     var userId = await session.auth.authenticatedUserId;
@@ -47,9 +47,10 @@ class HandleSocketMessage {
       }
     }
 
-    var unauthedID = getUserObject(session).id;
+    var sender = getUserObject(session).id;
     // Also update the cached user as some users are anonymous
-    User user = connectedUsers.firstWhere((user) => user.id == unauthedID);
+    UserServer user =
+        SocketsEndpoint.connectedUsers.firstWhere((user) => user.id == sender);
     user.bio = message.bio ?? user.bio;
     user.username = message.username ?? user.username;
     user.colour = message.colour ?? user.colour;
@@ -57,8 +58,8 @@ class HandleSocketMessage {
     // Tell everyone about the profile change
     session.messages.postMessage(
       'global',
-      UpdateProfile(
-        sender: unauthedID,
+      UpdateProfileServer(
+        sender: sender,
         username: message.username,
         bio: message.bio,
         colour: message.colour,
@@ -68,7 +69,7 @@ class HandleSocketMessage {
 
   static Future<void> friendRequest(
     StreamingSession session,
-    FriendRequest message,
+    FriendRequestClient message,
   ) async {
     UserInfo? senderInfo = await Util.getAuthUser(session);
     if (senderInfo == null) return;
@@ -109,7 +110,7 @@ class HandleSocketMessage {
 
     session.messages.postMessage(
       sender.userInfoId.toString(),
-      FriendList(
+      FriendListServer(
         friends: sender.friends,
         incomingFriendRequests: sender.incomingFriendRequests,
         outgoingFriendRequests: sender.outgoingFriendRequests,
@@ -118,7 +119,7 @@ class HandleSocketMessage {
 
     session.messages.postMessage(
       target.userInfoId.toString(),
-      FriendList(
+      FriendListServer(
         friends: target.friends,
         incomingFriendRequests: target.incomingFriendRequests,
         outgoingFriendRequests: target.outgoingFriendRequests,

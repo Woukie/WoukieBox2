@@ -7,7 +7,7 @@ import 'package:woukiebox2/src/app/profile/profile_preview.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 import 'package:woukiebox2/src/util/written_message.dart';
 
-User unknownUser = User(
+UserClient unknownUser = UserClient(
   id: -1,
   username: "Unknown User",
   bio: "",

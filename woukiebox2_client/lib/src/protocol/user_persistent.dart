@@ -19,6 +19,7 @@ abstract class UserPersistent extends _i1.SerializableEntity {
     required this.color,
     required this.bio,
     required this.image,
+    required this.chats,
     required this.friends,
     required this.outgoingFriendRequests,
     required this.incomingFriendRequests,
@@ -31,6 +32,7 @@ abstract class UserPersistent extends _i1.SerializableEntity {
     required String color,
     required String bio,
     required String image,
+    required List<int> chats,
     required List<int> friends,
     required List<int> outgoingFriendRequests,
     required List<int> incomingFriendRequests,
@@ -51,6 +53,8 @@ abstract class UserPersistent extends _i1.SerializableEntity {
       bio: serializationManager.deserialize<String>(jsonSerialization['bio']),
       image:
           serializationManager.deserialize<String>(jsonSerialization['image']),
+      chats: serializationManager
+          .deserialize<List<int>>(jsonSerialization['chats']),
       friends: serializationManager
           .deserialize<List<int>>(jsonSerialization['friends']),
       outgoingFriendRequests: serializationManager
@@ -75,6 +79,8 @@ abstract class UserPersistent extends _i1.SerializableEntity {
 
   String image;
 
+  List<int> chats;
+
   List<int> friends;
 
   List<int> outgoingFriendRequests;
@@ -88,6 +94,7 @@ abstract class UserPersistent extends _i1.SerializableEntity {
     String? color,
     String? bio,
     String? image,
+    List<int>? chats,
     List<int>? friends,
     List<int>? outgoingFriendRequests,
     List<int>? incomingFriendRequests,
@@ -101,6 +108,7 @@ abstract class UserPersistent extends _i1.SerializableEntity {
       'color': color,
       'bio': bio,
       'image': image,
+      'chats': chats.toJson(),
       'friends': friends.toJson(),
       'outgoingFriendRequests': outgoingFriendRequests.toJson(),
       'incomingFriendRequests': incomingFriendRequests.toJson(),
@@ -118,6 +126,7 @@ class _UserPersistentImpl extends UserPersistent {
     required String color,
     required String bio,
     required String image,
+    required List<int> chats,
     required List<int> friends,
     required List<int> outgoingFriendRequests,
     required List<int> incomingFriendRequests,
@@ -128,6 +137,7 @@ class _UserPersistentImpl extends UserPersistent {
           color: color,
           bio: bio,
           image: image,
+          chats: chats,
           friends: friends,
           outgoingFriendRequests: outgoingFriendRequests,
           incomingFriendRequests: incomingFriendRequests,
@@ -141,6 +151,7 @@ class _UserPersistentImpl extends UserPersistent {
     String? color,
     String? bio,
     String? image,
+    List<int>? chats,
     List<int>? friends,
     List<int>? outgoingFriendRequests,
     List<int>? incomingFriendRequests,
@@ -153,6 +164,7 @@ class _UserPersistentImpl extends UserPersistent {
       color: color ?? this.color,
       bio: bio ?? this.bio,
       image: image ?? this.image,
+      chats: chats ?? this.chats.clone(),
       friends: friends ?? this.friends.clone(),
       outgoingFriendRequests:
           outgoingFriendRequests ?? this.outgoingFriendRequests.clone(),

@@ -1,11 +1,13 @@
 class: UserPersistent
 
+# One-to-one relationship with stock user table, provides all extra user data. Waiting for the update where I can modify the dafault user model
 table: userpersistent
 fields:
   userInfo: module:auth:UserInfo?, relation
   color: String
   bio: String
   image: String
+  chats: List<int>
   friends: List<int>
   outgoingFriendRequests: List<int>
   incomingFriendRequests: List<int>

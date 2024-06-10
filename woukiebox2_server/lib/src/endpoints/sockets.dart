@@ -9,12 +9,12 @@ import 'package:serverpod/serverpod.dart';
 
 class SocketsEndpoint extends Endpoint {
   // setUserData is basically fucking useless because you can't get a list of all active sessions. We now have to manually keep track of users while STILL having to use userData to store the session id's
-  static Set<User> connectedUsers = {};
+  static Set<UserServer> connectedUsers = {};
   final Random random = Random();
 
   @override
   Future<void> streamOpened(StreamingSession session) async {
-    User? user = await Util.initUser(session, connectedUsers, setUserObject);
+    UserServer? user = await Util.initUser(session, setUserObject);
 
     if (user == null) return; // Prevent joining with the same ID twice
 
@@ -29,13 +29,24 @@ class SocketsEndpoint extends Endpoint {
     });
 
     // Send the client a list of all the members in the room
-    sendStreamMessage(session, RoomMembers(users: connectedUsers.toList()));
+    sendStreamMessage(
+      session,
+      RoomMembersServer(
+        users: connectedUsers.toList(),
+      ),
+    );
 
     // Give the client their ID so they know which user they are
-    sendStreamMessage(session, SelfIdentifier(id: user.id));
+    sendStreamMessage(session, SelfIdentifierServer(id: user.id));
 
-    // Broadcast to everyone that a new person has entered the room
-    session.messages.postMessage("global", JoinMessage(user: user));
+    // Broadcast to everyone that a new person has entered the global chat
+    session.messages.postMessage(
+      "global",
+      JoinChatServer(
+        sender: user,
+        chat: 0,
+      ),
+    );
 
     UserInfo? senderInfo = await Util.getAuthUser(session);
 
@@ -45,7 +56,7 @@ class SocketsEndpoint extends Endpoint {
 
       sendStreamMessage(
         session,
-        FriendList(
+        FriendListServer(
           friends: userPersistent.friends,
           incomingFriendRequests: userPersistent.incomingFriendRequests,
           outgoingFriendRequests: userPersistent.outgoingFriendRequests,
@@ -60,7 +71,10 @@ class SocketsEndpoint extends Endpoint {
     int id = getUserObject(session).id;
     connectedUsers.removeWhere((user) => user.id == id);
 
-    session.messages.postMessage("global", LeaveMessage(id: id));
+    session.messages.postMessage(
+      "global",
+      LeaveChatServer(chat: 0, sender: id),
+    );
 
     print("User left!");
   }
@@ -75,20 +89,19 @@ class SocketsEndpoint extends Endpoint {
     print(message);
 
     // Believe it or not, a switch/case would be worse.
-    if (message is ChatMessage) {
+    if (message is ChatMessageClient) {
       HandleSocketMessage.chatMessage(
         session,
         message,
         getUserObject,
       );
-    } else if (message is UpdateProfile) {
+    } else if (message is UpdateProfileClient) {
       HandleSocketMessage.updateProfile(
         session,
         message,
         getUserObject,
-        connectedUsers,
       );
-    } else if (message is FriendRequest) {
+    } else if (message is FriendRequestClient) {
       HandleSocketMessage.friendRequest(session, message);
     }
   }

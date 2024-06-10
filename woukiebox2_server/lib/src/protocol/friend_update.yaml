@@ -1,7 +1,0 @@
-class: FriendRequest
-
-# Object sent to the server for sending friend requests to others
-fields:
-  sender: int? # client to server requests don't specify this
-  target: int
-  positive: bool # true is to accept/send a request, false is to break up, cancel a sent request or to reject an incoming friend request

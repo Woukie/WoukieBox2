@@ -1,0 +1,6 @@
+class: ChatMessageServer
+
+fields:
+  sender: int
+  chat: int # Indicates desired destination of message, 0 is global
+  message: String

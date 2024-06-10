@@ -31,8 +31,8 @@ class Friend extends StatelessWidget {
 
     bool loading = appStateProvider.users[userId] == null;
 
-    User user = appStateProvider.users[userId] ??
-        User(
+    UserClient user = appStateProvider.users[userId] ??
+        UserClient(
           id: userId,
           username: "Loading...",
           bio: "Loading...",
@@ -41,6 +41,7 @@ class Friend extends StatelessWidget {
                   .hex,
           image: "",
           verified: true,
+          visible: false,
         );
 
     if (loading) {
@@ -80,7 +81,10 @@ class Friend extends StatelessWidget {
                         child: IconButton.filledTonal(
                           onPressed: () {
                             client.sockets.sendStreamMessage(
-                              FriendRequest(target: userId, positive: false),
+                              FriendRequestClient(
+                                target: userId,
+                                positive: false,
+                              ),
                             );
                           },
                           icon: Icon(negativeIcon),
@@ -93,7 +97,10 @@ class Friend extends StatelessWidget {
                         child: IconButton.filled(
                           onPressed: () {
                             client.sockets.sendStreamMessage(
-                              FriendRequest(target: userId, positive: true),
+                              FriendRequestClient(
+                                target: userId,
+                                positive: true,
+                              ),
                             );
                           },
                           icon: Icon(positiveIcon),

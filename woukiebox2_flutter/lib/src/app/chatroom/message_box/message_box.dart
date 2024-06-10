@@ -60,7 +60,7 @@ class _MessageBoxState extends State<MessageBox> {
 
 void sendMessage(String message, int target) {
   client.sockets.sendStreamMessage(
-    ChatMessage(
+    ChatMessageClient(
       message: message,
       target: target,
     ),

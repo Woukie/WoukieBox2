@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'package:woukiebox2_client/src/protocol/user.dart' as _i3;
+import 'package:woukiebox2_client/src/protocol/server/user.dart' as _i3;
 import 'package:serverpod_auth_client/module.dart' as _i4;
 import 'protocol.dart' as _i5;
 
@@ -21,8 +21,8 @@ class EndpointCrud extends _i1.EndpointRef {
   @override
   String get name => 'crud';
 
-  _i2.Future<_i3.User?> getUser(int targetId) =>
-      caller.callServerEndpoint<_i3.User?>(
+  _i2.Future<_i3.UserServer?> getUser(int targetId) =>
+      caller.callServerEndpoint<_i3.UserServer?>(
         'crud',
         'getUser',
         {'targetId': targetId},

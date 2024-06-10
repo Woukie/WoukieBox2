@@ -17,11 +17,10 @@ class Users extends StatelessWidget {
   Widget build(BuildContext context) {
     final appStateProvider = Provider.of<AppStateProvider>(context);
     final users = appStateProvider.users;
-    final List<User> userList = users.values.toList();
+    final List<UserClient> userList = users.values.toList();
     // app only renders if user passes null check
-    final User localUser = users[appStateProvider.currentUser]!;
-    userList
-        .removeWhere((user) => !(user.visible ?? true) || user == localUser);
+    final UserClient localUser = users[appStateProvider.currentUser]!;
+    userList.removeWhere((user) => !user.visible || user == localUser);
 
     return Padding(
       padding: const EdgeInsets.only(left: 12),
@@ -54,7 +53,7 @@ class Users extends StatelessWidget {
                       itemCount: userList.length,
                       itemBuilder: (context, index) {
                         Color color = HexColor.fromHex(userList[index].colour);
-                        User user = userList[index];
+                        UserClient user = userList[index];
 
                         return ProfilePreview(
                           user: user,

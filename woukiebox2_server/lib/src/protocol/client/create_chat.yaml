@@ -1,0 +1,4 @@
+class: CreateChatClient
+
+fields:
+  users: List<int>
