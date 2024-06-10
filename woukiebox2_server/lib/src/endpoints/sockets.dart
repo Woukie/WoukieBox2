@@ -50,9 +50,16 @@ class SocketsEndpoint extends Endpoint {
 
     UserInfo? senderInfo = await Util.getAuthUser(session);
 
-    // Give them their friend list
+    // Give them their friend list and chat rooms
     if (senderInfo != null) {
       UserPersistent userPersistent = (await Util.getPersistentData(session))!;
+
+      sendStreamMessage(
+        session,
+        ChatsServer(
+          chats: userPersistent.chats,
+        ),
+      );
 
       sendStreamMessage(
         session,

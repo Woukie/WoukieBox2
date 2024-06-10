@@ -1,0 +1,5 @@
+class: ChatsServer
+
+# Sent to users when whey join global, tells them what chats they are in
+fields:
+  chats: List<int>
