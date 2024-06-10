@@ -6,7 +6,7 @@ import 'package:woukiebox2_client/woukiebox2_client.dart';
 class MessageBox extends StatefulWidget {
   const MessageBox({
     super.key,
-    this.target = 0,
+    required this.target,
   });
 
   final int target;

@@ -104,16 +104,19 @@ class AppStateProvider extends ChangeNotifier {
     UserClient? user = _users[message.sender];
     if (user == null) return; // This will never happen. But who knows?
 
-    // We do this to preserve the details at the time of the message. If we only have a reference to the user.id, then sender and color would update
-    _messages.add(
-      WrittenMessage(
-        user.id,
-        user.username,
-        message.message,
-        user.colour,
-        user.image,
-      ),
+    WrittenMessage writtenMessage = WrittenMessage(
+      user.id,
+      user.username,
+      message.message,
+      user.colour,
+      user.image,
     );
+
+    if (message.chat == 0) {
+      _messages.add(writtenMessage);
+    } else {
+      _chats[message.chat]?.messages.add(writtenMessage);
+    }
 
     notifyListeners();
 

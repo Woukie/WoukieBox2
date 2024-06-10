@@ -11,19 +11,36 @@ class HandleSocketMessage {
     Session session,
     ChatMessageClient message,
     Function getUserObject,
-  ) {
+  ) async {
     String trimmedMessage = message.message.trim();
 
     if (trimmedMessage.isEmpty) return;
 
-    session.messages.postMessage(
-      'global',
-      ChatMessageServer(
-        sender: getUserObject(session).id,
-        chat: 0,
-        message: trimmedMessage,
-      ),
+    ChatMessageServer chatMessage = ChatMessageServer(
+      sender: getUserObject(session).id,
+      chat: message.target,
+      message: trimmedMessage,
     );
+
+    if (message.target == 0) {
+      session.messages.postMessage(
+        'global',
+        chatMessage,
+      );
+    } else {
+      Chat? groupChat = await Chat.db.findById(session, message.target);
+      print(groupChat);
+      if (groupChat == null) return;
+
+      if (!groupChat.users.contains(chatMessage.sender)) return;
+
+      for (int user in groupChat.users) {
+        session.messages.postMessage(
+          user.toString(),
+          chatMessage,
+        );
+      }
+    }
   }
 
   static Future<void> updateProfile(
@@ -141,6 +158,8 @@ class HandleSocketMessage {
       if (!senderPersistent.friends.contains(target)) return;
     }
 
+    message.users.add(senderInfo.id!);
+
     Chat chat = await Chat.db.insertRow(
       session,
       Chat(
@@ -150,7 +169,6 @@ class HandleSocketMessage {
       ),
     );
 
-    message.users.add(senderInfo.id!);
     for (int target in message.users) {
       UserPersistent? targetPersistent = await Util.getPersistentData(
         session,

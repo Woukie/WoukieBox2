@@ -43,7 +43,9 @@ class ChatRoom extends StatelessWidget {
               ],
             ),
           ),
-          const MessageBox()
+          const MessageBox(
+            target: 0,
+          )
         ],
       ),
     );
