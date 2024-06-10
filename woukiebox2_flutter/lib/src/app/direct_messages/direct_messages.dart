@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/chatroom/message_box/message_box.dart';
 import 'package:woukiebox2/src/app/chatroom/messages/messages.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
@@ -194,6 +195,14 @@ class _DirectMessagesState extends State<DirectMessages> {
                             const Padding(padding: EdgeInsets.only(right: 8)),
                             FilledButton(
                               onPressed: () {
+                                friendsSelection
+                                    .removeWhere((user, selected) => !selected);
+                                client.sockets.sendStreamMessage(
+                                  CreateChatClient(
+                                    users: List.of(friendsSelection.keys),
+                                  ),
+                                );
+
                                 Navigator.of(context).pop();
                               },
                               child: const Text('Create'),
