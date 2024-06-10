@@ -21,7 +21,7 @@ import 'package:windows_taskbar/windows_taskbar.dart';
 class AppStateProvider extends ChangeNotifier {
   int? _currentUser;
   final HashMap<int, UserClient> _users = HashMap<int, UserClient>();
-  final HashMap<int, GroupChat> _groupChats = HashMap<int, GroupChat>();
+  final HashMap<int, GroupChat> _chats = HashMap<int, GroupChat>();
 
   final List<dynamic> _messages = List.empty(growable: true);
   final List<int> _friends = List.empty(growable: true);
@@ -34,7 +34,7 @@ class AppStateProvider extends ChangeNotifier {
   late final PreferenceProvider _preferenceProvider;
 
   HashMap<int, UserClient> get users => _users;
-  HashMap<int, GroupChat> get groupChats => _groupChats;
+  HashMap<int, GroupChat> get chats => _chats;
 
   List<dynamic> get messages => _messages;
   List<int> get friends => _friends;
@@ -86,13 +86,13 @@ class AppStateProvider extends ChangeNotifier {
         );
       }
 
-      _groupChats[groupChatID] = GroupChat(
+      _chats[groupChatID] = GroupChat(
         groupChatID,
         List.empty(),
         "name",
         1,
       );
-      _groupChats[groupChatID]!.messages.addAll(messages);
+      _chats[groupChatID]!.messages.addAll(messages);
     }
 
     _preferenceProvider =
@@ -103,7 +103,7 @@ class AppStateProvider extends ChangeNotifier {
     _currentUser = null;
     _messages.clear();
     _loadingUsers.clear();
-    _groupChats.clear();
+    _chats.clear();
     _users.clear();
     _friends.clear();
     _incomingFriendRequests.clear();
@@ -116,7 +116,7 @@ class AppStateProvider extends ChangeNotifier {
     for (Chat chat in message.chats) {
       if (chat.id == null) continue;
 
-      _groupChats[chat.id!] = GroupChat(
+      _chats[chat.id!] = GroupChat(
         chat.id!,
         chat.users,
         chat.name,

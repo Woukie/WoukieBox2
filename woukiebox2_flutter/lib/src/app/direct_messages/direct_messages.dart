@@ -22,8 +22,7 @@ class _DirectMessagesState extends State<DirectMessages> {
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
 
-    final List<GroupChat> groupChats =
-        appStateProvider.groupChats.values.toList();
+    final List<GroupChat> groupChats = appStateProvider.chats.values.toList();
 
     return Padding(
       padding: const EdgeInsets.all(12),
