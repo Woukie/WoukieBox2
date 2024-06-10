@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/chatroom/message_box/message_box.dart';
 import 'package:woukiebox2/src/app/chatroom/messages/messages.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class DirectMessages extends StatefulWidget {
   const DirectMessages({
@@ -49,7 +51,9 @@ class _DirectMessagesState extends State<DirectMessages> {
                       child: Padding(
                         padding: const EdgeInsets.all(12),
                         child: FloatingActionButton.small(
-                          onPressed: () {},
+                          onPressed: () {
+                            _createChatDialog(context);
+                          },
                           child: const Icon(Icons.add),
                         ),
                       ),
@@ -80,6 +84,57 @@ class _DirectMessagesState extends State<DirectMessages> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _createChatDialog(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 300,
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text("Select Contacts"),
+                      const SizedBox(height: 250, child: Text("friends here")),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              textStyle: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            child: const Text('Cancel'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          const Padding(padding: EdgeInsets.only(right: 8)),
+                          FilledButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Create'),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
