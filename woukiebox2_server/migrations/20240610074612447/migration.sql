@@ -3,12 +3,22 @@ BEGIN;
 --
 -- ACTION CREATE TABLE
 --
+CREATE TABLE "chat" (
+    "id" serial PRIMARY KEY,
+    "users" json NOT NULL,
+    "owner" integer NOT NULL
+);
+
+--
+-- ACTION CREATE TABLE
+--
 CREATE TABLE "userpersistent" (
     "id" serial PRIMARY KEY,
     "userInfoId" integer NOT NULL,
     "color" text NOT NULL,
     "bio" text NOT NULL,
     "image" text NOT NULL,
+    "chats" json NOT NULL,
     "friends" json NOT NULL,
     "outgoingFriendRequests" json NOT NULL,
     "incomingFriendRequests" json NOT NULL
@@ -380,9 +390,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR woukiebox2
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('woukiebox2', '20240608153124324', now())
+    VALUES ('woukiebox2', '20240610074612447', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240608153124324', "timestamp" = now();
+    DO UPDATE SET "version" = '20240610074612447', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

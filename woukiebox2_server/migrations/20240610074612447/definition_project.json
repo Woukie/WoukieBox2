@@ -2,6 +2,49 @@
   "moduleName": "woukiebox2",
   "tables": [
     {
+      "name": "chat",
+      "dartName": "Chat",
+      "module": "woukiebox2",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": "nextval('chat_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "users",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<int>"
+        },
+        {
+          "name": "owner",
+          "columnType": 2,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "chat_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
       "name": "userpersistent",
       "dartName": "UserPersistent",
       "module": "woukiebox2",
@@ -37,6 +80,12 @@
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
+        },
+        {
+          "name": "chats",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<int>"
         },
         {
           "name": "friends",
