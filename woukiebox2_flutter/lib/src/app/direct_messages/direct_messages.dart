@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/chatroom/message_box/message_box.dart';
 import 'package:woukiebox2/src/app/chatroom/messages/messages.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
