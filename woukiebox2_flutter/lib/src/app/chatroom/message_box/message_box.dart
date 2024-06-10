@@ -7,9 +7,11 @@ class MessageBox extends StatefulWidget {
   const MessageBox({
     super.key,
     required this.target,
+    this.enabled = true,
   });
 
   final int target;
+  final bool enabled;
 
   @override
   State<MessageBox> createState() => _MessageBoxState();
@@ -42,7 +44,8 @@ class _MessageBoxState extends State<MessageBox> {
         child: TextField(
           controller: _controller,
           maxLines: null,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
+            enabled: widget.enabled,
             isDense: true,
             border: InputBorder.none,
             hintText: "Send Message...",

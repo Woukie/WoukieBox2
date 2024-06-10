@@ -29,11 +29,13 @@ class HandleSocketMessage {
       );
     } else {
       Chat? groupChat = await Chat.db.findById(session, message.target);
-      print(groupChat);
       if (groupChat == null) return;
 
       if (!groupChat.users.contains(chatMessage.sender)) return;
 
+      groupChat.lastMessage = DateTime.now();
+
+      await Chat.db.updateRow(session, groupChat);
       for (int user in groupChat.users) {
         session.messages.postMessage(
           user.toString(),
@@ -164,8 +166,9 @@ class HandleSocketMessage {
       session,
       Chat(
         users: message.users,
-        name: "New Group",
+        name: "${senderInfo.userName}'s Group",
         owner: senderInfo.id!,
+        lastMessage: DateTime.now(),
       ),
     );
 

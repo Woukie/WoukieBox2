@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/chatroom/message_box/message_box.dart';
@@ -22,11 +23,10 @@ class DirectMessages extends StatefulWidget {
 }
 
 class _DirectMessagesState extends State<DirectMessages> {
-  int? _selectedGroup;
-
   @override
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+    int? selectedGroup = appStateProvider.selectedGroup;
 
     return Padding(
       padding: const EdgeInsets.all(12),
@@ -38,28 +38,33 @@ class _DirectMessagesState extends State<DirectMessages> {
               color: Theme.of(context).colorScheme.surfaceContainerLow,
               child: SizedBox(
                 width: 200,
-                child: Stack(
+                child: Column(
                   children: [
-                    ChatsList(
-                      selectedGroup: _selectedGroup,
-                      selectGroup: (selectedGroup) {
-                        setState(() {
-                          _selectedGroup = selectedGroup;
-                        });
-                      },
-                    ),
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: FloatingActionButton.small(
-                          onPressed: () {
-                            _createFriendSelectionDialog(context);
-                          },
-                          child: const Icon(Icons.add),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          labelText: "Filter",
                         ),
                       ),
-                    )
+                    ),
+                    FilledButton(
+                      onPressed: () {
+                        _createFriendSelectionDialog(context);
+                      },
+                      child: const Text("Create Group"),
+                    ),
+                    const Divider(),
+                    Expanded(
+                      child: ChatsList(
+                        selectedGroup: selectedGroup,
+                        selectGroup: (value) {
+                          setState(() {
+                            appStateProvider.setSelectedGroup(value);
+                          });
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -77,11 +82,11 @@ class _DirectMessagesState extends State<DirectMessages> {
                                 .surfaceContainerLow,
                             margin: EdgeInsets.zero,
                             elevation: 1,
-                            child: _selectedGroup == null
+                            child: selectedGroup == null
                                 ? Container()
                                 : Messages(
                                     messages: appStateProvider
-                                        .chats[_selectedGroup]!.messages,
+                                        .chats[selectedGroup]!.messages,
                                   ),
                           ),
                         ),
@@ -89,7 +94,7 @@ class _DirectMessagesState extends State<DirectMessages> {
                           width: 200,
                           child: Users(
                             userIds:
-                                appStateProvider.chats[_selectedGroup]?.users ??
+                                appStateProvider.chats[selectedGroup]?.users ??
                                     [],
                             showInvisible: true,
                           ),
@@ -97,7 +102,9 @@ class _DirectMessagesState extends State<DirectMessages> {
                       ],
                     ),
                   ),
-                  MessageBox(target: _selectedGroup ?? 0)
+                  MessageBox(
+                      enabled: selectedGroup != null,
+                      target: selectedGroup ?? 0)
                 ],
               ),
             ),
@@ -253,6 +260,8 @@ class ChatsList extends StatelessWidget {
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
     final List<GroupChat> groupChats = appStateProvider.chats.values.toList();
+    groupChats
+        .sort((chatA, chatB) => chatB.lastMessage.compareTo(chatA.lastMessage));
 
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),

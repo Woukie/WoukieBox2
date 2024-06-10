@@ -60,7 +60,6 @@ class SocketsEndpoint extends Endpoint {
         if (chat != null) chats.add(chat);
       }
 
-      print(chats);
       sendStreamMessage(
         session,
         ChatsServer(

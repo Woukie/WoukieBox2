@@ -17,6 +17,8 @@ import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:windows_taskbar/windows_taskbar.dart';
 
 class AppStateProvider extends ChangeNotifier {
+  // Need to control this for e.g. deleting/leaving groups and auto selecting when creating group.
+  int? _selectedGroup;
   int? _currentUser;
   final HashMap<int, UserClient> _users = HashMap<int, UserClient>();
   final HashMap<int, GroupChat> _chats = HashMap<int, GroupChat>();
@@ -39,6 +41,12 @@ class AppStateProvider extends ChangeNotifier {
   List<int> get outgoingFriendRequests => _outgoingFriendRequests;
   List<int> get incomingFriendRequests => _incomingFriendRequests;
   int? get currentUser => _currentUser;
+  int? get selectedGroup => _selectedGroup;
+
+  void setSelectedGroup(value) {
+    _selectedGroup = value;
+    notifyListeners();
+  }
 
   final player = AudioPlayer();
   final _winNotifyPlugin = WindowsNotification(
@@ -96,6 +104,7 @@ class AppStateProvider extends ChangeNotifier {
         chat.users,
         chat.name,
         chat.owner,
+        chat.lastMessage,
       );
     }
   }
@@ -116,6 +125,7 @@ class AppStateProvider extends ChangeNotifier {
       _messages.add(writtenMessage);
     } else {
       _chats[message.chat]?.messages.add(writtenMessage);
+      _chats[message.chat]?.lastMessage = DateTime.now();
     }
 
     notifyListeners();
@@ -285,7 +295,11 @@ class AppStateProvider extends ChangeNotifier {
       message.chat.users,
       message.chat.name,
       message.chat.owner,
+      message.chat.lastMessage,
     );
+
+    if (message.chat.owner == _currentUser) _selectedGroup = message.chat.id;
+
     notifyListeners();
   }
 }

@@ -16,6 +16,7 @@ abstract class Chat extends _i1.SerializableEntity {
     required this.users,
     required this.name,
     required this.owner,
+    required this.lastMessage,
   });
 
   factory Chat({
@@ -23,6 +24,7 @@ abstract class Chat extends _i1.SerializableEntity {
     required List<int> users,
     required String name,
     required int owner,
+    required DateTime lastMessage,
   }) = _ChatImpl;
 
   factory Chat.fromJson(
@@ -35,6 +37,8 @@ abstract class Chat extends _i1.SerializableEntity {
           .deserialize<List<int>>(jsonSerialization['users']),
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
       owner: serializationManager.deserialize<int>(jsonSerialization['owner']),
+      lastMessage: serializationManager
+          .deserialize<DateTime>(jsonSerialization['lastMessage']),
     );
   }
 
@@ -49,11 +53,14 @@ abstract class Chat extends _i1.SerializableEntity {
 
   int owner;
 
+  DateTime lastMessage;
+
   Chat copyWith({
     int? id,
     List<int>? users,
     String? name,
     int? owner,
+    DateTime? lastMessage,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -62,6 +69,7 @@ abstract class Chat extends _i1.SerializableEntity {
       'users': users.toJson(),
       'name': name,
       'owner': owner,
+      'lastMessage': lastMessage.toJson(),
     };
   }
 }
@@ -74,11 +82,13 @@ class _ChatImpl extends Chat {
     required List<int> users,
     required String name,
     required int owner,
+    required DateTime lastMessage,
   }) : super._(
           id: id,
           users: users,
           name: name,
           owner: owner,
+          lastMessage: lastMessage,
         );
 
   @override
@@ -87,12 +97,14 @@ class _ChatImpl extends Chat {
     List<int>? users,
     String? name,
     int? owner,
+    DateTime? lastMessage,
   }) {
     return Chat(
       id: id is int? ? id : this.id,
       users: users ?? this.users.clone(),
       name: name ?? this.name,
       owner: owner ?? this.owner,
+      lastMessage: lastMessage ?? this.lastMessage,
     );
   }
 }

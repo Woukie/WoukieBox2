@@ -5,3 +5,4 @@ fields:
   users: List<int>
   name: String
   owner: int
+  lastMessage: DateTime
