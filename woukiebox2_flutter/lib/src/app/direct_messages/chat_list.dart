@@ -1,11 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/direct_messages/direct_message_dropdown.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
-import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class ChatsList extends StatelessWidget {
   const ChatsList({
@@ -26,8 +23,14 @@ class ChatsList extends StatelessWidget {
     groupChats
         .sort((chatA, chatB) => chatB.lastMessage.compareTo(chatA.lastMessage));
 
-    groupChats.removeWhere(
-        (chat) => !chat.name.toLowerCase().contains(searchQuery.toLowerCase()));
+    groupChats.removeWhere((chat) {
+      if (chat.name.isEmpty) {
+        return !GroupChat.generateGroupName(chat, appStateProvider)
+            .toLowerCase()
+            .contains(searchQuery.toLowerCase());
+      }
+      return !chat.name.toLowerCase().contains(searchQuery.toLowerCase());
+    });
 
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
