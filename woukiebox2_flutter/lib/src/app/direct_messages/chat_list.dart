@@ -10,9 +10,11 @@ class ChatsList extends StatelessWidget {
     super.key,
     required this.selectedGroup,
     required this.selectGroup,
+    this.searchQuery = "",
   });
 
   final int? selectedGroup;
+  final String searchQuery;
   final Function(int) selectGroup;
 
   @override
@@ -21,6 +23,9 @@ class ChatsList extends StatelessWidget {
     final List<GroupChat> groupChats = appStateProvider.chats.values.toList();
     groupChats
         .sort((chatA, chatB) => chatB.lastMessage.compareTo(chatA.lastMessage));
+
+    groupChats.removeWhere(
+        (chat) => !chat.name.toLowerCase().contains(searchQuery.toLowerCase()));
 
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),

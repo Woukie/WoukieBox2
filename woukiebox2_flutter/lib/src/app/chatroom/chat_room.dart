@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/chatroom/message_box/message_box.dart';
 import 'package:woukiebox2/src/app/chatroom/messages/messages.dart';
@@ -20,6 +21,8 @@ class ChatRoom extends StatefulWidget {
 }
 
 class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
+  final TextEditingController _searchController = TextEditingController();
+
   late final AnimationController _animationController = AnimationController(
     duration: const Duration(milliseconds: 100),
     vsync: this,
@@ -127,12 +130,14 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
               color: Theme.of(context).colorScheme.surfaceContainerLow,
               child: Column(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: TextField(
-                      decoration: InputDecoration(
+                      controller: _searchController,
+                      decoration: const InputDecoration(
                         labelText: "Filter",
                       ),
+                      onChanged: (value) => setState(() {}),
                     ),
                   ),
                   Expanded(
@@ -143,6 +148,7 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
                           appStateProvider.setSelectedGroup(value);
                         });
                       },
+                      searchQuery: _searchController.text,
                     ),
                   ),
                   Row(
