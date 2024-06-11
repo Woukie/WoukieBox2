@@ -286,7 +286,7 @@ class ChatsList extends StatelessWidget {
               margin: EdgeInsets.zero,
               elevation: selected ? 1 : 0,
               color: selected
-                  ? Theme.of(context).colorScheme.surfaceContainer
+                  ? Theme.of(context).colorScheme.surfaceContainerHigh
                   : null,
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
