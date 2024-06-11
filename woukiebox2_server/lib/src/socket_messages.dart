@@ -234,5 +234,30 @@ class HandleSocketMessage {
     }
   }
 
-  static Future<void> renameChat(StreamingSession session, message) async {}
+  static Future<void> renameChat(
+      StreamingSession session, RenameChat message) async {
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return;
+
+    UserPersistent senderPersistent =
+        (await Util.getPersistentData(session, senderInfo.id))!;
+
+    if (!senderPersistent.chats.contains(message.chat)) return;
+
+    Chat? chat = await Chat.db.findById(session, message.chat);
+    if (chat == null || chat.owner != senderInfo.id) return;
+
+    chat.name = message.name.trim();
+    await Chat.db.updateRow(session, chat);
+
+    for (int user in chat.users) {
+      session.messages.postMessage(
+        user.toString(),
+        RenameChat(
+          chat: chat.id!,
+          name: chat.name,
+        ),
+      );
+    }
+  }
 }
