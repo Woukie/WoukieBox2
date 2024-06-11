@@ -54,19 +54,24 @@ class ProfileMoreDropdown extends StatelessWidget {
     bool outgoing = appStateProvider.outgoingFriendRequests.contains(userId);
     bool incoming = appStateProvider.incomingFriendRequests.contains(userId);
 
-    User currentUser = appStateProvider.users[appStateProvider.currentUser]!;
-    User? targetUser = appStateProvider.users[userId];
+    UserClient currentUser =
+        appStateProvider.users[appStateProvider.currentUser]!;
+    UserClient? targetUser = appStateProvider.users[userId];
 
-    bool showFriendButtons = currentUser.id != userId &&
-        currentUser.verified &&
-        targetUser != null &&
-        targetUser.verified;
+    if (targetUser == null) return [];
+
+    bool showFriendButtons =
+        currentUser.id != userId && currentUser.verified && targetUser.verified;
 
     List<PopupMenuItem> items = List.empty(growable: true);
 
     friend(bool positive) {
-      client.sockets
-          .sendStreamMessage(FriendRequest(target: userId, positive: positive));
+      client.sockets.sendStreamMessage(
+        FriendRequestClient(
+          target: userId,
+          positive: positive,
+        ),
+      );
     }
 
     if (showFriendButtons) {

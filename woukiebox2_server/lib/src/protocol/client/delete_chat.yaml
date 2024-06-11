@@ -1,0 +1,4 @@
+class: DeleteChatClient
+
+fields:
+  chat: int

@@ -11,13 +11,19 @@ import 'package:windows_notification/windows_notification.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/providers/preference_provider.dart';
 import 'package:woukiebox2/src/util/assets.dart';
+import 'package:woukiebox2/src/util/group_chat.dart';
 import 'package:woukiebox2/src/util/written_message.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:windows_taskbar/windows_taskbar.dart';
 
 class AppStateProvider extends ChangeNotifier {
+  // Need to control this for e.g. deleting/leaving groups and auto selecting when creating group.
+  int? _selectedGroup;
   int? _currentUser;
-  final HashMap<int, User> _users = HashMap<int, User>();
+  int _selectedPage = 0;
+  final HashMap<int, UserClient> _users = HashMap<int, UserClient>();
+  final HashMap<int, GroupChat> _chats = HashMap<int, GroupChat>();
+
   final List<dynamic> _messages = List.empty(growable: true);
   final List<int> _friends = List.empty(growable: true);
   final List<int> _outgoingFriendRequests = List.empty(growable: true);
@@ -28,12 +34,26 @@ class AppStateProvider extends ChangeNotifier {
 
   late final PreferenceProvider _preferenceProvider;
 
-  HashMap<int, User> get users => _users;
+  HashMap<int, UserClient> get users => _users;
+  HashMap<int, GroupChat> get chats => _chats;
+
   List<dynamic> get messages => _messages;
   List<int> get friends => _friends;
   List<int> get outgoingFriendRequests => _outgoingFriendRequests;
   List<int> get incomingFriendRequests => _incomingFriendRequests;
   int? get currentUser => _currentUser;
+  int? get selectedGroup => _selectedGroup;
+  int get selectedPage => _selectedPage;
+
+  void setSelectedGroup(value) {
+    _selectedGroup = value;
+    notifyListeners();
+  }
+
+  void setSelectedPage(value) {
+    _selectedPage = value;
+    notifyListeners();
+  }
 
   final player = AudioPlayer();
   final _winNotifyPlugin = WindowsNotification(
@@ -41,7 +61,10 @@ class AppStateProvider extends ChangeNotifier {
         r"{6D809377-6AF0-444B-8957-A3773F02200E}\WoukieBox2\WoukieBox2.exe",
   );
 
-  Future<String> messageNotification(User sender, ChatMessage message) async {
+  Future<String> messageNotification(
+    UserClient sender,
+    ChatMessageServer message,
+  ) async {
     return '''
       <toast>
         <visual>
@@ -68,6 +91,7 @@ class AppStateProvider extends ChangeNotifier {
     _currentUser = null;
     _messages.clear();
     _loadingUsers.clear();
+    _chats.clear();
     _users.clear();
     _friends.clear();
     _incomingFriendRequests.clear();
@@ -76,20 +100,41 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  chatMessage(ChatMessage message) async {
-    User? user = _users[message.sender];
+  initGroupChats(ChatsServer message) async {
+    _chats.clear();
+
+    for (Chat chat in message.chats) {
+      if (chat.id == null) continue;
+
+      _chats[chat.id!] = GroupChat(
+        chat.id!,
+        chat.users,
+        chat.name,
+        chat.owners,
+        chat.creator,
+        chat.lastMessage,
+      );
+    }
+  }
+
+  chatMessage(ChatMessageServer message) async {
+    UserClient? user = _users[message.sender];
     if (user == null) return; // This will never happen. But who knows?
 
-    // We do this to preserve the details at the time of the message. If we only have a reference to the user.id, then sender and color would update
-    _messages.add(
-      WrittenMessage(
-        user.id,
-        user.username,
-        message.message,
-        user.colour,
-        user.image,
-      ),
+    WrittenMessage writtenMessage = WrittenMessage(
+      user.id,
+      user.username,
+      message.message,
+      user.colour,
+      user.image,
     );
+
+    if (message.chat == 0) {
+      _messages.add(writtenMessage);
+    } else {
+      _chats[message.chat]?.messages.add(writtenMessage);
+      _chats[message.chat]?.lastMessage = DateTime.now();
+    }
 
     notifyListeners();
 
@@ -119,54 +164,93 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  roomMembers(RoomMembers message) {
+  roomMembers(RoomMembersServer message) {
     _users.forEach((id, user) {
       user.visible = false;
     });
 
-    for (User user in message.users) {
-      _users[user.id] = user;
+    for (UserServer user in message.users) {
+      _users[user.id] = UserClient(
+        id: user.id,
+        username: user.username,
+        bio: user.bio,
+        colour: user.colour,
+        image: user.image,
+        verified: user.verified,
+        visible: true,
+      );
     }
 
     notifyListeners();
   }
 
-  leaveMessage(LeaveMessage message) {
-    User? user = _users[message.id];
+  leaveMessage(LeaveChatServer message) {
+    UserClient? user = _users[message.sender];
     if (user == null) return; // This will never happen. But who knows?
 
-    _messages.add(
-      WrittenLeaveMessage(
-        message.id,
-        user.username,
-        user.colour,
-      ),
-    );
+    if (message.chat == 0) {
+      _messages.add(
+        WrittenLeaveMessage(
+          message.sender,
+          user.username,
+          user.colour,
+        ),
+      );
 
-    _users[message.id]?.visible = false;
+      _users[message.sender]?.visible = false;
+    } else {
+      GroupChat? chat = _chats[message.chat];
+      if (chat == null) return;
+
+      if (message.sender == currentUser) {
+        _selectedGroup = null;
+        _chats.remove(chat.id);
+      } else {
+        chat.owners = message.owners ?? chat.owners;
+        chat.lastMessage = DateTime.now();
+        chat.users.remove(message.sender);
+        chat.messages.add(
+          WrittenLeaveMessage(
+            message.sender,
+            user.username,
+            user.colour,
+          ),
+        );
+      }
+    }
+
     notifyListeners();
   }
 
-  joinMessage(JoinMessage message) {
+  joinMessage(JoinChatServer message) {
     _messages.add(
       WrittenJoinMessage(
-        message.user.id,
-        message.user.username,
-        message.user.colour,
+        message.sender.id,
+        message.sender.username,
+        message.sender.colour,
       ),
     );
 
-    _users[message.user.id] = message.user;
+    _users[message.sender.id] = UserClient(
+      id: message.sender.id,
+      username: message.sender.username,
+      bio: message.sender.bio,
+      colour: message.sender.colour,
+      image: message.sender.image,
+      verified: message.sender.verified,
+      visible: true,
+    );
+
     notifyListeners();
   }
 
-  selfIdentifier(SelfIdentifier message) {
+  selfIdentifier(SelfIdentifierServer message) {
     _currentUser = message.id;
     notifyListeners();
   }
 
-  updateProfile(UpdateProfile message) {
-    User? user = _users[message.sender];
+  updateProfile(UpdateProfileServer message) {
+    UserClient? user = _users[message.sender];
     // The server never sends a null sender, and all users are tracked. But who knows?
     if (user == null) return;
 
@@ -174,7 +258,7 @@ class AppStateProvider extends ChangeNotifier {
     if (message.username != null || message.colour != null) {
       _messages.add(
         WrittenProfileMessage(
-          message.sender!,
+          message.sender,
           user.username,
           user.colour,
           message.username,
@@ -184,7 +268,7 @@ class AppStateProvider extends ChangeNotifier {
     }
 
     _users.update(
-      message.sender!, // We know there's a user with this id
+      message.sender,
       (user) => user.copyWith(
         bio: message.bio,
         colour: message.colour,
@@ -196,7 +280,7 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void friendList(FriendList message) {
+  void friendList(FriendListServer message) {
     _friends.clear();
     _friends.addAll(message.friends);
 
@@ -213,17 +297,48 @@ class AppStateProvider extends ChangeNotifier {
     if (_loadingUsers.contains(userId)) return;
     _loadingUsers.add(userId);
 
-    User? user = await client.crud.getUser(userId);
+    UserServer? user = await client.crud.getUser(userId);
 
     // We double check the loading users array in case we have logged out, which clears the set
     if (_loadingUsers.contains(userId)) {
       if (user != null) {
-        user.visible = _users[userId]?.visible ?? false;
-        _users[userId] = user;
+        _users[userId] = UserClient(
+          id: user.id,
+          username: user.username,
+          bio: user.bio,
+          colour: user.colour,
+          image: user.image,
+          verified: user.verified,
+          visible: _users[userId]?.visible ?? false,
+        );
+
         notifyListeners();
       }
 
       _loadingUsers.remove(userId);
     }
+  }
+
+  Future<void> createChat(CreateChatServer message) async {
+    _chats[message.chat.id!] = GroupChat(
+      message.chat.id!,
+      message.chat.users,
+      message.chat.name,
+      message.chat.owners,
+      message.chat.creator,
+      message.chat.lastMessage,
+    );
+
+    if (message.chat.creator == _currentUser) {
+      _selectedGroup = message.chat.id;
+      _selectedPage = 1;
+    }
+
+    notifyListeners();
+  }
+
+  void renameChat(RenameChat message) {
+    _chats[message.chat]?.name = message.name;
+    notifyListeners();
   }
 }

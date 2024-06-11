@@ -1,0 +1,6 @@
+class: CreateChatClient
+
+fields:
+  users: List<int>
+  owners: List<int>
+  name: String

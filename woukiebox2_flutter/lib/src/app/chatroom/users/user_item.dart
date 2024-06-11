@@ -9,12 +9,16 @@ class UserItem extends StatelessWidget {
     required this.colour,
     required this.image,
     required this.userId,
+    this.crowned = false,
+    this.disabled = false,
   });
 
   final String username;
   final String image;
   final Color colour;
   final int userId;
+  final bool crowned;
+  final bool disabled;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +29,7 @@ class UserItem extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ProfilePic(
+              offline: disabled,
               url: image,
             ),
           ),
@@ -37,11 +42,18 @@ class UserItem extends StatelessWidget {
                 maxLines: 1,
                 username,
                 style: TextStyle(
-                  color: colour,
+                  color: Color.lerp(colour, Colors.grey, disabled ? 0.7 : 0)
+                      ?.withAlpha(disabled ? 130 : 255),
                 ),
               ),
             ),
           ),
+          crowned
+              ? const Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: Icon(Icons.shield),
+                )
+              : Container(),
         ],
       ),
     );

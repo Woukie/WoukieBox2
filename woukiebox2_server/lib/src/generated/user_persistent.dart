@@ -20,6 +20,7 @@ abstract class UserPersistent extends _i1.TableRow {
     required this.color,
     required this.bio,
     required this.image,
+    required this.chats,
     required this.friends,
     required this.outgoingFriendRequests,
     required this.incomingFriendRequests,
@@ -32,6 +33,7 @@ abstract class UserPersistent extends _i1.TableRow {
     required String color,
     required String bio,
     required String image,
+    required List<int> chats,
     required List<int> friends,
     required List<int> outgoingFriendRequests,
     required List<int> incomingFriendRequests,
@@ -52,6 +54,8 @@ abstract class UserPersistent extends _i1.TableRow {
       bio: serializationManager.deserialize<String>(jsonSerialization['bio']),
       image:
           serializationManager.deserialize<String>(jsonSerialization['image']),
+      chats: serializationManager
+          .deserialize<List<int>>(jsonSerialization['chats']),
       friends: serializationManager
           .deserialize<List<int>>(jsonSerialization['friends']),
       outgoingFriendRequests: serializationManager
@@ -75,6 +79,8 @@ abstract class UserPersistent extends _i1.TableRow {
 
   String image;
 
+  List<int> chats;
+
   List<int> friends;
 
   List<int> outgoingFriendRequests;
@@ -91,6 +97,7 @@ abstract class UserPersistent extends _i1.TableRow {
     String? color,
     String? bio,
     String? image,
+    List<int>? chats,
     List<int>? friends,
     List<int>? outgoingFriendRequests,
     List<int>? incomingFriendRequests,
@@ -104,6 +111,7 @@ abstract class UserPersistent extends _i1.TableRow {
       'color': color,
       'bio': bio,
       'image': image,
+      'chats': chats.toJson(),
       'friends': friends.toJson(),
       'outgoingFriendRequests': outgoingFriendRequests.toJson(),
       'incomingFriendRequests': incomingFriendRequests.toJson(),
@@ -119,6 +127,7 @@ abstract class UserPersistent extends _i1.TableRow {
       'color': color,
       'bio': bio,
       'image': image,
+      'chats': chats,
       'friends': friends,
       'outgoingFriendRequests': outgoingFriendRequests,
       'incomingFriendRequests': incomingFriendRequests,
@@ -134,6 +143,7 @@ abstract class UserPersistent extends _i1.TableRow {
       'color': color,
       'bio': bio,
       'image': image,
+      'chats': chats.toJson(),
       'friends': friends.toJson(),
       'outgoingFriendRequests': outgoingFriendRequests.toJson(),
       'incomingFriendRequests': incomingFriendRequests.toJson(),
@@ -161,6 +171,9 @@ abstract class UserPersistent extends _i1.TableRow {
         return;
       case 'image':
         image = value;
+        return;
+      case 'chats':
+        chats = value;
         return;
       case 'friends':
         friends = value;
@@ -336,6 +349,7 @@ class _UserPersistentImpl extends UserPersistent {
     required String color,
     required String bio,
     required String image,
+    required List<int> chats,
     required List<int> friends,
     required List<int> outgoingFriendRequests,
     required List<int> incomingFriendRequests,
@@ -346,6 +360,7 @@ class _UserPersistentImpl extends UserPersistent {
           color: color,
           bio: bio,
           image: image,
+          chats: chats,
           friends: friends,
           outgoingFriendRequests: outgoingFriendRequests,
           incomingFriendRequests: incomingFriendRequests,
@@ -359,6 +374,7 @@ class _UserPersistentImpl extends UserPersistent {
     String? color,
     String? bio,
     String? image,
+    List<int>? chats,
     List<int>? friends,
     List<int>? outgoingFriendRequests,
     List<int>? incomingFriendRequests,
@@ -371,6 +387,7 @@ class _UserPersistentImpl extends UserPersistent {
       color: color ?? this.color,
       bio: bio ?? this.bio,
       image: image ?? this.image,
+      chats: chats ?? this.chats.clone(),
       friends: friends ?? this.friends.clone(),
       outgoingFriendRequests:
           outgoingFriendRequests ?? this.outgoingFriendRequests.clone(),
@@ -399,6 +416,10 @@ class UserPersistentTable extends _i1.Table {
       'image',
       this,
     );
+    chats = _i1.ColumnSerializable(
+      'chats',
+      this,
+    );
     friends = _i1.ColumnSerializable(
       'friends',
       this,
@@ -422,6 +443,8 @@ class UserPersistentTable extends _i1.Table {
   late final _i1.ColumnString bio;
 
   late final _i1.ColumnString image;
+
+  late final _i1.ColumnSerializable chats;
 
   late final _i1.ColumnSerializable friends;
 
@@ -449,6 +472,7 @@ class UserPersistentTable extends _i1.Table {
         color,
         bio,
         image,
+        chats,
         friends,
         outgoingFriendRequests,
         incomingFriendRequests,

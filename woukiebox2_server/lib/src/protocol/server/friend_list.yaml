@@ -1,0 +1,7 @@
+class: FriendListServer
+
+# Sent to client on friend list updates and when joining
+fields:
+  friends: List<int>
+  outgoingFriendRequests: List<int>
+  incomingFriendRequests: List<int>

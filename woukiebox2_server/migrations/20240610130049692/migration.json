@@ -1,0 +1,72 @@
+{
+  "actions": [
+    {
+      "type": "deleteTable",
+      "deleteTable": "chat"
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "chat",
+        "dartName": "Chat",
+        "module": "woukiebox2",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 2,
+            "isNullable": false,
+            "columnDefault": "nextval('chat_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "users",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "List<int>"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "owner",
+            "columnType": 2,
+            "isNullable": false,
+            "dartType": "int"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "chat_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "type": "tableDropped",
+      "message": "One or more columns are added to table \"chat\" which cannot be added in a table migration. The complete table will be deleted and recreated.",
+      "table": "chat",
+      "columns": [
+        "name"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}

@@ -1,0 +1,4 @@
+class: CreateChatServer
+
+fields:
+  chat: Chat

@@ -296,8 +296,10 @@ class _RegisterState extends State<Register> {
                                           _validateAccount(
                                             setState,
                                             Provider.of<
-                                                    ConnectionStateProvider>(
-                                                context),
+                                                ConnectionStateProvider>(
+                                              context,
+                                              listen: false,
+                                            ),
                                           );
                                         }
                                         setState(() {});
@@ -323,6 +325,8 @@ class _RegisterState extends State<Register> {
   Future<void> _validateAccount(StateSetter dialogueStateSetter,
       ConnectionStateProvider connectionStateProvider) async {
     var email = _emailController.text.toLowerCase().trim();
+
+    print("vbass");
 
     setState(() {
       _enabled = false;

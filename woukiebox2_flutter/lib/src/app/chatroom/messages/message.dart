@@ -7,7 +7,7 @@ import 'package:woukiebox2/src/app/profile/profile_preview.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 import 'package:woukiebox2/src/util/written_message.dart';
 
-User unknownUser = User(
+UserClient unknownUser = UserClient(
   id: -1,
   username: "Unknown User",
   bio: "",
@@ -26,7 +26,8 @@ class Message extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final message = messages[index];
-    final parentMessage = index != 0 ? messages[index - 1] : null;
+    final parentMessage =
+        index != messages.length - 1 ? messages[index + 1] : null;
 
     if (message is WrittenMessage) {
       bool typeMatch = parentMessage is WrittenMessage;
@@ -152,6 +153,8 @@ class HeadMessage extends StatelessWidget {
                   .users[message.senderId]!,
               child: ProfilePic(
                 url: message.image,
+                offline: false,
+                showIndicator: false,
               ),
             ),
           ),

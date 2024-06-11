@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
+import 'package:woukiebox2_server/src/endpoints/sockets.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 
 // Don't know how to have internal functions on an endpoint without also exposing them to the client. So this class handles a random assortment of things.
@@ -40,6 +41,7 @@ class Util {
         friends: List<int>.empty(),
         outgoingFriendRequests: List<int>.empty(),
         incomingFriendRequests: List<int>.empty(),
+        chats: [],
       ),
     );
 
@@ -47,15 +49,19 @@ class Util {
   }
 
   // Sets and returns the user object and updates connectedUsers. User constructed with database values if authenticated
-  static Future<User?> initUser(
+  static Future<UserServer?> initUser(
     StreamingSession session,
-    Set<User> connectedUsers,
     Function(Session, dynamic) setUserObject,
   ) async {
     UserInfo? senderInfo = await Util.getAuthUser(session);
 
     if (senderInfo != null) {
-      if (connectedUsers.any((user) => user.id == senderInfo.id)) return null;
+      if (SocketsEndpoint.connectedUsers.any(
+        (user) => user.id == senderInfo.id,
+      )) {
+        return null;
+      }
+
       UserPersistent senderPersistant =
           (await Util.getPersistentData(session))!;
 
@@ -64,17 +70,16 @@ class Util {
         path: senderPersistant.image,
       );
 
-      User user = User(
+      UserServer user = UserServer(
         id: senderInfo.id!,
         colour: senderPersistant.color,
         username: senderInfo.userName,
         image: imageUri.toString(),
         bio: senderPersistant.bio,
         verified: true,
-        visible: true,
       );
 
-      connectedUsers.add(user);
+      SocketsEndpoint.connectedUsers.add(user);
       setUserObject(session, (id: user.id));
 
       print("Authenticated user joined!");
@@ -82,17 +87,16 @@ class Util {
       return user;
     }
 
-    User user = User(
+    UserServer user = UserServer(
       id: Random().nextInt(100000000),
       colour: Util.randomColour(),
       username: "Anonymous",
       image: "",
       bio: "",
       verified: false,
-      visible: true,
     );
 
-    connectedUsers.add(user);
+    SocketsEndpoint.connectedUsers.add(user);
     setUserObject(session, (id: user.id));
 
     print("Anonymous user joined!");

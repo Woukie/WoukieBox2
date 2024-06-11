@@ -21,24 +21,28 @@ void run(List<String> args) async {
     sendValidationEmail: (session, email, validationCode) async {
       print('Validation code: $validationCode');
 
-      final gmailEmail = session.serverpod.getPassword('gmailEmail')!;
-      final gmailPassword = session.serverpod.getPassword('gmailPassword')!;
+      if (pod.runMode == ServerpodRunMode.production) {
+        final gmailEmail = session.serverpod.getPassword('gmailEmail')!;
+        final gmailPassword = session.serverpod.getPassword('gmailPassword')!;
 
-      final smtpServer = gmail(gmailEmail, gmailPassword);
-      final message = Message()
-        ..from = Address(gmailEmail, "Woukie's Goon")
-        ..recipients = [email]
-        ..subject = "Verification Code for WoukieBox2"
-        ..html = validationCode;
+        final smtpServer = gmail(gmailEmail, gmailPassword);
+        final message = Message()
+          ..from = Address(gmailEmail, "Woukie's Goon")
+          ..recipients = [email]
+          ..subject = "Verification Code for WoukieBox2"
+          ..html = validationCode;
 
-      try {
-        await send(message, smtpServer);
-        return true;
-      } on MailerException catch (e) {
-        print(e);
+        try {
+          await send(message, smtpServer);
+          return true;
+        } on MailerException catch (e) {
+          print(e);
+        }
+
+        return false;
       }
 
-      return false;
+      return true;
     },
     sendPasswordResetEmail: (session, userInfo, validationCode) async {
       print('Validation code: $validationCode');

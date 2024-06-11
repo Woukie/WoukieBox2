@@ -1,4 +1,0 @@
-class: SystemMessage
-
-fields:
-  message: String

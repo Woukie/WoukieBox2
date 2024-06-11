@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/profile/profile_more_dropdown.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
-import 'package:woukiebox2/src/app/profile/profile_preview.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
@@ -31,8 +30,8 @@ class Friend extends StatelessWidget {
 
     bool loading = appStateProvider.users[userId] == null;
 
-    User user = appStateProvider.users[userId] ??
-        User(
+    UserClient user = appStateProvider.users[userId] ??
+        UserClient(
           id: userId,
           username: "Loading...",
           bio: "Loading...",
@@ -41,6 +40,7 @@ class Friend extends StatelessWidget {
                   .hex,
           image: "",
           verified: true,
+          visible: false,
         );
 
     if (loading) {
@@ -52,19 +52,65 @@ class Friend extends StatelessWidget {
       child: ProfileMoreDropdown(
         enabled: !loading,
         userId: user.id,
-        child: ProfilePreview(
-          enabled: !loading,
-          user: user,
-          child: Card(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            elevation: .5,
-            margin: EdgeInsets.zero,
+        child: Card(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          elevation: .5,
+          margin: EdgeInsets.zero,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () {
+              bool found = false;
+              appStateProvider.chats.forEach((id, chat) {
+                if (chat.users.length == 2 && chat.users.contains(user.id)) {
+                  appStateProvider.setSelectedGroup(id);
+                  appStateProvider.setSelectedPage(1);
+                  found = true;
+                }
+              });
+
+              if (!found) {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    contentPadding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                    actionsPadding: const EdgeInsets.all(12),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(12),
+                      ),
+                    ),
+                    content:
+                        const Text("Create a group with you and this person?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("Cancel"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          client.sockets.sendStreamMessage(
+                            CreateChatClient(
+                              name: "",
+                              owners: [userId].toList(),
+                              users: [userId].toList(),
+                            ),
+                          );
+                        },
+                        child: const Text("Create"),
+                      )
+                    ],
+                  ),
+                );
+              }
+            },
             child: Row(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(12),
                   child: ProfilePic(
                     url: user.image,
+                    offline: !user.visible,
                   ),
                 ),
                 Expanded(
@@ -80,7 +126,10 @@ class Friend extends StatelessWidget {
                         child: IconButton.filledTonal(
                           onPressed: () {
                             client.sockets.sendStreamMessage(
-                              FriendRequest(target: userId, positive: false),
+                              FriendRequestClient(
+                                target: userId,
+                                positive: false,
+                              ),
                             );
                           },
                           icon: Icon(negativeIcon),
@@ -93,7 +142,10 @@ class Friend extends StatelessWidget {
                         child: IconButton.filled(
                           onPressed: () {
                             client.sockets.sendStreamMessage(
-                              FriendRequest(target: userId, positive: true),
+                              FriendRequestClient(
+                                target: userId,
+                                positive: true,
+                              ),
                             );
                           },
                           icon: Icon(positiveIcon),

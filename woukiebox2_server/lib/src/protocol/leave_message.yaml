@@ -1,4 +1,0 @@
-class: LeaveMessage
-
-fields:
-  id: int

@@ -1,0 +1,5 @@
+class: RoomMembersServer
+
+# Sent to users when whey join global chat to update them with all users currently connected to the server
+fields:
+  users: List<UserServer>

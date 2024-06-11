@@ -39,7 +39,7 @@ class ProfilePictureEndpoint extends Endpoint {
 
   Future<bool> verifyUpload(Session session) async {
     UserInfo? senderInfo = await Util.getAuthUser(session);
-    if (senderInfo == null) return false;
+    if (senderInfo == null || senderInfo.id == null) return false;
 
     UserPersistent senderPersistant =
         (await Util.getPersistentData(session, senderInfo.id))!;
@@ -58,8 +58,8 @@ class ProfilePictureEndpoint extends Endpoint {
     if (successful) {
       session.messages.postMessage(
         'global',
-        UpdateProfile(
-          sender: senderInfo.id,
+        UpdateProfileServer(
+          sender: senderInfo.id!,
           image: imageUri.toString(),
         ),
       );

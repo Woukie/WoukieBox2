@@ -17,7 +17,7 @@ class ProfileEditor extends StatelessWidget {
     required this.child,
   });
 
-  final User user;
+  final UserClient user;
   final Widget child;
 
   @override
@@ -56,7 +56,7 @@ class ProfileEditor extends StatelessWidget {
 class EditorWidget extends StatefulWidget {
   const EditorWidget({super.key, required this.user, required this.child});
 
-  final User user;
+  final UserClient user;
   final Widget child;
 
   @override
@@ -74,7 +74,8 @@ class _EditorWidgetState extends State<EditorWidget> {
   Widget build(BuildContext context) {
     final appStateProvider = Provider.of<AppStateProvider>(context);
     // User is never null as app is conditionally rendered based on user null check
-    final User user = appStateProvider.users[appStateProvider.currentUser]!;
+    final UserClient user =
+        appStateProvider.users[appStateProvider.currentUser]!;
 
     nameController ??= TextEditingController(text: user.username);
     bioController ??= TextEditingController(text: user.bio);
@@ -96,6 +97,7 @@ class _EditorWidgetState extends State<EditorWidget> {
                   child: ProfilePic(
                     url: newImage == "" ? user.image : (newImage),
                     local: !kIsWeb && newImage != "",
+                    offline: !user.visible,
                   ),
                 ),
                 Expanded(
@@ -247,9 +249,9 @@ class _EditorWidgetState extends State<EditorWidget> {
     });
   }
 
-  void updateProfile(User originalUser) async {
+  void updateProfile(UserClient originalUser) async {
     client.sockets.sendStreamMessage(
-      UpdateProfile(
+      UpdateProfileClient(
         bio: bioController?.text != originalUser.bio
             ? bioController?.text
             : null,

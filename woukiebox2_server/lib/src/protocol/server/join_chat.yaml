@@ -1,0 +1,6 @@
+class: JoinChatServer
+
+# Sent to users in a chat when a user joins so they can update their users array without having to request a new user with CRUD
+fields:
+  sender: UserServer
+  chat: int

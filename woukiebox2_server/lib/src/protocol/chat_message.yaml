@@ -1,5 +1,0 @@
-class: ChatMessage
-
-fields:
-  sender: int?
-  message: String

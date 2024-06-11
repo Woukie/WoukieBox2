@@ -1,3 +1,4 @@
+import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/profile/profile_editor.dart';
@@ -11,17 +12,52 @@ import 'user_item.dart';
 class Users extends StatelessWidget {
   const Users({
     super.key,
+    required this.userIds,
+    required this.showInvisible,
+    required this.owners,
   });
+
+  final List<int> userIds;
+  final List<int> owners;
+  final bool showInvisible;
 
   @override
   Widget build(BuildContext context) {
     final appStateProvider = Provider.of<AppStateProvider>(context);
-    final users = appStateProvider.users;
-    final List<User> userList = users.values.toList();
+    List<UserClient> users = List<UserClient>.empty(growable: true);
+
+    for (int userId in userIds) {
+      UserClient? user = appStateProvider.users[userId];
+
+      if (user == null) {
+        user = UserClient(
+          id: userId,
+          username: "Loading...",
+          bio: "Loading...",
+          colour:
+              (Theme.of(context).textTheme.labelMedium?.color ?? Colors.white)
+                  .hex,
+          image: "",
+          verified: true,
+          visible: false,
+        );
+
+        appStateProvider.scheduleGetUser(userId);
+      }
+
+      if (!showInvisible && !user.visible) continue;
+
+      users.add(user);
+    }
+
     // app only renders if user passes null check
-    final User localUser = users[appStateProvider.currentUser]!;
-    userList
-        .removeWhere((user) => !(user.visible ?? true) || user == localUser);
+    final UserClient localUser =
+        appStateProvider.users[appStateProvider.currentUser]!;
+    users.removeWhere((user) => user == localUser);
+    users.sort((userA, userB) {
+      if (userA.visible != userB.visible) return userA.visible ? -1 : 1;
+      return userA.username.compareTo(userB.username);
+    });
 
     return Padding(
       padding: const EdgeInsets.only(left: 12),
@@ -38,6 +74,7 @@ class Users extends StatelessWidget {
                   image: localUser.image,
                   username: localUser.username,
                   userId: localUser.id,
+                  crowned: owners.contains(localUser.id),
                 ),
               ),
             ),
@@ -51,18 +88,20 @@ class Users extends StatelessWidget {
                 children: [
                   Expanded(
                     child: ListView.builder(
-                      itemCount: userList.length,
+                      itemCount: users.length,
                       itemBuilder: (context, index) {
-                        Color color = HexColor.fromHex(userList[index].colour);
-                        User user = userList[index];
+                        Color color = HexColor.fromHex(users[index].colour);
+                        UserClient user = users[index];
 
                         return ProfilePreview(
                           user: user,
                           child: UserItem(
+                            disabled: !user.visible,
                             colour: color,
                             image: user.image,
                             username: user.username,
                             userId: user.id,
+                            crowned: owners.contains(user.id),
                           ),
                         );
                       },

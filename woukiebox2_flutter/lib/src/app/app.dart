@@ -1,7 +1,9 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/friends/friends.dart';
 import 'package:woukiebox2/src/app/settings.dart';
+import 'package:woukiebox2/src/providers/app_state_provider.dart';
 
 import 'chatroom/chat_room.dart';
 
@@ -15,27 +17,31 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  int _selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+    int selectedPage = appStateProvider.selectedPage;
+
     return Row(
       children: [
         NavigationRail(
           backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
           elevation: 2,
-          selectedIndex: _selectedIndex,
+          selectedIndex: selectedPage,
           labelType: NavigationRailLabelType.selected,
           onDestinationSelected: (int index) {
-            setState(() {
-              _selectedIndex = index;
-            });
+            appStateProvider.setSelectedPage(index);
           },
           destinations: const <NavigationRailDestination>[
             NavigationRailDestination(
+              icon: Icon(Icons.public_outlined),
+              selectedIcon: Icon(Icons.public),
+              label: Text('Global'),
+            ),
+            NavigationRailDestination(
               icon: Icon(Icons.chat_bubble_outline),
               selectedIcon: Icon(Icons.chat_bubble),
-              label: Text('Chat'),
+              label: Text('Messages'),
             ),
             NavigationRailDestination(
               icon: Icon(Icons.group_outlined),
@@ -55,10 +61,12 @@ class _AppState extends State<App> {
             transitionBuilder: (Widget child, Animation<double> animation) {
               return FadeScaleTransition(animation: animation, child: child);
             },
-            child: switch (_selectedIndex) {
-              0 => const ChatRoom(),
-              1 => const Friends(),
-              2 => const Settings(),
+            child: switch (selectedPage) {
+              0 || 1 => ChatRoom(
+                  global: selectedPage == 0,
+                ),
+              2 => const Friends(),
+              3 => const Settings(),
               _ => Container(),
             },
           ),
