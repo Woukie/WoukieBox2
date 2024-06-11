@@ -206,7 +206,11 @@ class HandleSocketMessage {
 
     // Remove user from chat
     chat.users.remove(senderInfo.id);
-    await Chat.db.updateRow(session, chat);
+    if (chat.users.isEmpty) {
+      await Chat.db.deleteRow(session, chat);
+    } else {
+      await Chat.db.updateRow(session, chat);
+    }
 
     // Remove chat from user
     senderPersistent.chats.remove(message.chat);
