@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/direct_messages/direct_message_dropdown.dart';
@@ -25,6 +27,20 @@ class ChatsList extends StatelessWidget {
 
     groupChats.removeWhere(
         (chat) => !chat.name.toLowerCase().contains(searchQuery.toLowerCase()));
+
+    String generateGroupName(GroupChat groupChat) {
+      List<int> members = groupChat.users
+          .where((user) => user != appStateProvider.currentUser)
+          .toList();
+
+      String name = "";
+      for (int i = 0; i < min(members.length, 3); i++) {
+        int member = members[i];
+        name += "${appStateProvider.users[member]?.username ?? "Loading"}, ";
+      }
+
+      return name.substring(0, name.length - 2);
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
@@ -62,7 +78,9 @@ class ChatsList extends StatelessWidget {
                       Expanded(
                         child: Text(
                           softWrap: false,
-                          groupChat.name,
+                          groupChat.name.isEmpty
+                              ? generateGroupName(groupChat)
+                              : groupChat.name,
                           overflow: TextOverflow.fade,
                         ),
                       ),
