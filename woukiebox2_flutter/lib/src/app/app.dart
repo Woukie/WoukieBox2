@@ -1,6 +1,5 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:woukiebox2/src/app/direct_messages/direct_messages.dart';
 import 'package:woukiebox2/src/app/friends/friends.dart';
 import 'package:woukiebox2/src/app/settings.dart';
 
@@ -62,8 +61,9 @@ class _AppState extends State<App> {
               return FadeScaleTransition(animation: animation, child: child);
             },
             child: switch (_selectedIndex) {
-              0 => const ChatRoom(),
-              1 => const DirectMessages(),
+              0 || 1 => ChatRoom(
+                  global: _selectedIndex == 0,
+                ),
               2 => const Friends(),
               3 => const Settings(),
               _ => Container(),
