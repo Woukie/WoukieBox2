@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/profile/profile_more_dropdown.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
-import 'package:woukiebox2/src/app/profile/profile_preview.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
@@ -53,13 +52,27 @@ class Friend extends StatelessWidget {
       child: ProfileMoreDropdown(
         enabled: !loading,
         userId: user.id,
-        child: ProfilePreview(
-          enabled: !loading,
-          user: user,
-          child: Card(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            elevation: .5,
-            margin: EdgeInsets.zero,
+        child: Card(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          elevation: .5,
+          margin: EdgeInsets.zero,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () {
+              appStateProvider.chats.forEach((id, chat) {
+                if (chat.users.length == 2 && chat.users.contains(user.id)) {
+                  appStateProvider.setSelectedGroup(id);
+                  appStateProvider.setSelectedPage(1);
+                  return;
+                }
+              });
+
+              client.sockets.sendStreamMessage(
+                CreateChatClient(
+                  users: [userId].toList(),
+                ),
+              );
+            },
             child: Row(
               children: [
                 Padding(

@@ -1,7 +1,9 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/friends/friends.dart';
 import 'package:woukiebox2/src/app/settings.dart';
+import 'package:woukiebox2/src/providers/app_state_provider.dart';
 
 import 'chatroom/chat_room.dart';
 
@@ -15,21 +17,20 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  int _selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+    int selectedPage = appStateProvider.selectedPage;
+
     return Row(
       children: [
         NavigationRail(
           backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
           elevation: 2,
-          selectedIndex: _selectedIndex,
+          selectedIndex: selectedPage,
           labelType: NavigationRailLabelType.selected,
           onDestinationSelected: (int index) {
-            setState(() {
-              _selectedIndex = index;
-            });
+            appStateProvider.setSelectedPage(index);
           },
           destinations: const <NavigationRailDestination>[
             NavigationRailDestination(
@@ -60,9 +61,9 @@ class _AppState extends State<App> {
             transitionBuilder: (Widget child, Animation<double> animation) {
               return FadeScaleTransition(animation: animation, child: child);
             },
-            child: switch (_selectedIndex) {
+            child: switch (selectedPage) {
               0 || 1 => ChatRoom(
-                  global: _selectedIndex == 0,
+                  global: selectedPage == 0,
                 ),
               2 => const Friends(),
               3 => const Settings(),

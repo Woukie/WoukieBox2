@@ -20,6 +20,7 @@ class AppStateProvider extends ChangeNotifier {
   // Need to control this for e.g. deleting/leaving groups and auto selecting when creating group.
   int? _selectedGroup;
   int? _currentUser;
+  int _selectedPage = 0;
   final HashMap<int, UserClient> _users = HashMap<int, UserClient>();
   final HashMap<int, GroupChat> _chats = HashMap<int, GroupChat>();
 
@@ -42,9 +43,15 @@ class AppStateProvider extends ChangeNotifier {
   List<int> get incomingFriendRequests => _incomingFriendRequests;
   int? get currentUser => _currentUser;
   int? get selectedGroup => _selectedGroup;
+  int get selectedPage => _selectedPage;
 
   void setSelectedGroup(value) {
     _selectedGroup = value;
+    notifyListeners();
+  }
+
+  void setSelectedPage(value) {
+    _selectedPage = value;
     notifyListeners();
   }
 
@@ -320,7 +327,10 @@ class AppStateProvider extends ChangeNotifier {
       message.chat.lastMessage,
     );
 
-    if (message.chat.owner == _currentUser) _selectedGroup = message.chat.id;
+    if (message.chat.owner == _currentUser) {
+      _selectedGroup = message.chat.id;
+      _selectedPage = 1;
+    }
 
     notifyListeners();
   }
