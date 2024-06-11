@@ -96,6 +96,7 @@ class Users extends StatelessWidget {
                         return ProfilePreview(
                           user: user,
                           child: UserItem(
+                            disabled: !user.visible,
                             colour: color,
                             image: user.image,
                             username: user.username,
