@@ -206,11 +206,11 @@ class HandleSocketMessage {
 
     // Remove user from chat
     chat.users.remove(senderInfo.id);
-    if ((await Chat.db.insertRow(session, chat)).id == null) return;
+    await Chat.db.updateRow(session, chat);
 
     // Remove chat from user
     senderPersistent.chats.remove(message.chat);
-    UserPersistent.db.updateRow(session, senderPersistent);
+    await UserPersistent.db.updateRow(session, senderPersistent);
 
     // Short way to also send leave message to sender, doesn't actually save
     chat.users.add(senderInfo.id!);
