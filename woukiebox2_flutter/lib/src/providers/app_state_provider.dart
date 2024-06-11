@@ -180,15 +180,36 @@ class AppStateProvider extends ChangeNotifier {
     UserClient? user = _users[message.sender];
     if (user == null) return; // This will never happen. But who knows?
 
-    _messages.add(
-      WrittenLeaveMessage(
-        message.sender,
-        user.username,
-        user.colour,
-      ),
-    );
+    if (message.chat == 0) {
+      _messages.add(
+        WrittenLeaveMessage(
+          message.sender,
+          user.username,
+          user.colour,
+        ),
+      );
 
-    _users[message.sender]?.visible = false;
+      _users[message.sender]?.visible = false;
+    } else {
+      GroupChat? chat = _chats[message.chat];
+      if (chat == null) return;
+
+      if (message.sender == currentUser) {
+        _selectedGroup = null;
+        _chats.remove(chat.id);
+      } else {
+        chat.lastMessage = DateTime.now();
+        chat.users.remove(message.sender);
+        chat.messages.add(
+          WrittenLeaveMessage(
+            message.sender,
+            user.username,
+            user.colour,
+          ),
+        );
+      }
+    }
+
     notifyListeners();
   }
 

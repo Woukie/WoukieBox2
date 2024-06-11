@@ -190,4 +190,41 @@ class HandleSocketMessage {
       );
     }
   }
+
+  static Future<void> leaveChat(
+      StreamingSession session, LeaveChatClient message) async {
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return;
+
+    UserPersistent senderPersistent =
+        (await Util.getPersistentData(session, senderInfo.id))!;
+
+    if (!senderPersistent.chats.contains(message.chat)) return;
+
+    Chat? chat = await Chat.db.findById(session, message.chat);
+    if (chat == null) return;
+
+    // Remove user from chat
+    chat.users.remove(senderInfo.id);
+    if ((await Chat.db.insertRow(session, chat)).id == null) return;
+
+    // Remove chat from user
+    senderPersistent.chats.remove(message.chat);
+    UserPersistent.db.updateRow(session, senderPersistent);
+
+    // Short way to also send leave message to sender, doesn't actually save
+    chat.users.add(senderInfo.id!);
+
+    for (int user in chat.users) {
+      session.messages.postMessage(
+        user.toString(),
+        LeaveChatServer(
+          chat: chat.id!,
+          sender: senderInfo.id!,
+        ),
+      );
+    }
+  }
+
+  static Future<void> renameChat(StreamingSession session, message) async {}
 }

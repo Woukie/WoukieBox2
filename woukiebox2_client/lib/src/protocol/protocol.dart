@@ -28,9 +28,10 @@ import 'server/room_members.dart' as _i16;
 import 'server/self_identifier.dart' as _i17;
 import 'server/update_profile.dart' as _i18;
 import 'server/user.dart' as _i19;
-import 'user_persistent.dart' as _i20;
-import 'protocol.dart' as _i21;
-import 'package:serverpod_auth_client/module.dart' as _i22;
+import 'shared/rename_chat.dart' as _i20;
+import 'user_persistent.dart' as _i21;
+import 'protocol.dart' as _i22;
+import 'package:serverpod_auth_client/module.dart' as _i23;
 export 'chat.dart';
 export 'client/chat_message.dart';
 export 'client/create_chat.dart';
@@ -49,6 +50,7 @@ export 'server/room_members.dart';
 export 'server/self_identifier.dart';
 export 'server/update_profile.dart';
 export 'server/user.dart';
+export 'shared/rename_chat.dart';
 export 'user_persistent.dart';
 export 'client.dart';
 
@@ -124,8 +126,11 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i19.UserServer) {
       return _i19.UserServer.fromJson(data, this) as T;
     }
-    if (t == _i20.UserPersistent) {
-      return _i20.UserPersistent.fromJson(data, this) as T;
+    if (t == _i20.RenameChat) {
+      return _i20.RenameChat.fromJson(data, this) as T;
+    }
+    if (t == _i21.UserPersistent) {
+      return _i21.UserPersistent.fromJson(data, this) as T;
     }
     if (t == _i1.getType<_i2.Chat?>()) {
       return (data != null ? _i2.Chat.fromJson(data, this) : null) as T;
@@ -199,23 +204,26 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i19.UserServer?>()) {
       return (data != null ? _i19.UserServer.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i20.UserPersistent?>()) {
-      return (data != null ? _i20.UserPersistent.fromJson(data, this) : null)
+    if (t == _i1.getType<_i20.RenameChat?>()) {
+      return (data != null ? _i20.RenameChat.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i21.UserPersistent?>()) {
+      return (data != null ? _i21.UserPersistent.fromJson(data, this) : null)
           as T;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
     }
-    if (t == List<_i21.Chat>) {
-      return (data as List).map((e) => deserialize<_i21.Chat>(e)).toList()
+    if (t == List<_i22.Chat>) {
+      return (data as List).map((e) => deserialize<_i22.Chat>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i21.UserServer>) {
-      return (data as List).map((e) => deserialize<_i21.UserServer>(e)).toList()
+    if (t == List<_i22.UserServer>) {
+      return (data as List).map((e) => deserialize<_i22.UserServer>(e)).toList()
           as dynamic;
     }
     try {
-      return _i22.Protocol().deserialize<T>(data, t);
+      return _i23.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -223,7 +231,7 @@ class Protocol extends _i1.SerializationManager {
   @override
   String? getClassNameForObject(Object data) {
     String? className;
-    className = _i22.Protocol().getClassNameForObject(data);
+    className = _i23.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
@@ -281,7 +289,10 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i19.UserServer) {
       return 'UserServer';
     }
-    if (data is _i20.UserPersistent) {
+    if (data is _i20.RenameChat) {
+      return 'RenameChat';
+    }
+    if (data is _i21.UserPersistent) {
       return 'UserPersistent';
     }
     return super.getClassNameForObject(data);
@@ -291,7 +302,7 @@ class Protocol extends _i1.SerializationManager {
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
-      return _i22.Protocol().deserializeByClassName(data);
+      return _i23.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'Chat') {
       return deserialize<_i2.Chat>(data['data']);
@@ -347,8 +358,11 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'UserServer') {
       return deserialize<_i19.UserServer>(data['data']);
     }
+    if (data['className'] == 'RenameChat') {
+      return deserialize<_i20.RenameChat>(data['data']);
+    }
     if (data['className'] == 'UserPersistent') {
-      return deserialize<_i20.UserPersistent>(data['data']);
+      return deserialize<_i21.UserPersistent>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

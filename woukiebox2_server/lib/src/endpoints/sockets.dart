@@ -118,6 +118,10 @@ class SocketsEndpoint extends Endpoint {
       HandleSocketMessage.friendRequest(session, message);
     } else if (message is CreateChatClient) {
       HandleSocketMessage.createChat(session, message);
+    } else if (message is LeaveChatClient) {
+      HandleSocketMessage.leaveChat(session, message);
+    } else if (message is RenameChat) {
+      HandleSocketMessage.renameChat(session, message);
     }
   }
 }

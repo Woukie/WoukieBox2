@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2/src/util/group_chat.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class DirectMessageDropdown extends StatelessWidget {
   const DirectMessageDropdown({
     super.key,
     required this.child,
-    required this.userId,
+    required this.groupChat,
     this.enabled = true,
   });
 
+  final GroupChat groupChat;
   final Widget child;
-  final int userId;
   final bool enabled;
 
   @override
@@ -34,18 +37,23 @@ class DirectMessageDropdown extends StatelessWidget {
                   screenSize.width - offset.dx,
                   screenSize.height - offset.dy,
                 ),
-                items: getDropdownElements(),
+                items: getDropdownElements(groupChat),
               );
             },
           )
         : Container(child: child);
   }
 
-  static List<PopupMenuItem> getDropdownElements() {
+  static List<PopupMenuItem> getDropdownElements(GroupChat groupChat) {
     List<PopupMenuItem> items = List.empty(growable: true);
 
-    items.add(getButton("Rename", Icons.person_remove, () => print("Rename")));
-    items.add(getButton("Leave", Icons.close, () => print("Leave")));
+    items.add(getButton("Rename", Icons.edit, () {
+      client.sockets.sendStreamMessage(
+          RenameChat(name: "rename test!", chat: groupChat.id));
+    }));
+    items.add(getButton("Leave", Icons.exit_to_app, () {
+      client.sockets.sendStreamMessage(LeaveChatClient(chat: groupChat.id));
+    }));
 
     return items;
   }

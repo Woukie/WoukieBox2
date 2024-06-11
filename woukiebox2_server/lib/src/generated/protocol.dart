@@ -30,8 +30,9 @@ import 'server/room_members.dart' as _i18;
 import 'server/self_identifier.dart' as _i19;
 import 'server/update_profile.dart' as _i20;
 import 'server/user.dart' as _i21;
-import 'user_persistent.dart' as _i22;
-import 'protocol.dart' as _i23;
+import 'shared/rename_chat.dart' as _i22;
+import 'user_persistent.dart' as _i23;
+import 'protocol.dart' as _i24;
 export 'chat.dart';
 export 'client/chat_message.dart';
 export 'client/create_chat.dart';
@@ -50,6 +51,7 @@ export 'server/room_members.dart';
 export 'server/self_identifier.dart';
 export 'server/update_profile.dart';
 export 'server/user.dart';
+export 'shared/rename_chat.dart';
 export 'user_persistent.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
@@ -289,8 +291,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i21.UserServer) {
       return _i21.UserServer.fromJson(data, this) as T;
     }
-    if (t == _i22.UserPersistent) {
-      return _i22.UserPersistent.fromJson(data, this) as T;
+    if (t == _i22.RenameChat) {
+      return _i22.RenameChat.fromJson(data, this) as T;
+    }
+    if (t == _i23.UserPersistent) {
+      return _i23.UserPersistent.fromJson(data, this) as T;
     }
     if (t == _i1.getType<_i4.Chat?>()) {
       return (data != null ? _i4.Chat.fromJson(data, this) : null) as T;
@@ -364,19 +369,22 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i21.UserServer?>()) {
       return (data != null ? _i21.UserServer.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i22.UserPersistent?>()) {
-      return (data != null ? _i22.UserPersistent.fromJson(data, this) : null)
+    if (t == _i1.getType<_i22.RenameChat?>()) {
+      return (data != null ? _i22.RenameChat.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i23.UserPersistent?>()) {
+      return (data != null ? _i23.UserPersistent.fromJson(data, this) : null)
           as T;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
     }
-    if (t == List<_i23.Chat>) {
-      return (data as List).map((e) => deserialize<_i23.Chat>(e)).toList()
+    if (t == List<_i24.Chat>) {
+      return (data as List).map((e) => deserialize<_i24.Chat>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i23.UserServer>) {
-      return (data as List).map((e) => deserialize<_i23.UserServer>(e)).toList()
+    if (t == List<_i24.UserServer>) {
+      return (data as List).map((e) => deserialize<_i24.UserServer>(e)).toList()
           as dynamic;
     }
     try {
@@ -449,7 +457,10 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i21.UserServer) {
       return 'UserServer';
     }
-    if (data is _i22.UserPersistent) {
+    if (data is _i22.RenameChat) {
+      return 'RenameChat';
+    }
+    if (data is _i23.UserPersistent) {
       return 'UserPersistent';
     }
     return super.getClassNameForObject(data);
@@ -515,8 +526,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'UserServer') {
       return deserialize<_i21.UserServer>(data['data']);
     }
+    if (data['className'] == 'RenameChat') {
+      return deserialize<_i22.RenameChat>(data['data']);
+    }
     if (data['className'] == 'UserPersistent') {
-      return deserialize<_i22.UserPersistent>(data['data']);
+      return deserialize<_i23.UserPersistent>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -538,8 +552,8 @@ class Protocol extends _i1.SerializationManagerServer {
     switch (t) {
       case _i4.Chat:
         return _i4.Chat.t;
-      case _i22.UserPersistent:
-        return _i22.UserPersistent.t;
+      case _i23.UserPersistent:
+        return _i23.UserPersistent.t;
     }
     return null;
   }
