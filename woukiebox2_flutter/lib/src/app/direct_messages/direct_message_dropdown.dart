@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
-import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
@@ -19,8 +17,6 @@ class DirectMessageDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
-
     return enabled
         ? InkWell(
             borderRadius: BorderRadius.circular(12),
