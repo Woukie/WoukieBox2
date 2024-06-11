@@ -58,7 +58,9 @@ class ChatsList extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.group),
+                      groupChat.users.length <= 2
+                          ? const Icon(Icons.person)
+                          : const Icon(Icons.group),
                       const Padding(
                         padding: EdgeInsets.only(right: 12),
                       ),
