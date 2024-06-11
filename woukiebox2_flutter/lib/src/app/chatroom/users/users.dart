@@ -54,6 +54,10 @@ class Users extends StatelessWidget {
     final UserClient localUser =
         appStateProvider.users[appStateProvider.currentUser]!;
     users.removeWhere((user) => user == localUser);
+    users.sort((userA, userB) {
+      if (userA.visible != userB.visible) return userA.visible ? -1 : 1;
+      return userA.username.compareTo(userB.username);
+    });
 
     return Padding(
       padding: const EdgeInsets.only(left: 12),
