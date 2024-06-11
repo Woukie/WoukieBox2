@@ -120,10 +120,7 @@ class SelectFriendDialogue {
                                     .removeWhere((user, selected) => !selected);
                                 client.sockets.sendStreamMessage(
                                   CreateChatClient(
-                                    name: appStateProvider
-                                            .users[appStateProvider.currentUser]
-                                            ?.username ??
-                                        "",
+                                    name: "",
                                     owners: [],
                                     users: List.of(friendsSelection.keys),
                                   ),
