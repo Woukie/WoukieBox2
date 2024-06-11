@@ -97,6 +97,7 @@ class _EditorWidgetState extends State<EditorWidget> {
                   child: ProfilePic(
                     url: newImage == "" ? user.image : (newImage),
                     local: !kIsWeb && newImage != "",
+                    offline: !user.visible,
                   ),
                 ),
                 Expanded(

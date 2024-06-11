@@ -79,6 +79,7 @@ class Friend extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   child: ProfilePic(
                     url: user.image,
+                    offline: !user.visible,
                   ),
                 ),
                 Expanded(

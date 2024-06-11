@@ -54,6 +54,7 @@ class ProfilePreview extends StatelessWidget {
                               children: [
                                 ProfilePic(
                                   url: user.image,
+                                  offline: !user.visible,
                                 ),
                                 Expanded(
                                   child: Padding(

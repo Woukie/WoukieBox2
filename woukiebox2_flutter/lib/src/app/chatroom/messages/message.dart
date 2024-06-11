@@ -153,6 +153,8 @@ class HeadMessage extends StatelessWidget {
                   .users[message.senderId]!,
               child: ProfilePic(
                 url: message.image,
+                offline: false,
+                showIndicator: false,
               ),
             ),
           ),

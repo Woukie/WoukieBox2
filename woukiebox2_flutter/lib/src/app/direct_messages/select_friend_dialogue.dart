@@ -69,6 +69,7 @@ class SelectFriendDialogue {
                                     children: [
                                       ProfilePic(
                                         url: user == null ? "" : user.image,
+                                        offline: user?.visible ?? false,
                                       ),
                                       const Padding(
                                           padding: EdgeInsets.only(right: 8)),

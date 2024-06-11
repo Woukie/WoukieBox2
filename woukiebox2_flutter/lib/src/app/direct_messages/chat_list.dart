@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/direct_messages/direct_message_dropdown.dart';
-import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
 
@@ -56,7 +55,7 @@ class ChatsList extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const ProfilePic(url: ""),
+                      const Icon(Icons.group),
                       const Padding(
                         padding: EdgeInsets.only(right: 12),
                       ),
