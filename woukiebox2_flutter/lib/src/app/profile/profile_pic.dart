@@ -1,4 +1,3 @@
-import 'dart:ffi' as ffi;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
