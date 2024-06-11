@@ -29,28 +29,6 @@ class ChatsList extends StatelessWidget {
     groupChats.removeWhere(
         (chat) => !chat.name.toLowerCase().contains(searchQuery.toLowerCase()));
 
-    String generateGroupName(GroupChat groupChat) {
-      List<int> members = groupChat.users
-          .where((user) => user != appStateProvider.currentUser)
-          .toList();
-
-      String name = "";
-      for (int i = 0; i < min(members.length, 3); i++) {
-        int member = members[i];
-        UserClient? user = appStateProvider.users[member];
-        if (user == null) appStateProvider.scheduleGetUser(member);
-        name += "${user?.username ?? "Loading..."}, ";
-      }
-
-      if (name.isEmpty) {
-        name = "Lonely Chat";
-      } else {
-        name = name.substring(0, name.length - 2);
-      }
-
-      return name;
-    }
-
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
       itemCount: groupChats.length,
@@ -88,7 +66,8 @@ class ChatsList extends StatelessWidget {
                         child: Text(
                           softWrap: false,
                           groupChat.name.isEmpty
-                              ? generateGroupName(groupChat)
+                              ? GroupChat.generateGroupName(
+                                  groupChat, appStateProvider)
                               : groupChat.name,
                           overflow: TextOverflow.fade,
                         ),
