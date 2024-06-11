@@ -84,16 +84,22 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'List<int>',
         ),
         _i2.ColumnDefinition(
+          name: 'owners',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<int>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'creator',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
           name: 'name',
           columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'owner',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
         ),
         _i2.ColumnDefinition(
           name: 'lastMessage',
@@ -382,6 +388,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<_i24.Chat>) {
       return (data as List).map((e) => deserialize<_i24.Chat>(e)).toList()
           as dynamic;
+    }
+    if (t == _i1.getType<List<int>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<int>(e)).toList()
+          : null) as dynamic;
     }
     if (t == List<_i24.UserServer>) {
       return (data as List).map((e) => deserialize<_i24.UserServer>(e)).toList()

@@ -3,4 +3,4 @@ class: LeaveChatServer
 fields:
   sender: int
   chat: int
-  owner: int? # Indicates new owner of chat if owner left
+  owners: List<int>? # Indicates new owners of chat. (if owners have all left)

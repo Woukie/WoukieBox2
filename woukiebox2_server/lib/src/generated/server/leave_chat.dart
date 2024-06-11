@@ -9,18 +9,19 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class LeaveChatServer extends _i1.SerializableEntity {
   LeaveChatServer._({
     required this.sender,
     required this.chat,
-    this.owner,
+    this.owners,
   });
 
   factory LeaveChatServer({
     required int sender,
     required int chat,
-    int? owner,
+    List<int>? owners,
   }) = _LeaveChatServerImpl;
 
   factory LeaveChatServer.fromJson(
@@ -31,7 +32,8 @@ abstract class LeaveChatServer extends _i1.SerializableEntity {
       sender:
           serializationManager.deserialize<int>(jsonSerialization['sender']),
       chat: serializationManager.deserialize<int>(jsonSerialization['chat']),
-      owner: serializationManager.deserialize<int?>(jsonSerialization['owner']),
+      owners: serializationManager
+          .deserialize<List<int>?>(jsonSerialization['owners']),
     );
   }
 
@@ -39,19 +41,19 @@ abstract class LeaveChatServer extends _i1.SerializableEntity {
 
   int chat;
 
-  int? owner;
+  List<int>? owners;
 
   LeaveChatServer copyWith({
     int? sender,
     int? chat,
-    int? owner,
+    List<int>? owners,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'sender': sender,
       'chat': chat,
-      if (owner != null) 'owner': owner,
+      if (owners != null) 'owners': owners?.toJson(),
     };
   }
 
@@ -60,7 +62,7 @@ abstract class LeaveChatServer extends _i1.SerializableEntity {
     return {
       'sender': sender,
       'chat': chat,
-      if (owner != null) 'owner': owner,
+      if (owners != null) 'owners': owners?.toJson(),
     };
   }
 }
@@ -71,23 +73,23 @@ class _LeaveChatServerImpl extends LeaveChatServer {
   _LeaveChatServerImpl({
     required int sender,
     required int chat,
-    int? owner,
+    List<int>? owners,
   }) : super._(
           sender: sender,
           chat: chat,
-          owner: owner,
+          owners: owners,
         );
 
   @override
   LeaveChatServer copyWith({
     int? sender,
     int? chat,
-    Object? owner = _Undefined,
+    Object? owners = _Undefined,
   }) {
     return LeaveChatServer(
       sender: sender ?? this.sender,
       chat: chat ?? this.chat,
-      owner: owner is int? ? owner : this.owner,
+      owners: owners is List<int>? ? owners : this.owners?.clone(),
     );
   }
 }

@@ -99,10 +99,9 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
                             ? List.of(appStateProvider.users.keys)
                             : appStateProvider.chats[selectedGroup]?.users ??
                                 [],
-                        crown: widget.global
-                            ? 0
-                            : appStateProvider.chats[selectedGroup]?.owner ?? 0,
                         showInvisible: !widget.global,
+                        owners:
+                            appStateProvider.chats[selectedGroup]?.owners ?? [],
                       ),
                     ),
                   ],

@@ -110,7 +110,8 @@ class AppStateProvider extends ChangeNotifier {
         chat.id!,
         chat.users,
         chat.name,
-        chat.owner,
+        chat.owners,
+        chat.creator,
         chat.lastMessage,
       );
     }
@@ -205,7 +206,7 @@ class AppStateProvider extends ChangeNotifier {
         _selectedGroup = null;
         _chats.remove(chat.id);
       } else {
-        chat.owner = message.owner ?? chat.owner;
+        chat.owners = message.owners ?? chat.owners;
         chat.lastMessage = DateTime.now();
         chat.users.remove(message.sender);
         chat.messages.add(
@@ -323,11 +324,12 @@ class AppStateProvider extends ChangeNotifier {
       message.chat.id!,
       message.chat.users,
       message.chat.name,
-      message.chat.owner,
+      message.chat.owners,
+      message.chat.creator,
       message.chat.lastMessage,
     );
 
-    if (message.chat.owner == _currentUser) {
+    if (message.chat.creator == _currentUser) {
       _selectedGroup = message.chat.id;
       _selectedPage = 1;
     }

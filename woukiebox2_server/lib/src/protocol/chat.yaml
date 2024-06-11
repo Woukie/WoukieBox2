@@ -3,6 +3,7 @@ class: Chat
 table: chat
 fields:
   users: List<int>
+  owners: List<int>
+  creator: int # Creator of 0 means auto-created (not made intentionally)
   name: String
-  owner: int
   lastMessage: DateTime

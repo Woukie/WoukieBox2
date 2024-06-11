@@ -70,6 +70,7 @@ class SelectFriendDialogue {
                                       ProfilePic(
                                         url: user == null ? "" : user.image,
                                         offline: user?.visible ?? false,
+                                        showIndicator: false,
                                       ),
                                       const Padding(
                                           padding: EdgeInsets.only(right: 8)),
@@ -119,6 +120,11 @@ class SelectFriendDialogue {
                                     .removeWhere((user, selected) => !selected);
                                 client.sockets.sendStreamMessage(
                                   CreateChatClient(
+                                    name: appStateProvider
+                                            .users[appStateProvider.currentUser]
+                                            ?.username ??
+                                        "",
+                                    owners: [],
                                     users: List.of(friendsSelection.keys),
                                   ),
                                 );

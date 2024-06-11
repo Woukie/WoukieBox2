@@ -162,12 +162,17 @@ class HandleSocketMessage {
 
     message.users.add(senderInfo.id!);
 
+    if (!message.owners.contains(senderInfo.id)) {
+      message.owners.add(senderInfo.id!);
+    }
+
     Chat chat = await Chat.db.insertRow(
       session,
       Chat(
         users: message.users,
-        name: "${senderInfo.userName}'s Group",
-        owner: senderInfo.id!,
+        name: message.name.trim(),
+        creator: senderInfo.id!,
+        owners: message.owners,
         lastMessage: DateTime.now(),
       ),
     );
@@ -209,8 +214,8 @@ class HandleSocketMessage {
     if (chat.users.isEmpty) {
       await Chat.db.deleteRow(session, chat);
     } else {
-      if (chat.owner == senderInfo.id) {
-        chat.owner = chat.users.first;
+      if (chat.owners.contains(senderInfo.id) && chat.owners.length == 1) {
+        chat.owners.add(chat.users.first);
       }
       await Chat.db.updateRow(session, chat);
     }
@@ -228,7 +233,7 @@ class HandleSocketMessage {
         LeaveChatServer(
           chat: chat.id!,
           sender: senderInfo.id!,
-          owner: chat.owner,
+          owners: chat.owners,
         ),
       );
     }
@@ -245,7 +250,7 @@ class HandleSocketMessage {
     if (!senderPersistent.chats.contains(message.chat)) return;
 
     Chat? chat = await Chat.db.findById(session, message.chat);
-    if (chat == null || chat.owner != senderInfo.id) return;
+    if (chat == null || !chat.owners.contains(senderInfo.id)) return;
 
     chat.name = message.name.trim();
     await Chat.db.updateRow(session, chat);

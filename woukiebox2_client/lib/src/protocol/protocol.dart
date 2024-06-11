@@ -218,6 +218,11 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<_i22.Chat>(e)).toList()
           as dynamic;
     }
+    if (t == _i1.getType<List<int>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<int>(e)).toList()
+          : null) as dynamic;
+    }
     if (t == List<_i22.UserServer>) {
       return (data as List).map((e) => deserialize<_i22.UserServer>(e)).toList()
           as dynamic;

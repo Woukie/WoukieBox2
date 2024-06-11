@@ -14,16 +14,18 @@ abstract class Chat extends _i1.SerializableEntity {
   Chat._({
     this.id,
     required this.users,
+    required this.owners,
+    required this.creator,
     required this.name,
-    required this.owner,
     required this.lastMessage,
   });
 
   factory Chat({
     int? id,
     required List<int> users,
+    required List<int> owners,
+    required int creator,
     required String name,
-    required int owner,
     required DateTime lastMessage,
   }) = _ChatImpl;
 
@@ -35,8 +37,11 @@ abstract class Chat extends _i1.SerializableEntity {
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       users: serializationManager
           .deserialize<List<int>>(jsonSerialization['users']),
+      owners: serializationManager
+          .deserialize<List<int>>(jsonSerialization['owners']),
+      creator:
+          serializationManager.deserialize<int>(jsonSerialization['creator']),
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      owner: serializationManager.deserialize<int>(jsonSerialization['owner']),
       lastMessage: serializationManager
           .deserialize<DateTime>(jsonSerialization['lastMessage']),
     );
@@ -49,17 +54,20 @@ abstract class Chat extends _i1.SerializableEntity {
 
   List<int> users;
 
-  String name;
+  List<int> owners;
 
-  int owner;
+  int creator;
+
+  String name;
 
   DateTime lastMessage;
 
   Chat copyWith({
     int? id,
     List<int>? users,
+    List<int>? owners,
+    int? creator,
     String? name,
-    int? owner,
     DateTime? lastMessage,
   });
   @override
@@ -67,8 +75,9 @@ abstract class Chat extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'users': users.toJson(),
+      'owners': owners.toJson(),
+      'creator': creator,
       'name': name,
-      'owner': owner,
       'lastMessage': lastMessage.toJson(),
     };
   }
@@ -80,14 +89,16 @@ class _ChatImpl extends Chat {
   _ChatImpl({
     int? id,
     required List<int> users,
+    required List<int> owners,
+    required int creator,
     required String name,
-    required int owner,
     required DateTime lastMessage,
   }) : super._(
           id: id,
           users: users,
+          owners: owners,
+          creator: creator,
           name: name,
-          owner: owner,
           lastMessage: lastMessage,
         );
 
@@ -95,15 +106,17 @@ class _ChatImpl extends Chat {
   Chat copyWith({
     Object? id = _Undefined,
     List<int>? users,
+    List<int>? owners,
+    int? creator,
     String? name,
-    int? owner,
     DateTime? lastMessage,
   }) {
     return Chat(
       id: id is int? ? id : this.id,
       users: users ?? this.users.clone(),
+      owners: owners ?? this.owners.clone(),
+      creator: creator ?? this.creator,
       name: name ?? this.name,
-      owner: owner ?? this.owner,
       lastMessage: lastMessage ?? this.lastMessage,
     );
   }

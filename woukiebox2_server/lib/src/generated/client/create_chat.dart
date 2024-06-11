@@ -12,38 +12,82 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class CreateChatClient extends _i1.SerializableEntity {
-  CreateChatClient._({required this.users});
+  CreateChatClient._({
+    required this.users,
+    required this.owners,
+    required this.name,
+  });
 
-  factory CreateChatClient({required List<int> users}) = _CreateChatClientImpl;
+  factory CreateChatClient({
+    required List<int> users,
+    required List<int> owners,
+    required String name,
+  }) = _CreateChatClientImpl;
 
   factory CreateChatClient.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
     return CreateChatClient(
-        users: serializationManager
-            .deserialize<List<int>>(jsonSerialization['users']));
+      users: serializationManager
+          .deserialize<List<int>>(jsonSerialization['users']),
+      owners: serializationManager
+          .deserialize<List<int>>(jsonSerialization['owners']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+    );
   }
 
   List<int> users;
 
-  CreateChatClient copyWith({List<int>? users});
+  List<int> owners;
+
+  String name;
+
+  CreateChatClient copyWith({
+    List<int>? users,
+    List<int>? owners,
+    String? name,
+  });
   @override
   Map<String, dynamic> toJson() {
-    return {'users': users.toJson()};
+    return {
+      'users': users.toJson(),
+      'owners': owners.toJson(),
+      'name': name,
+    };
   }
 
   @override
   Map<String, dynamic> allToJson() {
-    return {'users': users.toJson()};
+    return {
+      'users': users.toJson(),
+      'owners': owners.toJson(),
+      'name': name,
+    };
   }
 }
 
 class _CreateChatClientImpl extends CreateChatClient {
-  _CreateChatClientImpl({required List<int> users}) : super._(users: users);
+  _CreateChatClientImpl({
+    required List<int> users,
+    required List<int> owners,
+    required String name,
+  }) : super._(
+          users: users,
+          owners: owners,
+          name: name,
+        );
 
   @override
-  CreateChatClient copyWith({List<int>? users}) {
-    return CreateChatClient(users: users ?? this.users.clone());
+  CreateChatClient copyWith({
+    List<int>? users,
+    List<int>? owners,
+    String? name,
+  }) {
+    return CreateChatClient(
+      users: users ?? this.users.clone(),
+      owners: owners ?? this.owners.clone(),
+      name: name ?? this.name,
+    );
   }
 }

@@ -44,7 +44,7 @@ class DirectMessageDropdown extends StatelessWidget {
                     items: _getDropdownElements(
                       groupChat,
                       context,
-                      appStateProvider.currentUser == groupChat.owner,
+                      groupChat.owners.contains(appStateProvider.currentUser),
                     ),
                   );
                 },
