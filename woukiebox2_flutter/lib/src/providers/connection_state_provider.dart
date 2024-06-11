@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -54,7 +55,9 @@ class ConnectionStateProvider extends ChangeNotifier {
   }
 
   Future<void> _handleMessage(SerializableEntity message) async {
-    print("${message.runtimeType} | $message");
+    if (kDebugMode) {
+      print("${message.runtimeType} | $message");
+    }
 
     if (message is ChatMessageServer) {
       _appStateProvider.chatMessage(message);
