@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/direct_messages/direct_message_dropdown.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class ChatsList extends StatelessWidget {
   const ChatsList({
@@ -36,10 +37,18 @@ class ChatsList extends StatelessWidget {
       String name = "";
       for (int i = 0; i < min(members.length, 3); i++) {
         int member = members[i];
-        name += "${appStateProvider.users[member]?.username ?? "Loading"}, ";
+        UserClient? user = appStateProvider.users[member];
+        if (user == null) appStateProvider.scheduleGetUser(member);
+        name += "${user?.username ?? "Loading..."}, ";
       }
 
-      return name.substring(0, name.length - 2);
+      if (name.isEmpty) {
+        name = "Lonely Chat";
+      } else {
+        name = name.substring(0, name.length - 2);
+      }
+
+      return name;
     }
 
     return ListView.builder(
