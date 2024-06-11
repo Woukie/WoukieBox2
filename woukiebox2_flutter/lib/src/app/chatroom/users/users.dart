@@ -14,10 +14,12 @@ class Users extends StatelessWidget {
     super.key,
     required this.userIds,
     required this.showInvisible,
+    this.crown = 0,
   });
 
   final List<int> userIds;
   final bool showInvisible;
+  final int crown;
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +70,7 @@ class Users extends StatelessWidget {
                   image: localUser.image,
                   username: localUser.username,
                   userId: localUser.id,
+                  crowned: crown == localUser.id,
                 ),
               ),
             ),
@@ -93,6 +96,7 @@ class Users extends StatelessWidget {
                             image: user.image,
                             username: user.username,
                             userId: user.id,
+                            crowned: crown == user.id,
                           ),
                         );
                       },

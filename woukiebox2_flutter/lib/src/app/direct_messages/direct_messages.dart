@@ -104,6 +104,9 @@ class _DirectMessagesState extends State<DirectMessages> {
                             userIds:
                                 appStateProvider.chats[selectedGroup]?.users ??
                                     [],
+                            crown:
+                                appStateProvider.chats[selectedGroup]?.owner ??
+                                    0,
                             showInvisible: true,
                           ),
                         ),

@@ -9,12 +9,14 @@ class UserItem extends StatelessWidget {
     required this.colour,
     required this.image,
     required this.userId,
+    this.crowned = false,
   });
 
   final String username;
   final String image;
   final Color colour;
   final int userId;
+  final bool crowned;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +44,12 @@ class UserItem extends StatelessWidget {
               ),
             ),
           ),
+          crowned
+              ? const Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: Icon(Icons.shield),
+                )
+              : Container(),
         ],
       ),
     );
