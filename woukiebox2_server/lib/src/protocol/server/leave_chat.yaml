@@ -3,3 +3,4 @@ class: LeaveChatServer
 fields:
   sender: int
   chat: int
+  owner: int? # Indicates new owner of chat if owner left

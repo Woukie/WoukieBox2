@@ -14,11 +14,13 @@ abstract class LeaveChatServer extends _i1.SerializableEntity {
   LeaveChatServer._({
     required this.sender,
     required this.chat,
+    this.owner,
   });
 
   factory LeaveChatServer({
     required int sender,
     required int chat,
+    int? owner,
   }) = _LeaveChatServerImpl;
 
   factory LeaveChatServer.fromJson(
@@ -29,6 +31,7 @@ abstract class LeaveChatServer extends _i1.SerializableEntity {
       sender:
           serializationManager.deserialize<int>(jsonSerialization['sender']),
       chat: serializationManager.deserialize<int>(jsonSerialization['chat']),
+      owner: serializationManager.deserialize<int?>(jsonSerialization['owner']),
     );
   }
 
@@ -36,36 +39,46 @@ abstract class LeaveChatServer extends _i1.SerializableEntity {
 
   int chat;
 
+  int? owner;
+
   LeaveChatServer copyWith({
     int? sender,
     int? chat,
+    int? owner,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'sender': sender,
       'chat': chat,
+      if (owner != null) 'owner': owner,
     };
   }
 }
+
+class _Undefined {}
 
 class _LeaveChatServerImpl extends LeaveChatServer {
   _LeaveChatServerImpl({
     required int sender,
     required int chat,
+    int? owner,
   }) : super._(
           sender: sender,
           chat: chat,
+          owner: owner,
         );
 
   @override
   LeaveChatServer copyWith({
     int? sender,
     int? chat,
+    Object? owner = _Undefined,
   }) {
     return LeaveChatServer(
       sender: sender ?? this.sender,
       chat: chat ?? this.chat,
+      owner: owner is int? ? owner : this.owner,
     );
   }
 }

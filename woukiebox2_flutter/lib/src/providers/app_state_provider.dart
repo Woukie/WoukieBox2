@@ -198,6 +198,7 @@ class AppStateProvider extends ChangeNotifier {
         _selectedGroup = null;
         _chats.remove(chat.id);
       } else {
+        chat.owner = message.owner ?? chat.owner;
         chat.lastMessage = DateTime.now();
         chat.users.remove(message.sender);
         chat.messages.add(

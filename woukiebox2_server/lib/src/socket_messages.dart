@@ -209,6 +209,9 @@ class HandleSocketMessage {
     if (chat.users.isEmpty) {
       await Chat.db.deleteRow(session, chat);
     } else {
+      if (chat.owner == senderInfo.id) {
+        chat.owner = chat.users.first;
+      }
       await Chat.db.updateRow(session, chat);
     }
 
@@ -225,6 +228,7 @@ class HandleSocketMessage {
         LeaveChatServer(
           chat: chat.id!,
           sender: senderInfo.id!,
+          owner: chat.owner,
         ),
       );
     }
