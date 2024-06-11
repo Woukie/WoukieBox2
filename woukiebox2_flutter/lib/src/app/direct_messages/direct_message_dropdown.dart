@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
+import 'package:woukiebox2/src/app/direct_messages/rename_chat_dialogue.dart';
+import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
@@ -18,35 +21,52 @@ class DirectMessageDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return enabled
-        ? InkWell(
-            borderRadius: BorderRadius.circular(12),
-            child: child,
-            onSecondaryTapDown: (details) {
-              final screenSize = MediaQuery.of(context).size;
-              Offset offset = details.globalPosition;
+        ? StatefulBuilder(
+            builder: (context, setState) {
+              AppStateProvider appStateProvider =
+                  Provider.of<AppStateProvider>(context);
 
-              showMenu(
-                context: context,
-                position: RelativeRect.fromLTRB(
-                  offset.dx,
-                  offset.dy,
-                  screenSize.width - offset.dx,
-                  screenSize.height - offset.dy,
-                ),
-                items: getDropdownElements(groupChat),
+              return InkWell(
+                borderRadius: BorderRadius.circular(12),
+                child: child,
+                onSecondaryTapDown: (details) {
+                  final screenSize = MediaQuery.of(context).size;
+                  Offset offset = details.globalPosition;
+
+                  showMenu(
+                    context: context,
+                    position: RelativeRect.fromLTRB(
+                      offset.dx,
+                      offset.dy,
+                      screenSize.width - offset.dx,
+                      screenSize.height - offset.dy,
+                    ),
+                    items: _getDropdownElements(
+                      groupChat,
+                      context,
+                      appStateProvider.currentUser == groupChat.owner,
+                    ),
+                  );
+                },
               );
             },
           )
         : Container(child: child);
   }
 
-  static List<PopupMenuItem> getDropdownElements(GroupChat groupChat) {
+  List<PopupMenuItem> _getDropdownElements(
+    GroupChat groupChat,
+    BuildContext context,
+    bool owner,
+  ) {
     List<PopupMenuItem> items = List.empty(growable: true);
 
-    items.add(getButton("Rename", Icons.edit, () {
-      client.sockets.sendStreamMessage(
-          RenameChat(name: "rename test!", chat: groupChat.id));
-    }));
+    if (owner) {
+      items.add(getButton("Rename", Icons.edit, () {
+        RenameChatDialogue.showDialogue(context, groupChat.id);
+      }));
+    }
+
     items.add(getButton("Leave", Icons.exit_to_app, () {
       client.sockets.sendStreamMessage(LeaveChatClient(chat: groupChat.id));
     }));
