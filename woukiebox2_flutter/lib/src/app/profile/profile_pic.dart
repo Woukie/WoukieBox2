@@ -36,7 +36,7 @@ class ProfilePic extends StatelessWidget {
               : Avatar(url: url, local: local),
         ),
         Padding(
-          padding: const EdgeInsets.all(2),
+          padding: const EdgeInsets.all(3),
           child: Container(
             width: 10,
             height: 10,
