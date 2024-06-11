@@ -324,4 +324,9 @@ class AppStateProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  void renameChat(RenameChat message) {
+    _chats[message.chat]?.name = message.name;
+    notifyListeners();
+  }
 }
