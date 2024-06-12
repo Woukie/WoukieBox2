@@ -49,9 +49,12 @@ class UserItem extends StatelessWidget {
             ),
           ),
           crowned
-              ? const Padding(
-                  padding: EdgeInsets.only(right: 8),
-                  child: Icon(Icons.shield),
+              ? Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Icon(
+                    Icons.shield,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 )
               : Container(),
         ],
