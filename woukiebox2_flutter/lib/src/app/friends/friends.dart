@@ -20,15 +20,14 @@ class _FriendsState extends State<Friends> {
   Widget build(BuildContext context) {
     final appStateProvider = Provider.of<AppStateProvider>(context);
 
-    return Card(
-      margin: const EdgeInsets.all(12),
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
-      elevation: 0,
+    return Padding(
+      padding: const EdgeInsets.all(12),
       child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: NavigationRail(
+              minExtendedWidth: 200,
               backgroundColor:
                   Theme.of(context).colorScheme.surfaceContainerLow,
               labelType: NavigationRailLabelType.none,
@@ -59,32 +58,39 @@ class _FriendsState extends State<Friends> {
             ),
           ),
           Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 100),
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-              child: switch (_selectedIndex) {
-                0 => FriendList(
-                    key: const Key("friends"),
-                    userIds: appStateProvider.friends,
-                    showNegative: true,
-                  ),
-                1 => FriendList(
-                    key: const Key("outgoingFriendRequests"),
-                    userIds: appStateProvider.outgoingFriendRequests,
-                    showNegative: true,
-                    negativeIcon: Icons.close,
-                  ),
-                2 => FriendList(
-                    key: const Key("incomingFriendRequests"),
-                    userIds: appStateProvider.incomingFriendRequests,
-                    showPositive: true,
-                    showNegative: true,
-                    negativeIcon: Icons.person_off,
-                  ),
-                _ => Container(),
-              },
+            child: Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: Card(
+                margin: EdgeInsets.zero,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 50),
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                  child: switch (_selectedIndex) {
+                    0 => FriendList(
+                        key: const Key("friends"),
+                        userIds: appStateProvider.friends,
+                        showNegative: true,
+                      ),
+                    1 => FriendList(
+                        key: const Key("outgoingFriendRequests"),
+                        userIds: appStateProvider.outgoingFriendRequests,
+                        showNegative: true,
+                        negativeIcon: Icons.close,
+                      ),
+                    2 => FriendList(
+                        key: const Key("incomingFriendRequests"),
+                        userIds: appStateProvider.incomingFriendRequests,
+                        showPositive: true,
+                        showNegative: true,
+                        negativeIcon: Icons.person_off,
+                      ),
+                    _ => Container(),
+                  },
+                ),
+              ),
             ),
           ),
         ],
