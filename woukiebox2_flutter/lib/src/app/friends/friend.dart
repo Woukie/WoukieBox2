@@ -48,7 +48,7 @@ class Friend extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(right: 12, top: 12),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       child: ProfileMoreDropdown(
         enabled: !loading,
         userId: user.id,
@@ -111,6 +111,7 @@ class Friend extends StatelessWidget {
                   child: ProfilePic(
                     url: user.image,
                     offline: !user.visible,
+                    imageEffects: false,
                   ),
                 ),
                 Expanded(

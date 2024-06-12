@@ -62,8 +62,18 @@ class ChatsList extends StatelessWidget {
                   child: Row(
                     children: [
                       groupChat.users.length <= 2
-                          ? const Icon(Icons.person)
-                          : const Icon(Icons.group),
+                          ? Icon(
+                              Icons.person,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            )
+                          : Icon(
+                              Icons.group,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
                       const Padding(
                         padding: EdgeInsets.only(right: 12),
                       ),
