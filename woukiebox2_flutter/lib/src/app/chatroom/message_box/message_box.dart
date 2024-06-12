@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
+import 'package:woukiebox2/src/providers/styling_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class MessageBox extends StatefulWidget {
@@ -36,9 +38,11 @@ class _MessageBoxState extends State<MessageBox> {
 
   @override
   Widget build(BuildContext context) {
+    StylingProvider stylingProvider = Provider.of<StylingProvider>(context);
+
     return Card(
       elevation: 0,
-      margin: const EdgeInsets.only(top: 12),
+      margin: EdgeInsets.only(top: stylingProvider.cardMargin),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: TextField(

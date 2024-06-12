@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/profile/profile_editor.dart';
 import 'package:woukiebox2/src/app/profile/profile_preview.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2/src/providers/styling_provider.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
@@ -23,7 +24,8 @@ class Users extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appStateProvider = Provider.of<AppStateProvider>(context);
+    StylingProvider stylingProvider = Provider.of<StylingProvider>(context);
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
     List<UserClient> users = List<UserClient>.empty(growable: true);
 
     for (int userId in userIds) {
@@ -60,11 +62,11 @@ class Users extends StatelessWidget {
     });
 
     return Padding(
-      padding: const EdgeInsets.only(left: 12),
+      padding: EdgeInsets.only(left: stylingProvider.cardMargin),
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.only(bottom: stylingProvider.cardMargin),
             child: ProfileEditor(
               user: localUser,
               child: Card(

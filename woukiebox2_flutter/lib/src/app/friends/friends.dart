@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2/src/providers/styling_provider.dart';
 
 import 'friend.dart';
 
@@ -18,10 +19,11 @@ class _FriendsState extends State<Friends> {
 
   @override
   Widget build(BuildContext context) {
-    final appStateProvider = Provider.of<AppStateProvider>(context);
+    StylingProvider stylingProvider = Provider.of<StylingProvider>(context);
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
 
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(stylingProvider.cardMargin),
       child: Row(
         children: [
           ClipRRect(
@@ -71,7 +73,7 @@ class _FriendsState extends State<Friends> {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(left: 12),
+              padding: EdgeInsets.only(left: stylingProvider.cardMargin),
               child: Card(
                 margin: EdgeInsets.zero,
                 child: AnimatedSwitcher(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/providers/connection_state_provider.dart';
 import 'package:woukiebox2/src/providers/preference_provider.dart';
+import 'package:woukiebox2/src/providers/styling_provider.dart';
 
 class Settings extends StatelessWidget {
   const Settings({
@@ -12,9 +13,11 @@ class Settings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final connectionStateProvider =
+    StylingProvider stylingProvider = Provider.of<StylingProvider>(context);
+    ConnectionStateProvider connectionStateProvider =
         Provider.of<ConnectionStateProvider>(context);
-    final preferenceProvider = Provider.of<PreferenceProvider>(context);
+    PreferenceProvider preferenceProvider =
+        Provider.of<PreferenceProvider>(context);
 
     return ConstrainedBox(
       constraints: const BoxConstraints.expand(width: 700),
@@ -22,7 +25,7 @@ class Settings extends StatelessWidget {
         children: [
           Expanded(
             child: Card(
-              margin: const EdgeInsets.all(12),
+              margin: EdgeInsets.all(stylingProvider.cardMargin),
               elevation: 0,
               child: SingleChildScrollView(
                 child: Padding(
