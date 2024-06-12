@@ -72,7 +72,7 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
   rightMenu(
     globalMessages,
     AppStateProvider appStateProvider,
-    selectedGroup,
+    int? selectedGroup,
     StylingProvider stylingProvider,
   ) =>
       Expanded(
@@ -92,6 +92,7 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
                           children: [
                             Flexible(
                               child: Messages(
+                                chat: widget.global ? 0 : selectedGroup ?? -1,
                                 messages: widget.global
                                     ? globalMessages
                                     : appStateProvider
