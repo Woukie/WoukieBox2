@@ -157,6 +157,39 @@ class Settings extends StatelessWidget {
 
                       const Padding(padding: EdgeInsets.all(12)),
                       const Text(
+                        "Advanced Styling",
+                        style: TextStyle(fontSize: 22),
+                      ),
+
+                      // Card margin
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text("Card Margin"),
+                          Row(
+                            children: [
+                              FilledButton.icon(
+                                onPressed: () =>
+                                    stylingProvider.updateCardMargin(12),
+                                label: const Text("Reset"),
+                                icon: const Icon(Icons.refresh),
+                              ),
+                              Slider(
+                                min: 0,
+                                max: 24,
+                                value: stylingProvider.cardMargin,
+                                onChanged: (value) =>
+                                    stylingProvider.updateCardMargin(value),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const Text("Modify the margin of cards to your liking"),
+                      const Divider(),
+
+                      const Padding(padding: EdgeInsets.all(12)),
+                      const Text(
                         "Misc",
                         style: TextStyle(fontSize: 22),
                       ),

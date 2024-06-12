@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StylingProvider extends ChangeNotifier {
-  double _cardMargin = 6;
+  double _cardMargin = 12;
 
   double get cardMargin => _cardMargin;
 
@@ -12,7 +12,7 @@ class StylingProvider extends ChangeNotifier {
     _loadPreferences();
   }
 
-  void updateCardPadding(double padding) {
+  void updateCardMargin(double padding) {
     _cardMargin = padding;
     _savePreferences();
     notifyListeners();
