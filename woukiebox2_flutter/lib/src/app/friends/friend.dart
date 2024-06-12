@@ -111,6 +111,7 @@ class Friend extends StatelessWidget {
                   child: ProfilePic(
                     url: user.image,
                     offline: !user.visible,
+                    imageEffects: false,
                   ),
                 ),
                 Expanded(

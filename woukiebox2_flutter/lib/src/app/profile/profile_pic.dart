@@ -6,6 +6,7 @@ class ProfilePic extends StatelessWidget {
   final String? url;
   final bool? local;
   final bool showIndicator;
+  final bool imageEffects;
   final bool offline;
 
   const ProfilePic({
@@ -13,6 +14,7 @@ class ProfilePic extends StatelessWidget {
     this.url,
     this.local,
     this.showIndicator = true,
+    this.imageEffects = true,
     required this.offline,
   });
 
@@ -24,7 +26,7 @@ class ProfilePic extends StatelessWidget {
             children: [
               ClipPath(
                 clipper: StatusClip(),
-                child: offline
+                child: offline && imageEffects
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: ColorFiltered(

@@ -43,7 +43,7 @@ class UserItem extends StatelessWidget {
                 username,
                 style: TextStyle(
                   color: Color.lerp(colour, Colors.grey, disabled ? 0.7 : 0)
-                      ?.withAlpha(disabled ? 130 : 255),
+                      ?.withAlpha(disabled ? 90 : 255),
                 ),
               ),
             ),
@@ -53,7 +53,10 @@ class UserItem extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 8),
                   child: Icon(
                     Icons.shield,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurfaceVariant
+                        .withAlpha(disabled ? 90 : 255),
                   ),
                 )
               : Container(),

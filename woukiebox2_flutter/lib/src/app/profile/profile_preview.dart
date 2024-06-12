@@ -55,11 +55,15 @@ class ProfilePreview extends StatelessWidget {
                                 ProfilePic(
                                   url: user.image,
                                   offline: !user.visible,
+                                  imageEffects: false,
                                 ),
                                 Expanded(
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 12),
                                     child: Text(
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      overflow: TextOverflow.fade,
                                       style: textStyle.copyWith(
                                         color: HexColor.fromHex(user.colour),
                                       ),
