@@ -38,21 +38,33 @@ class _FriendsState extends State<Friends> {
                   _selectedIndex = index;
                 });
               },
-              destinations: const <NavigationRailDestination>[
-                NavigationRailDestination(
+              destinations: <NavigationRailDestination>[
+                const NavigationRailDestination(
                   icon: Icon(Icons.person_outline),
                   selectedIcon: Icon(Icons.person),
                   label: Text('Friends'),
                 ),
                 NavigationRailDestination(
-                  icon: Icon(Icons.outbox_outlined),
-                  selectedIcon: Icon(Icons.outbox),
-                  label: Text("Outgoing"),
+                  icon: _getIconFromList(
+                    Icons.outbox_outlined,
+                    appStateProvider.outgoingFriendRequests,
+                  ),
+                  selectedIcon: _getIconFromList(
+                    Icons.outbox,
+                    appStateProvider.outgoingFriendRequests,
+                  ),
+                  label: const Text("Outgoing"),
                 ),
                 NavigationRailDestination(
-                  icon: Icon(Icons.inbox_outlined),
-                  selectedIcon: Icon(Icons.inbox),
-                  label: Text("Incoming"),
+                  icon: _getIconFromList(
+                    Icons.inbox_outlined,
+                    appStateProvider.incomingFriendRequests,
+                  ),
+                  selectedIcon: _getIconFromList(
+                    Icons.inbox,
+                    appStateProvider.incomingFriendRequests,
+                  ),
+                  label: const Text("Incoming"),
                 ),
               ],
             ),
@@ -96,6 +108,15 @@ class _FriendsState extends State<Friends> {
         ],
       ),
     );
+  }
+
+  _getIconFromList(IconData icon, List list) {
+    return list.isEmpty
+        ? Icon(icon)
+        : Badge(
+            label: Text(list.length.toString()),
+            child: Icon(icon),
+          );
   }
 }
 
