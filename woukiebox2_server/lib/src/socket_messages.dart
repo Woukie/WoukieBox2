@@ -33,8 +33,6 @@ class HandleSocketMessage {
 
       if (!groupChat.users.contains(chatMessage.sender)) return;
 
-      groupChat.lastMessage = DateTime.now();
-
       await Chat.db.updateRow(session, groupChat);
       for (int user in groupChat.users) {
         session.messages.postMessage(
@@ -173,7 +171,6 @@ class HandleSocketMessage {
         name: message.name.trim(),
         creator: senderInfo.id!,
         owners: message.owners,
-        lastMessage: DateTime.now(),
       ),
     );
 

@@ -17,7 +17,6 @@ abstract class Chat extends _i1.SerializableEntity {
     required this.owners,
     required this.creator,
     required this.name,
-    required this.lastMessage,
   });
 
   factory Chat({
@@ -26,7 +25,6 @@ abstract class Chat extends _i1.SerializableEntity {
     required List<int> owners,
     required int creator,
     required String name,
-    required DateTime lastMessage,
   }) = _ChatImpl;
 
   factory Chat.fromJson(
@@ -42,8 +40,6 @@ abstract class Chat extends _i1.SerializableEntity {
       creator:
           serializationManager.deserialize<int>(jsonSerialization['creator']),
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      lastMessage: serializationManager
-          .deserialize<DateTime>(jsonSerialization['lastMessage']),
     );
   }
 
@@ -60,15 +56,12 @@ abstract class Chat extends _i1.SerializableEntity {
 
   String name;
 
-  DateTime lastMessage;
-
   Chat copyWith({
     int? id,
     List<int>? users,
     List<int>? owners,
     int? creator,
     String? name,
-    DateTime? lastMessage,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,7 +71,6 @@ abstract class Chat extends _i1.SerializableEntity {
       'owners': owners.toJson(),
       'creator': creator,
       'name': name,
-      'lastMessage': lastMessage.toJson(),
     };
   }
 }
@@ -92,14 +84,12 @@ class _ChatImpl extends Chat {
     required List<int> owners,
     required int creator,
     required String name,
-    required DateTime lastMessage,
   }) : super._(
           id: id,
           users: users,
           owners: owners,
           creator: creator,
           name: name,
-          lastMessage: lastMessage,
         );
 
   @override
@@ -109,7 +99,6 @@ class _ChatImpl extends Chat {
     List<int>? owners,
     int? creator,
     String? name,
-    DateTime? lastMessage,
   }) {
     return Chat(
       id: id is int? ? id : this.id,
@@ -117,7 +106,6 @@ class _ChatImpl extends Chat {
       owners: owners ?? this.owners.clone(),
       creator: creator ?? this.creator,
       name: name ?? this.name,
-      lastMessage: lastMessage ?? this.lastMessage,
     );
   }
 }
