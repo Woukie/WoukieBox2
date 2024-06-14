@@ -2,7 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:woukiebox2_server/src/friend_manager.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
-import 'package:woukiebox2_server/src/socket/bucket_manager.dart';
+import 'package:woukiebox2_server/src/socket/chat_message_manager.dart';
 import 'package:woukiebox2_server/src/socket/session_manager.dart';
 import 'package:woukiebox2_server/src/util.dart';
 
