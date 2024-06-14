@@ -1,0 +1,14 @@
+class: ChatMessage
+
+table: chatmessage
+fields:
+  sentAt: DateTime
+  message: String
+  sender: UserPersistent?, relation
+  chat: Chat?, relation
+  bucket: int
+indexes:
+  bucket_idx:
+    fields: bucket
+  chatmessage_chat_idx:
+    fields: chatId
