@@ -18,6 +18,10 @@ class ChatMessageManager {
 
   static final int bucketSize = 10;
 
+  static void deleteBucket(int target) {
+    _latestBucket.remove(target);
+  }
+
   static Future<BucketData> _getLatestBucket(
       Session session, int target) async {
     if (_latestBucket.containsKey(target)) return _latestBucket[target]!;

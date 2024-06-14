@@ -169,7 +169,9 @@ class UserActions {
   }
 
   static Future<void> leaveChat(
-      StreamingSession session, LeaveChatClient message) async {
+    StreamingSession session,
+    LeaveChatClient message,
+  ) async {
     UserInfo? senderInfo = await Util.getAuthUser(session);
     if (senderInfo == null) return;
 
@@ -185,6 +187,7 @@ class UserActions {
     chat.users.remove(senderInfo.id);
     if (chat.users.isEmpty) {
       await Chat.db.deleteRow(session, chat);
+      ChatMessageManager.deleteBucket(chat.id!);
     } else {
       if (chat.owners.contains(senderInfo.id) && chat.owners.length == 1) {
         chat.owners.add(chat.users.first);
@@ -196,9 +199,7 @@ class UserActions {
     senderPersistent.chats.remove(message.chat);
     await UserPersistent.db.updateRow(session, senderPersistent);
 
-    // Short way to also send leave message to sender, doesn't actually save
     chat.users.add(senderInfo.id!);
-
     for (int user in chat.users) {
       session.messages.postMessage(
         user.toString(),
