@@ -32,8 +32,10 @@ class ChatMessageManager {
       orderBy: (t) => t.bucket,
     );
 
-    _latestBucket[target] =
-        BucketData(bucketMessages.length, bucketMessages.first.bucket);
+    _latestBucket[target] = BucketData(
+      bucketMessages.length,
+      bucketMessages.isEmpty ? 1 : bucketMessages.first.bucket,
+    );
 
     return _latestBucket[target]!;
   }
