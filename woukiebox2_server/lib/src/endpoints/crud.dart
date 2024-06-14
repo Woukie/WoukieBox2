@@ -3,6 +3,7 @@ import 'dart:core';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:woukiebox2_server/src/socket/chat_message_manager.dart';
 import 'package:woukiebox2_server/src/util.dart';
 
 class CrudEndpoint extends Endpoint {
@@ -30,5 +31,21 @@ class CrudEndpoint extends Endpoint {
       image: imageUri.toString(),
       verified: true,
     );
+  }
+
+  // Get a whole bucket of chat messages by the chat id and bucket. If no bucket is specified, the latest will be returned.
+  Future<List<ChatMessage>?> getBucket(
+      Session session, int chat, int? bucket) async {
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return null;
+
+    bucket ??= (await ChatMessageManager.getLatestBucket(session, chat)).bucket;
+
+    return (await ChatMessage.db.find(
+      session,
+      where: (t) => (t.chatId.equals(chat)) & (t.bucket.equals(bucket)),
+      orderBy: (t) => t.sentAt,
+      orderDescending: true,
+    ));
   }
 }

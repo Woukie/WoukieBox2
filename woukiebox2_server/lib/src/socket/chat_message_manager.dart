@@ -22,8 +22,7 @@ class ChatMessageManager {
     _latestBucket.remove(target);
   }
 
-  static Future<BucketData> _getLatestBucket(
-      Session session, int target) async {
+  static Future<BucketData> getLatestBucket(Session session, int target) async {
     if (_latestBucket.containsKey(target)) return _latestBucket[target]!;
 
     var bucketMessages = await ChatMessage.db.find(
@@ -48,7 +47,7 @@ class ChatMessageManager {
   }
 
   static _incrementBucket(Session session, int target) async {
-    BucketData bucket = await _getLatestBucket(session, target);
+    BucketData bucket = await getLatestBucket(session, target);
 
     bucket.count += 1;
 
@@ -71,7 +70,7 @@ class ChatMessageManager {
 
     if (!groupChat.users.contains(senderInfo.id!)) return;
 
-    BucketData latestBucket = await _getLatestBucket(session, message.target);
+    BucketData latestBucket = await getLatestBucket(session, message.target);
     ChatMessage databaseMessage = ChatMessage(
       sentAt: DateTime.now(),
       chatId: message.target,
