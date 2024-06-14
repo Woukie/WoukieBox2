@@ -20,8 +20,7 @@ class ChatsList extends StatelessWidget {
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
     final List<GroupChat> groupChats = appStateProvider.chats.values.toList();
-    groupChats
-        .sort((chatA, chatB) => chatB.lastMessage.compareTo(chatA.lastMessage));
+    groupChats.sort((chatA, chatB) => chatB.name.compareTo(chatA.name));
 
     groupChats.removeWhere((chat) {
       if (chat.name.isEmpty) {

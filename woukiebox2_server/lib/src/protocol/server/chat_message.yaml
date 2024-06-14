@@ -2,5 +2,7 @@ class: ChatMessageServer
 
 fields:
   sender: int
-  chat: int # Indicates desired destination of message, 0 is global
+  sentAt: DateTime
+  chat: int # message destination, 0 = global
   message: String
+  bucket: int? # null bucket for global messages

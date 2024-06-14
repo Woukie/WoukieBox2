@@ -58,7 +58,31 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['targetId'],
           ),
-        )
+        ),
+        'getBucket': _i1.MethodConnector(
+          name: 'getBucket',
+          params: {
+            'chat': _i1.ParameterDescription(
+              name: 'chat',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'bucket': _i1.ParameterDescription(
+              name: 'bucket',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['crud'] as _i2.CrudEndpoint).getBucket(
+            session,
+            params['chat'],
+            params['bucket'],
+          ),
+        ),
       },
     );
     connectors['profilePicture'] = _i1.EndpointConnector(

@@ -112,7 +112,6 @@ class AppStateProvider extends ChangeNotifier {
         chat.name,
         chat.owners,
         chat.creator,
-        chat.lastMessage,
       );
     }
   }
@@ -121,19 +120,21 @@ class AppStateProvider extends ChangeNotifier {
     UserClient? user = _users[message.sender];
     if (user == null) return; // This will never happen. But who knows?
 
-    WrittenMessage writtenMessage = WrittenMessage(
-      user.id,
-      user.username,
-      message.message,
-      user.colour,
-      user.image,
-    );
-
     if (message.chat == 0) {
+      WrittenGlobalMessage writtenMessage = WrittenGlobalMessage(
+        user.id,
+        user.username,
+        message.message,
+        user.colour,
+        user.image,
+      );
+
       _messages.add(writtenMessage);
     } else {
+      WrittenChatMessage writtenMessage = WrittenChatMessage(
+          message.sender, message.message, message.bucket!, message.sentAt);
+
       _chats[message.chat]?.messages.add(writtenMessage);
-      _chats[message.chat]?.lastMessage = DateTime.now();
     }
 
     notifyListeners();
@@ -207,7 +208,6 @@ class AppStateProvider extends ChangeNotifier {
         _chats.remove(chat.id);
       } else {
         chat.owners = message.owners ?? chat.owners;
-        chat.lastMessage = DateTime.now();
         chat.users.remove(message.sender);
         chat.messages.add(
           WrittenLeaveMessage(
@@ -326,7 +326,6 @@ class AppStateProvider extends ChangeNotifier {
       message.chat.name,
       message.chat.owners,
       message.chat.creator,
-      message.chat.lastMessage,
     );
 
     if (message.chat.creator == _currentUser) {
@@ -340,5 +339,50 @@ class AppStateProvider extends ChangeNotifier {
   void renameChat(RenameChat message) {
     _chats[message.chat]?.name = message.name;
     notifyListeners();
+  }
+
+  // call when needing to load more message history
+  Future<void> loadNextBucket(int chat) async {
+    if (chat == 0) return;
+
+    GroupChat? groupChat = _chats[chat];
+    if (groupChat == null) return;
+
+    // null to load latest bucket
+    int? bucket;
+    if (groupChat.messages.isEmpty) {
+      if (groupChat.bucketsLoading.contains(-1)) return;
+    } else {
+      bucket = groupChat.messages.firstWhere((message) {
+        return message is WrittenChatMessage;
+      })!.bucket;
+
+      // cannot do -= for null safety
+      bucket = bucket! - 1;
+    }
+
+    if (bucket == 0 || groupChat.bucketsLoading.contains(bucket)) return;
+
+    groupChat.bucketsLoading.add(bucket ?? -1);
+
+    List<ChatMessage>? chatMessages = await client.crud.getBucket(chat, bucket);
+
+    // We double check if the group chat still exists in case we logged out
+    // Add new messages to the group
+    if (_chats[chat] != null &&
+        chatMessages != null &&
+        chatMessages.isNotEmpty) {
+      List<WrittenChatMessage> newMessages = chatMessages
+          .map(
+            (message) => WrittenChatMessage(message.senderId, message.message,
+                message.bucket, message.sentAt),
+          )
+          .toList();
+
+      groupChat.messages.insertAll(0, newMessages.reversed);
+      notifyListeners();
+    }
+
+    groupChat.bucketsLoading.remove(bucket);
   }
 }
