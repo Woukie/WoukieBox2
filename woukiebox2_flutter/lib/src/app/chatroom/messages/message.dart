@@ -29,14 +29,32 @@ class Message extends StatelessWidget {
     final parentMessage =
         index != messages.length - 1 ? messages[index + 1] : null;
 
-    if (message is WrittenMessage) {
-      bool typeMatch = parentMessage is WrittenMessage;
+    if (message is WrittenGlobalMessage) {
+      bool typeMatch = parentMessage is WrittenGlobalMessage;
 
       bool child = typeMatch && parentMessage.senderId == message.senderId;
 
       return child
-          ? ChildMessage(message: messages[index])
-          : HeadMessage(message: messages[index]);
+          ? ChildMessage(
+              message: message.message,
+            )
+          : HeadMessage(
+              senderId: message.senderId,
+              message: message.message,
+              color: message.colour,
+              image: message.image,
+              username: message.username,
+            );
+    }
+
+    if (message is WrittenChatMessage) {
+      bool typeMatch = parentMessage is WrittenChatMessage;
+
+      bool child = typeMatch && parentMessage.senderId == message.senderId;
+
+      return child
+          ? ChildMessage(message: message.message)
+          : HeadMessage(senderId: message.senderId, message: message.message);
     }
 
     if (message is WrittenLeaveMessage) {
@@ -135,12 +153,38 @@ class SystemMessageWrapper extends StatelessWidget {
 }
 
 class HeadMessage extends StatelessWidget {
-  const HeadMessage({super.key, required this.message});
+  final int senderId;
+  final String? username, image, color;
+  final String message;
 
-  final WrittenMessage message;
+  const HeadMessage({
+    super.key,
+    required this.senderId,
+    required this.message,
+    this.image,
+    this.username,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+    UserClient? user = appStateProvider.users[senderId];
+
+    if (user == null) {
+      appStateProvider.scheduleGetUser(senderId);
+    }
+
+    user ??= UserClient(
+      id: senderId,
+      username: "Loading...",
+      bio: "",
+      colour: Theme.of(context).primaryTextTheme.bodyMedium!.color!.toHex(),
+      image: "",
+      verified: false,
+      visible: false,
+    );
+
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: Row(
@@ -149,10 +193,9 @@ class HeadMessage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 12, right: 12),
             child: ProfilePreview(
-              user: Provider.of<AppStateProvider>(context)
-                  .users[message.senderId]!,
+              user: user,
               child: ProfilePic(
-                url: message.image,
+                url: image ?? user.image,
                 offline: false,
                 showIndicator: false,
               ),
@@ -163,10 +206,12 @@ class HeadMessage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  message.username,
-                  style: TextStyle(color: HexColor.fromHex(message.colour)),
+                  username ?? user.username,
+                  style: TextStyle(
+                    color: HexColor.fromHex(color ?? user.colour),
+                  ),
                 ),
-                Text(message.message),
+                Text(message),
               ],
             ),
           ),
@@ -177,9 +222,9 @@ class HeadMessage extends StatelessWidget {
 }
 
 class ChildMessage extends StatelessWidget {
-  const ChildMessage({super.key, required this.message});
+  final String message;
 
-  final WrittenMessage message;
+  const ChildMessage({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +239,7 @@ class ChildMessage extends StatelessWidget {
         ),
         Expanded(
           child: Text(
-            message.message,
+            message,
           ),
         ),
       ],

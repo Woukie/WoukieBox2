@@ -34,6 +34,7 @@ import 'server/user.dart' as _i22;
 import 'shared/rename_chat.dart' as _i23;
 import 'user_persistent.dart' as _i24;
 import 'protocol.dart' as _i25;
+import 'package:woukiebox2_server/src/generated/chat_message.dart' as _i26;
 export 'chat.dart';
 export 'chat_message.dart';
 export 'client/chat_message.dart';
@@ -508,6 +509,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<_i25.UserServer>) {
       return (data as List).map((e) => deserialize<_i25.UserServer>(e)).toList()
           as dynamic;
+    }
+    if (t == _i1.getType<List<_i26.ChatMessage>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<_i26.ChatMessage>(e)).toList()
+          : null) as dynamic;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);

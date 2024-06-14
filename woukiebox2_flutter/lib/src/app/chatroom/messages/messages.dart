@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/chatroom/messages/message.dart';
+import 'package:woukiebox2/src/providers/app_state_provider.dart';
 
 class Messages extends StatelessWidget {
   const Messages({
     super.key,
     required this.messages,
-    this.chat = 0, // Soley for animations
+    this.chat = 0,
   });
 
   final List<dynamic> messages;
@@ -18,7 +20,17 @@ class Messages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
     final scrollController = ScrollController();
+
+    scrollController.addListener(() {
+      if (scrollController.position.atEdge) {
+        if (scrollController.position.pixels != 0) {
+          print('Chatbox wants to load next bucket');
+          appStateProvider.loadNextBucket(chat);
+        }
+      }
+    });
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 150),

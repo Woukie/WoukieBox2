@@ -87,9 +87,12 @@ class ChatMessageManager {
       session.messages.postMessage(
         user.toString(),
         ChatMessageServer(
-            sender: senderInfo.id!,
-            chat: message.target,
-            message: message.message),
+          sentAt: databaseMessage.sentAt,
+          sender: databaseMessage.senderId,
+          chat: databaseMessage.chatId,
+          message: databaseMessage.message,
+          bucket: databaseMessage.bucket,
+        ),
       );
     }
   }
@@ -105,6 +108,7 @@ class ChatMessageManager {
     ChatMessageServer chatMessage = ChatMessageServer(
       sender: userId,
       chat: message.target,
+      sentAt: DateTime.now(),
       message: trimmedMessage,
     );
 
