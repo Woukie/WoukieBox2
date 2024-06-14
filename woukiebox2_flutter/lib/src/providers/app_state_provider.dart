@@ -112,7 +112,6 @@ class AppStateProvider extends ChangeNotifier {
         chat.name,
         chat.owners,
         chat.creator,
-        chat.lastMessage,
       );
     }
   }
@@ -133,7 +132,6 @@ class AppStateProvider extends ChangeNotifier {
       _messages.add(writtenMessage);
     } else {
       _chats[message.chat]?.messages.add(writtenMessage);
-      _chats[message.chat]?.lastMessage = DateTime.now();
     }
 
     notifyListeners();
@@ -207,7 +205,6 @@ class AppStateProvider extends ChangeNotifier {
         _chats.remove(chat.id);
       } else {
         chat.owners = message.owners ?? chat.owners;
-        chat.lastMessage = DateTime.now();
         chat.users.remove(message.sender);
         chat.messages.add(
           WrittenLeaveMessage(
@@ -326,7 +323,6 @@ class AppStateProvider extends ChangeNotifier {
       message.chat.name,
       message.chat.owners,
       message.chat.creator,
-      message.chat.lastMessage,
     );
 
     if (message.chat.creator == _currentUser) {

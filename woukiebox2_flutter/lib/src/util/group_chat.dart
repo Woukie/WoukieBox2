@@ -9,7 +9,6 @@ class GroupChat {
   List<int> owners;
   String name;
   int creator;
-  DateTime lastMessage;
 
   // Built client-side
   final List<dynamic> messages = List.empty(growable: true);
@@ -20,7 +19,6 @@ class GroupChat {
     this.name,
     this.owners,
     this.creator,
-    this.lastMessage,
   );
 
   static String generateGroupName(
