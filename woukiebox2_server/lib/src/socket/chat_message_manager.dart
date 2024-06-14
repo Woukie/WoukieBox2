@@ -16,8 +16,11 @@ class ChatMessageManager {
   static final HashMap<int, BucketData> _latestBucket =
       HashMap<int, BucketData>();
 
-  static Future<int> _getLatestBucket(Session session, int target) async {
-    if (_latestBucket.containsKey(target)) return _latestBucket[target]!.bucket;
+  static final int bucketSize = 10;
+
+  static Future<BucketData> _getLatestBucket(
+      Session session, int target) async {
+    if (_latestBucket.containsKey(target)) return _latestBucket[target]!;
 
     var bucketMessages = await ChatMessage.db.find(
       session,
@@ -28,7 +31,14 @@ class ChatMessageManager {
     _latestBucket[target] =
         BucketData(bucketMessages.length, bucketMessages.first.bucket);
 
-    return _latestBucket[target]!.bucket;
+    return _latestBucket[target]!;
+  }
+
+  static _incrementBucket(Session session, int target) async {
+    _latestBucket[target] = BucketData(
+      0,
+      (await _getLatestBucket(session, target)).bucket + 1,
+    );
   }
 
   // Must be authed, hence no userId required
@@ -44,15 +54,21 @@ class ChatMessageManager {
 
     if (!groupChat.users.contains(senderInfo.id!)) return;
 
+    BucketData latestBucket = await _getLatestBucket(session, message.target);
     ChatMessage databaseMessage = ChatMessage(
       sentAt: DateTime.now(),
       chatId: message.target,
       message: trimmedMessage,
       senderId: senderInfo.id!,
-      bucket: await _getLatestBucket(session, message.target),
+      bucket: latestBucket.bucket,
     );
 
     await ChatMessage.db.insertRow(session, databaseMessage);
+
+    if (latestBucket.count > bucketSize) {
+      _incrementBucket(session, message.target);
+    }
+
     for (int user in groupChat.users) {
       session.messages.postMessage(
         user.toString(),
