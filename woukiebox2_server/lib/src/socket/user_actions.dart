@@ -1,52 +1,28 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
-import 'package:woukiebox2_server/src/endpoints/sockets.dart';
 import 'package:woukiebox2_server/src/friend_manager.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
+import 'package:woukiebox2_server/src/socket/bucket_manager.dart';
+import 'package:woukiebox2_server/src/socket/session_manager.dart';
 import 'package:woukiebox2_server/src/util.dart';
 
 // For a less confusing socket implementation
-class HandleSocketMessage {
+class UserActions {
   static chatMessage(
     Session session,
     ChatMessageClient message,
-    Function getUserObject,
+    int userId,
   ) async {
-    String trimmedMessage = message.message.trim();
-
-    if (trimmedMessage.isEmpty) return;
-
-    ChatMessageServer chatMessage = ChatMessageServer(
-      sender: getUserObject(session).id,
-      chat: message.target,
-      message: trimmedMessage,
-    );
-
     if (message.target == 0) {
-      session.messages.postMessage(
-        'global',
-        chatMessage,
-      );
+      ChatMessageManager.sendGlobalMessage(session, message, userId);
     } else {
-      Chat? groupChat = await Chat.db.findById(session, message.target);
-      if (groupChat == null) return;
-
-      if (!groupChat.users.contains(chatMessage.sender)) return;
-
-      await Chat.db.updateRow(session, groupChat);
-      for (int user in groupChat.users) {
-        session.messages.postMessage(
-          user.toString(),
-          chatMessage,
-        );
-      }
+      ChatMessageManager.sendChatMessage(session, message);
     }
   }
 
   static Future<void> updateProfile(
     StreamingSession session,
     UpdateProfileClient message,
-    Function(Session session) getUserObject,
   ) async {
     // Update the users profile on the database, also note that profile pics are neither cached or updated in UpdateProfile.
     var userId = await session.auth.authenticatedUserId;
@@ -64,10 +40,9 @@ class HandleSocketMessage {
       }
     }
 
-    var sender = getUserObject(session).id;
     // Also update the cached user as some users are anonymous
     UserServer user =
-        SocketsEndpoint.connectedUsers.firstWhere((user) => user.id == sender);
+        SessionManager.connectedUsers.firstWhere((user) => user.id == userId);
     user.bio = message.bio ?? user.bio;
     user.username = message.username ?? user.username;
     user.colour = message.colour ?? user.colour;
@@ -76,7 +51,7 @@ class HandleSocketMessage {
     session.messages.postMessage(
       'global',
       UpdateProfileServer(
-        sender: sender,
+        sender: userId!,
         username: message.username,
         bio: message.bio,
         colour: message.colour,
