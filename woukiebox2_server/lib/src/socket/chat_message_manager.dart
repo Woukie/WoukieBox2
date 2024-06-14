@@ -30,21 +30,32 @@ class ChatMessageManager {
       session,
       where: (t) => t.chatId.equals(target),
       orderBy: (t) => t.bucket,
+      orderDescending: true,
     );
 
-    _latestBucket[target] = BucketData(
-      bucketMessages.length,
-      bucketMessages.isEmpty ? 1 : bucketMessages.first.bucket,
-    );
+    if (bucketMessages.isEmpty) {
+      _latestBucket[target] = BucketData(0, 1);
+    } else {
+      int bucket = bucketMessages.first.bucket;
+
+      _latestBucket[target] = BucketData(
+        bucketMessages.where((message) => message.bucket == bucket).length,
+        bucketMessages.first.bucket,
+      );
+    }
 
     return _latestBucket[target]!;
   }
 
   static _incrementBucket(Session session, int target) async {
-    _latestBucket[target] = BucketData(
-      0,
-      (await _getLatestBucket(session, target)).bucket + 1,
-    );
+    BucketData bucket = await _getLatestBucket(session, target);
+
+    bucket.count += 1;
+
+    if (bucket.count >= bucketSize) {
+      bucket.count = 0;
+      bucket.bucket += 1;
+    }
   }
 
   // Must be authed, hence no userId required
@@ -71,9 +82,7 @@ class ChatMessageManager {
 
     await ChatMessage.db.insertRow(session, databaseMessage);
 
-    if (latestBucket.count > bucketSize) {
-      _incrementBucket(session, message.target);
-    }
+    _incrementBucket(session, message.target);
 
     for (int user in groupChat.users) {
       session.messages.postMessage(
