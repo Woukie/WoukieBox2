@@ -16,7 +16,7 @@ class ChatMessageManager {
   static final HashMap<int, BucketData> _latestBucket =
       HashMap<int, BucketData>();
 
-  static final int bucketSize = 10;
+  static final int bucketSize = 100;
 
   static void deleteBucket(int target) {
     _latestBucket.remove(target);
