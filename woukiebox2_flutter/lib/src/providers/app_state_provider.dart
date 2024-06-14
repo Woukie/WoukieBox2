@@ -348,14 +348,22 @@ class AppStateProvider extends ChangeNotifier {
     GroupChat? groupChat = _chats[chat];
     if (groupChat == null) return;
 
-    int bucket = groupChat.messages
-            .firstWhere((message) => message is WrittenChatMessage)
-            .bucket -
-        1;
+    // null to load latest bucket
+    int? bucket;
+    if (groupChat.messages.isEmpty) {
+      if (groupChat.bucketsLoading.contains(-1)) return;
+    } else {
+      bucket = groupChat.messages.firstWhere((message) {
+        return message is WrittenChatMessage;
+      })!.bucket;
+
+      // cannot do -= for null safety
+      bucket = bucket! - 1;
+    }
 
     if (bucket == 0 || groupChat.bucketsLoading.contains(bucket)) return;
 
-    groupChat.bucketsLoading.add(bucket);
+    groupChat.bucketsLoading.add(bucket ?? -1);
 
     List<ChatMessage>? chatMessages = await client.crud.getBucket(chat, bucket);
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/chatroom/messages/message.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
@@ -20,15 +21,19 @@ class Messages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
     final scrollController = ScrollController();
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.position.maxScrollExtent <= 200) {
+        appStateProvider.loadNextBucket(chat);
+      }
+    });
 
     scrollController.addListener(() {
-      if (scrollController.position.atEdge) {
-        if (scrollController.position.pixels != 0) {
-          print('Chatbox wants to load next bucket');
-          appStateProvider.loadNextBucket(chat);
-        }
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 200) {
+        appStateProvider.loadNextBucket(chat);
       }
     });
 
