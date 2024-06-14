@@ -39,6 +39,10 @@ class CrudEndpoint extends Endpoint {
     UserInfo? senderInfo = await Util.getAuthUser(session);
     if (senderInfo == null) return null;
 
+    UserPersistent senderPersistant =
+        (await Util.getPersistentData(session, senderInfo.id))!;
+    if (!senderPersistant.chats.contains(chat)) return null;
+
     bucket ??= (await ChatMessageManager.getLatestBucket(session, chat)).bucket;
 
     return (await ChatMessage.db.find(
