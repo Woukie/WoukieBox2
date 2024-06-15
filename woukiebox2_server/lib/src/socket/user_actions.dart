@@ -186,6 +186,10 @@ class UserActions {
     // Remove user from chat
     chat.users.remove(senderInfo.id);
     if (chat.users.isEmpty) {
+      await ChatMessage.db.deleteWhere(
+        session,
+        where: (message) => message.chatId.equals(chat.id!),
+      );
       await Chat.db.deleteRow(session, chat);
       ChatMessageManager.deleteBucket(chat.id!);
     } else {
