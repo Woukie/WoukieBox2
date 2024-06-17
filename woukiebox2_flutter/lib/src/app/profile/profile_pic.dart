@@ -82,9 +82,27 @@ class Avatar extends StatelessWidget {
       );
     }
 
-    return const Icon(
-      size: 40,
-      Icons.person,
+    final TextStyle fontStyle = TextStyle(
+      inherit: false,
+      fontSize: 40,
+      fontFamily: Icons.person.fontFamily,
+      package: Icons.person.fontPackage,
+      height: 1.0,
+      leadingDistribution: TextLeadingDistribution.even,
+    );
+
+    return SizedBox(
+      width: 40,
+      height: 40,
+      child: Center(
+        child: RichText(
+          overflow: TextOverflow.visible,
+          text: TextSpan(
+            style: fontStyle,
+            text: String.fromCharCode(Icons.person.codePoint),
+          ),
+        ),
+      ),
     );
   }
 }
