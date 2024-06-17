@@ -146,6 +146,7 @@ class UserActions {
         name: message.name.trim(),
         creator: senderInfo.id!,
         owners: message.owners,
+        lastMessage: DateTime.now(),
       ),
     );
 
@@ -186,12 +187,18 @@ class UserActions {
     // Remove user from chat
     chat.users.remove(senderInfo.id);
     if (chat.users.isEmpty) {
+      await ChatMessage.db.deleteWhere(
+        session,
+        where: (message) => message.chatId.equals(chat.id!),
+      );
       await Chat.db.deleteRow(session, chat);
       ChatMessageManager.deleteBucket(chat.id!);
     } else {
       if (chat.owners.contains(senderInfo.id) && chat.owners.length == 1) {
         chat.owners.add(chat.users.first);
       }
+
+      chat.lastMessage = DateTime.now();
       await Chat.db.updateRow(session, chat);
     }
 
@@ -207,6 +214,7 @@ class UserActions {
           chat: chat.id!,
           sender: senderInfo.id!,
           owners: chat.owners,
+          sentAt: chat.lastMessage,
         ),
       );
     }

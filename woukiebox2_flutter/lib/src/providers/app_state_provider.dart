@@ -112,6 +112,7 @@ class AppStateProvider extends ChangeNotifier {
         chat.name,
         chat.owners,
         chat.creator,
+        chat.lastMessage,
       );
     }
   }
@@ -127,6 +128,7 @@ class AppStateProvider extends ChangeNotifier {
         message.message,
         user.colour,
         user.image,
+        message.sentAt,
       );
 
       _messages.add(writtenMessage);
@@ -135,6 +137,7 @@ class AppStateProvider extends ChangeNotifier {
           message.sender, message.message, message.bucket!, message.sentAt);
 
       _chats[message.chat]?.messages.add(writtenMessage);
+      _chats[message.chat]?.lastMessage = message.sentAt;
     }
 
     notifyListeners();
@@ -195,6 +198,7 @@ class AppStateProvider extends ChangeNotifier {
           message.sender,
           user.username,
           user.colour,
+          message.sentAt,
         ),
       );
 
@@ -207,6 +211,7 @@ class AppStateProvider extends ChangeNotifier {
         _selectedGroup = null;
         _chats.remove(chat.id);
       } else {
+        chat.lastMessage = message.sentAt;
         chat.owners = message.owners ?? chat.owners;
         chat.users.remove(message.sender);
         chat.messages.add(
@@ -214,6 +219,7 @@ class AppStateProvider extends ChangeNotifier {
             message.sender,
             user.username,
             user.colour,
+            message.sentAt,
           ),
         );
       }
@@ -228,6 +234,7 @@ class AppStateProvider extends ChangeNotifier {
         message.sender.id,
         message.sender.username,
         message.sender.colour,
+        message.sentAt,
       ),
     );
 
@@ -326,6 +333,7 @@ class AppStateProvider extends ChangeNotifier {
       message.chat.name,
       message.chat.owners,
       message.chat.creator,
+      message.chat.lastMessage,
     );
 
     if (message.chat.creator == _currentUser) {

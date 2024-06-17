@@ -15,12 +15,14 @@ abstract class LeaveChatServer extends _i1.SerializableEntity {
     required this.sender,
     required this.chat,
     this.owners,
+    required this.sentAt,
   });
 
   factory LeaveChatServer({
     required int sender,
     required int chat,
     List<int>? owners,
+    required DateTime sentAt,
   }) = _LeaveChatServerImpl;
 
   factory LeaveChatServer.fromJson(
@@ -33,6 +35,8 @@ abstract class LeaveChatServer extends _i1.SerializableEntity {
       chat: serializationManager.deserialize<int>(jsonSerialization['chat']),
       owners: serializationManager
           .deserialize<List<int>?>(jsonSerialization['owners']),
+      sentAt: serializationManager
+          .deserialize<DateTime>(jsonSerialization['sentAt']),
     );
   }
 
@@ -42,10 +46,13 @@ abstract class LeaveChatServer extends _i1.SerializableEntity {
 
   List<int>? owners;
 
+  DateTime sentAt;
+
   LeaveChatServer copyWith({
     int? sender,
     int? chat,
     List<int>? owners,
+    DateTime? sentAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -53,6 +60,7 @@ abstract class LeaveChatServer extends _i1.SerializableEntity {
       'sender': sender,
       'chat': chat,
       if (owners != null) 'owners': owners?.toJson(),
+      'sentAt': sentAt.toJson(),
     };
   }
 }
@@ -64,10 +72,12 @@ class _LeaveChatServerImpl extends LeaveChatServer {
     required int sender,
     required int chat,
     List<int>? owners,
+    required DateTime sentAt,
   }) : super._(
           sender: sender,
           chat: chat,
           owners: owners,
+          sentAt: sentAt,
         );
 
   @override
@@ -75,11 +85,13 @@ class _LeaveChatServerImpl extends LeaveChatServer {
     int? sender,
     int? chat,
     Object? owners = _Undefined,
+    DateTime? sentAt,
   }) {
     return LeaveChatServer(
       sender: sender ?? this.sender,
       chat: chat ?? this.chat,
       owners: owners is List<int>? ? owners : this.owners?.clone(),
+      sentAt: sentAt ?? this.sentAt,
     );
   }
 }

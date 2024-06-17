@@ -4,3 +4,4 @@ fields:
   sender: int
   chat: int
   owners: List<int>? # Indicates new owners of chat. (if owners have all left)
+  sentAt: DateTime

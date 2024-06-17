@@ -27,13 +27,10 @@ class ProfilePic extends StatelessWidget {
               ClipPath(
                 clipper: StatusClip(),
                 child: offline && imageEffects
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: ColorFiltered(
-                          colorFilter: const ColorFilter.mode(
-                            Color.fromARGB(160, 141, 141, 141),
-                            BlendMode.saturation,
-                          ),
+                    ? Opacity(
+                        opacity: 0.6,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
                           child: Avatar(url: url, local: local),
                         ),
                       )
@@ -68,23 +65,51 @@ class Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (url != null && url != "") {
-      if (local != null && local!) {
-        return CircleAvatar(
-          radius: 20,
-          foregroundImage: FileImage(File(url!)),
-        );
-      }
+    if (url != null && url != "" && url != "null") {
+      // To support web
+      ImageProvider<Object> image = (local != null && local!
+          ? FileImage(File(url!))
+          : NetworkImage(url!)) as ImageProvider<Object>;
 
-      return CircleAvatar(
-        radius: 20,
-        foregroundImage: NetworkImage(url!),
+      return Container(
+        constraints: const BoxConstraints(
+          minHeight: 40,
+          minWidth: 40,
+          maxWidth: 40,
+          maxHeight: 40,
+        ),
+        foregroundDecoration: BoxDecoration(
+          image: DecorationImage(
+            image: image,
+            fit: BoxFit.cover,
+          ),
+          shape: BoxShape.circle,
+        ),
       );
     }
 
-    return const Icon(
-      size: 40,
-      Icons.person,
+    final TextStyle fontStyle = TextStyle(
+      inherit: false,
+      fontSize: 40,
+      color: Theme.of(context).colorScheme.secondary,
+      fontFamily: Icons.person.fontFamily,
+      package: Icons.person.fontPackage,
+      height: 1.0,
+      leadingDistribution: TextLeadingDistribution.even,
+    );
+
+    return SizedBox(
+      width: 40,
+      height: 40,
+      child: Center(
+        child: RichText(
+          overflow: TextOverflow.visible,
+          text: TextSpan(
+            style: fontStyle,
+            text: String.fromCharCode(Icons.person.codePoint),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -18,6 +18,7 @@ abstract class Chat extends _i1.TableRow {
     required this.owners,
     required this.creator,
     required this.name,
+    required this.lastMessage,
   }) : super(id);
 
   factory Chat({
@@ -26,6 +27,7 @@ abstract class Chat extends _i1.TableRow {
     required List<int> owners,
     required int creator,
     required String name,
+    required DateTime lastMessage,
   }) = _ChatImpl;
 
   factory Chat.fromJson(
@@ -41,6 +43,8 @@ abstract class Chat extends _i1.TableRow {
       creator:
           serializationManager.deserialize<int>(jsonSerialization['creator']),
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      lastMessage: serializationManager
+          .deserialize<DateTime>(jsonSerialization['lastMessage']),
     );
   }
 
@@ -56,6 +60,8 @@ abstract class Chat extends _i1.TableRow {
 
   String name;
 
+  DateTime lastMessage;
+
   @override
   _i1.Table get table => t;
 
@@ -65,6 +71,7 @@ abstract class Chat extends _i1.TableRow {
     List<int>? owners,
     int? creator,
     String? name,
+    DateTime? lastMessage,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -74,6 +81,7 @@ abstract class Chat extends _i1.TableRow {
       'owners': owners.toJson(),
       'creator': creator,
       'name': name,
+      'lastMessage': lastMessage.toJson(),
     };
   }
 
@@ -86,6 +94,7 @@ abstract class Chat extends _i1.TableRow {
       'owners': owners,
       'creator': creator,
       'name': name,
+      'lastMessage': lastMessage,
     };
   }
 
@@ -97,6 +106,7 @@ abstract class Chat extends _i1.TableRow {
       'owners': owners.toJson(),
       'creator': creator,
       'name': name,
+      'lastMessage': lastMessage.toJson(),
     };
   }
 
@@ -121,6 +131,9 @@ abstract class Chat extends _i1.TableRow {
         return;
       case 'name':
         name = value;
+        return;
+      case 'lastMessage':
+        lastMessage = value;
         return;
       default:
         throw UnimplementedError();
@@ -278,12 +291,14 @@ class _ChatImpl extends Chat {
     required List<int> owners,
     required int creator,
     required String name,
+    required DateTime lastMessage,
   }) : super._(
           id: id,
           users: users,
           owners: owners,
           creator: creator,
           name: name,
+          lastMessage: lastMessage,
         );
 
   @override
@@ -293,6 +308,7 @@ class _ChatImpl extends Chat {
     List<int>? owners,
     int? creator,
     String? name,
+    DateTime? lastMessage,
   }) {
     return Chat(
       id: id is int? ? id : this.id,
@@ -300,6 +316,7 @@ class _ChatImpl extends Chat {
       owners: owners ?? this.owners.clone(),
       creator: creator ?? this.creator,
       name: name ?? this.name,
+      lastMessage: lastMessage ?? this.lastMessage,
     );
   }
 }
@@ -322,6 +339,10 @@ class ChatTable extends _i1.Table {
       'name',
       this,
     );
+    lastMessage = _i1.ColumnDateTime(
+      'lastMessage',
+      this,
+    );
   }
 
   late final _i1.ColumnSerializable users;
@@ -332,6 +353,8 @@ class ChatTable extends _i1.Table {
 
   late final _i1.ColumnString name;
 
+  late final _i1.ColumnDateTime lastMessage;
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -339,6 +362,7 @@ class ChatTable extends _i1.Table {
         owners,
         creator,
         name,
+        lastMessage,
       ];
 }
 

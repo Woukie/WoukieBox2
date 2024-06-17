@@ -1,11 +1,11 @@
 // Helps to preserve state of message without having to send additional data per message.
-// TODO: Make use of timestamps being sent with messages from the server
 class WrittenGlobalMessage {
   final int senderId;
   final String username;
   final String colour;
   final String message;
   final String image; // Lead messages have images
+  final DateTime sentAt;
 
   WrittenGlobalMessage(
     this.senderId,
@@ -13,6 +13,7 @@ class WrittenGlobalMessage {
     this.message,
     this.colour,
     this.image,
+    this.sentAt,
   );
 }
 
@@ -34,16 +35,18 @@ class WrittenJoinMessage {
   final int senderId;
   final String username;
   final String colour;
+  final DateTime sentAt;
 
-  WrittenJoinMessage(this.senderId, this.username, this.colour);
+  WrittenJoinMessage(this.senderId, this.username, this.colour, this.sentAt);
 }
 
 class WrittenLeaveMessage {
   final int senderId;
   final String username;
   final String colour;
+  final DateTime sentAt;
 
-  WrittenLeaveMessage(this.senderId, this.username, this.colour);
+  WrittenLeaveMessage(this.senderId, this.username, this.colour, this.sentAt);
 }
 
 class WrittenProfileMessage {
