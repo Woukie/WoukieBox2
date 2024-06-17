@@ -69,16 +69,25 @@ class Avatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (url != null && url != "" && url != "null") {
-      if (local != null && local!) {
-        return CircleAvatar(
-          radius: 20,
-          foregroundImage: FileImage(File(url!)),
-        );
-      }
+      // To support web
+      ImageProvider<Object> image = (local != null && local!
+          ? FileImage(File(url!))
+          : NetworkImage(url!)) as ImageProvider<Object>;
 
-      return CircleAvatar(
-        radius: 20,
-        foregroundImage: NetworkImage(url!),
+      return Container(
+        constraints: const BoxConstraints(
+          minHeight: 40,
+          minWidth: 40,
+          maxWidth: 40,
+          maxHeight: 40,
+        ),
+        foregroundDecoration: BoxDecoration(
+          image: DecorationImage(
+            image: image,
+            fit: BoxFit.cover,
+          ),
+          shape: BoxShape.circle,
+        ),
       );
     }
 
