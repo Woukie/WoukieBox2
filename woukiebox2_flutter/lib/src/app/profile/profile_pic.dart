@@ -27,13 +27,10 @@ class ProfilePic extends StatelessWidget {
               ClipPath(
                 clipper: StatusClip(),
                 child: offline && imageEffects
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: ColorFiltered(
-                          colorFilter: const ColorFilter.mode(
-                            Color.fromARGB(160, 141, 141, 141),
-                            BlendMode.saturation,
-                          ),
+                    ? Opacity(
+                        opacity: 0.6,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
                           child: Avatar(url: url, local: local),
                         ),
                       )
