@@ -85,6 +85,7 @@ class Avatar extends StatelessWidget {
     final TextStyle fontStyle = TextStyle(
       inherit: false,
       fontSize: 40,
+      color: Theme.of(context).colorScheme.secondary,
       fontFamily: Icons.person.fontFamily,
       package: Icons.person.fontPackage,
       height: 1.0,
