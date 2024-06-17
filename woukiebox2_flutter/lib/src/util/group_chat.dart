@@ -7,6 +7,7 @@ class GroupChat {
   final int id, creator;
   List<int> users, owners;
   String name;
+  DateTime lastMessage;
 
   // Supports any type from written_message. Use WrittenChatMessage over WrittenGlobalMessage to display the latest user data
   final List<dynamic> messages = List.empty(growable: true);
@@ -18,6 +19,7 @@ class GroupChat {
     this.name,
     this.owners,
     this.creator,
+    this.lastMessage,
   );
 
   static String generateGroupName(

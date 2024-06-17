@@ -14,7 +14,11 @@ class SessionManager {
 
     session.messages.postMessage(
       "global",
-      LeaveChatServer(chat: 0, sender: userId),
+      LeaveChatServer(
+        chat: 0,
+        sender: userId,
+        sentAt: DateTime.now(),
+      ),
     );
 
     print("User left!");
@@ -55,6 +59,7 @@ class SessionManager {
       JoinChatServer(
         sender: user,
         chat: 0,
+        sentAt: DateTime.now(),
       ),
     );
 

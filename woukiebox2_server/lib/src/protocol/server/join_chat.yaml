@@ -4,3 +4,4 @@ class: JoinChatServer
 fields:
   sender: UserServer
   chat: int
+  sentAt: DateTime

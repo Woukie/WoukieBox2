@@ -146,6 +146,7 @@ class UserActions {
         name: message.name.trim(),
         creator: senderInfo.id!,
         owners: message.owners,
+        lastMessage: DateTime.now(),
       ),
     );
 
@@ -196,6 +197,8 @@ class UserActions {
       if (chat.owners.contains(senderInfo.id) && chat.owners.length == 1) {
         chat.owners.add(chat.users.first);
       }
+
+      chat.lastMessage = DateTime.now();
       await Chat.db.updateRow(session, chat);
     }
 
@@ -211,6 +214,7 @@ class UserActions {
           chat: chat.id!,
           sender: senderInfo.id!,
           owners: chat.owners,
+          sentAt: chat.lastMessage,
         ),
       );
     }

@@ -6,3 +6,4 @@ fields:
   owners: List<int>
   creator: int # Creator of 0 means auto-created (not made intentionally)
   name: String
+  lastMessage: DateTime
