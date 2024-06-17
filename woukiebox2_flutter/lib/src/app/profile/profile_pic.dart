@@ -68,7 +68,7 @@ class Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (url != null && url != "") {
+    if (url != null && url != "" && url != "null") {
       if (local != null && local!) {
         return CircleAvatar(
           radius: 20,
