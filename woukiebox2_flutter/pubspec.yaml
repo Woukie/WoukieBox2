@@ -27,8 +27,8 @@ dependencies:
   serverpod_flutter: 1.2.7
   woukiebox2_client:
     path: ../woukiebox2_client
-  serverpod_auth_shared_flutter: ^1.2.7
-  serverpod_auth_email_flutter: ^1.2.7
+  serverpod_auth_shared_flutter: 1.2.7
+  serverpod_auth_email_flutter: 1.2.7
   animations: ^2.0.11
   provider: ^6.1.2
   shared_preferences: ^2.2.3
