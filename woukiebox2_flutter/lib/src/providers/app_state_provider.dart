@@ -87,6 +87,28 @@ class AppStateProvider extends ChangeNotifier {
   AppStateProvider(BuildContext context) {
     _preferenceProvider =
         Provider.of<PreferenceProvider>(context, listen: false);
+    _winNotifyPlugin
+        .initNotificationCallBack((NotificationCallBackDetails details) {
+      int? group = int.tryParse(details.argrument ?? "");
+
+      // It can be null :)
+      // ignore: unnecessary_null_comparison
+      if (details.userInput == null || group == null) return;
+
+      windowManager.restore();
+      windowManager.focus();
+
+      if (group == 0) {
+        // Switch to global
+        _selectedPage = 0;
+        _selectedGroup = null;
+      } else {
+        _selectedPage = 1;
+        _selectedGroup = group;
+      }
+
+      notifyListeners();
+    });
   }
 
   Future<void> readChat(int chat) async {
@@ -149,8 +171,6 @@ class AppStateProvider extends ChangeNotifier {
 
       _chats[message.chat]?.messages.add(writtenMessage);
       _chats[message.chat]?.lastMessage = message.sentAt;
-
-      if (_selectedGroup == message.chat) readChat(message.chat);
     }
 
     notifyListeners();
@@ -175,9 +195,14 @@ class AppStateProvider extends ChangeNotifier {
 
     if (!kIsWeb && !windowFocused && _preferenceProvider.desktopNotifications) {
       NotificationMessage notificationMessage =
-          NotificationMessage.fromCustomTemplate("ToastGeneric");
+          NotificationMessage.fromCustomTemplate(
+        "ToastGeneric",
+        launch: "${message.chat}",
+      );
       _winNotifyPlugin.showNotificationCustomTemplate(
-          notificationMessage, await messageNotification(user, message));
+        notificationMessage,
+        await messageNotification(user, message),
+      );
     }
   }
 
@@ -235,8 +260,6 @@ class AppStateProvider extends ChangeNotifier {
             message.sentAt,
           ),
         );
-
-        if (_selectedGroup == chat.id) readChat(chat.id);
       }
     }
 
@@ -354,7 +377,6 @@ class AppStateProvider extends ChangeNotifier {
     if (message.chat.creator == _currentUser) {
       _selectedGroup = message.chat.id;
       _selectedPage = 1;
-      readChat(message.chat.id!);
     }
 
     notifyListeners();
