@@ -208,6 +208,10 @@ class UserActions {
 
     // Remove chat from user
     senderPersistent.chats.remove(message.chat);
+    LastRead.db.deleteWhere(session,
+        where: (row) =>
+            (row.chatId.equals(chat.id!)) &
+            (row.userInfoId.equals(senderInfo.id)));
     await UserPersistent.db.updateRow(session, senderPersistent);
 
     chat.users.add(senderInfo.id!);

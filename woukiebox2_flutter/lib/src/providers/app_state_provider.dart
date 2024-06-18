@@ -49,6 +49,7 @@ class AppStateProvider extends ChangeNotifier {
 
   void setSelectedGroup(value) {
     _selectedGroup = value;
+    if (kDebugMode) print("Selected group $value");
     notifyListeners();
   }
 
@@ -113,8 +114,9 @@ class AppStateProvider extends ChangeNotifier {
 
   Future<void> readChat(int chat) async {
     _lastRead[chat] = DateTime.now();
-    await client.sockets.sendStreamMessage(ReadChatClient(chat: chat));
     notifyListeners();
+    await client.sockets.sendStreamMessage(ReadChatClient(chat: chat));
+    if (kDebugMode) print("Read chat $chat");
   }
 
   resetData() {
@@ -171,6 +173,9 @@ class AppStateProvider extends ChangeNotifier {
 
       _chats[message.chat]?.messages.add(writtenMessage);
       _chats[message.chat]?.lastMessage = message.sentAt;
+
+      readChat(message.chat);
+      if (_selectedGroup == message.chat && _selectedPage == 1) {}
     }
 
     notifyListeners();
@@ -391,6 +396,8 @@ class AppStateProvider extends ChangeNotifier {
     if (message.chat.creator == _currentUser) {
       _selectedGroup = message.chat.id;
       _selectedPage = 1;
+
+      readChat(message.chat.id!);
     }
 
     notifyListeners();
