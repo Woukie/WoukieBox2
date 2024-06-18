@@ -23,6 +23,7 @@ class AppStateProvider extends ChangeNotifier {
   int _selectedPage = 0;
   final HashMap<int, UserClient> _users = HashMap<int, UserClient>();
   final HashMap<int, GroupChat> _chats = HashMap<int, GroupChat>();
+  final HashMap<int, DateTime> _lastRead = HashMap<int, DateTime>();
 
   final List<dynamic> _messages = List.empty(growable: true);
   final List<int> _friends = List.empty(growable: true);
@@ -36,6 +37,7 @@ class AppStateProvider extends ChangeNotifier {
 
   HashMap<int, UserClient> get users => _users;
   HashMap<int, GroupChat> get chats => _chats;
+  HashMap<int, DateTime> get lastReads => _lastRead;
 
   List<dynamic> get messages => _messages;
   List<int> get friends => _friends;
@@ -392,5 +394,11 @@ class AppStateProvider extends ChangeNotifier {
     }
 
     groupChat.bucketsLoading.remove(bucket);
+  }
+
+  void lastRead(LastViewedServer message) {
+    _lastRead.clear();
+    _lastRead.addAll(message.viewedData);
+    notifyListeners();
   }
 }
