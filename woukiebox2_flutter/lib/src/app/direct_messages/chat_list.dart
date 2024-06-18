@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/direct_messages/direct_message_dropdown.dart';
@@ -20,8 +22,15 @@ class ChatsList extends StatelessWidget {
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
     final List<GroupChat> groupChats = appStateProvider.chats.values.toList();
+    final HashMap<int, DateTime> lastReads = appStateProvider.lastReads;
     groupChats.sort(
       (chatA, chatB) {
+        bool unreadA = !lastReads.containsKey(chatA.id) ||
+            chatA.lastMessage.isAfter(lastReads[chatA.id]!);
+        bool unreadB = !lastReads.containsKey(chatB.id) ||
+            chatB.lastMessage.isAfter(lastReads[chatB.id]!);
+        if (unreadA != unreadB) return unreadA ? -1 : 1;
+
         return chatB.lastMessage.compareTo(chatA.lastMessage);
       },
     );
@@ -41,6 +50,10 @@ class ChatsList extends StatelessWidget {
       itemBuilder: (context, index) {
         GroupChat groupChat = groupChats[index];
         bool selected = groupChat.id == selectedGroup;
+
+        bool unread = !appStateProvider.lastReads.containsKey(groupChat.id) ||
+            appStateProvider.lastReads[groupChat.id]!
+                .isBefore(groupChat.lastMessage);
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 4),
@@ -90,6 +103,19 @@ class ChatsList extends StatelessWidget {
                           overflow: TextOverflow.fade,
                         ),
                       ),
+                      unread
+                          ? Padding(
+                              padding: const EdgeInsets.only(left: 12),
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                            )
+                          : Container(),
                     ],
                   ),
                 ),

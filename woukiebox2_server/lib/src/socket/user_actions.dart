@@ -191,6 +191,10 @@ class UserActions {
         session,
         where: (message) => message.chatId.equals(chat.id!),
       );
+      await LastRead.db.deleteWhere(
+        session,
+        where: (row) => row.chatId.equals(chat.id!),
+      );
       await Chat.db.deleteRow(session, chat);
       ChatMessageManager.deleteBucket(chat.id!);
     } else {
@@ -244,6 +248,38 @@ class UserActions {
           name: chat.name,
         ),
       );
+    }
+  }
+
+  static Future<void> readChat(
+      StreamingSession session, ReadChatClient message) async {
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return;
+
+    UserPersistent senderPersistent =
+        (await Util.getPersistentData(session, senderInfo.id))!;
+
+    if (!senderPersistent.chats.contains(message.chat)) return;
+
+    LastRead? existingLastRead = await LastRead.db.findFirstRow(
+      session,
+      where: (row) =>
+          (row.chatId.equals(message.chat)) &
+          (row.userInfoId.equals(senderInfo.id)),
+    );
+
+    if (existingLastRead == null) {
+      await LastRead.db.insertRow(
+        session,
+        LastRead(
+          userInfoId: senderInfo.id!,
+          chatId: message.chat,
+          readAt: DateTime.now(),
+        ),
+      );
+    } else {
+      existingLastRead.readAt = DateTime.now();
+      await LastRead.db.updateRow(session, existingLastRead);
     }
   }
 }

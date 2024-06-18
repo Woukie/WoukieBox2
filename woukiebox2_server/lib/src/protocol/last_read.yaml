@@ -1,0 +1,13 @@
+class: LastRead
+
+# Currently used to determine what chats have notifications for a user
+table: lastread
+fields:
+  userInfo: module:auth:UserInfo?, relation
+  chat: Chat?, relation
+  readAt: DateTime
+indexes:
+  lastread_chat_idx:
+    fields: chatId
+  lastread_user_info_idx:
+    fields: userInfoId

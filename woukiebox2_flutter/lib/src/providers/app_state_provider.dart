@@ -23,6 +23,7 @@ class AppStateProvider extends ChangeNotifier {
   int _selectedPage = 0;
   final HashMap<int, UserClient> _users = HashMap<int, UserClient>();
   final HashMap<int, GroupChat> _chats = HashMap<int, GroupChat>();
+  final HashMap<int, DateTime> _lastRead = HashMap<int, DateTime>();
 
   final List<dynamic> _messages = List.empty(growable: true);
   final List<int> _friends = List.empty(growable: true);
@@ -36,6 +37,7 @@ class AppStateProvider extends ChangeNotifier {
 
   HashMap<int, UserClient> get users => _users;
   HashMap<int, GroupChat> get chats => _chats;
+  HashMap<int, DateTime> get lastReads => _lastRead;
 
   List<dynamic> get messages => _messages;
   List<int> get friends => _friends;
@@ -85,12 +87,43 @@ class AppStateProvider extends ChangeNotifier {
   AppStateProvider(BuildContext context) {
     _preferenceProvider =
         Provider.of<PreferenceProvider>(context, listen: false);
+    _winNotifyPlugin
+        .initNotificationCallBack((NotificationCallBackDetails details) {
+      int? group = int.tryParse(details.argrument ?? "");
+
+      // It can be null :)
+      // ignore: unnecessary_null_comparison
+      if (details.userInput == null || group == null) return;
+
+      windowManager.restore();
+      windowManager.focus();
+
+      if (group == 0) {
+        // Switch to global
+        _selectedPage = 0;
+        _selectedGroup = null;
+      } else {
+        _selectedPage = 1;
+        _selectedGroup = group;
+      }
+
+      notifyListeners();
+    });
+  }
+
+  Future<void> readChat(int chat) async {
+    _lastRead[chat] = DateTime.now();
+    await client.sockets.sendStreamMessage(ReadChatClient(chat: chat));
+    notifyListeners();
   }
 
   resetData() {
     _currentUser = null;
     _messages.clear();
+    _selectedGroup = null;
+    _selectedPage = 0;
     _loadingUsers.clear();
+    _lastRead.clear();
     _chats.clear();
     _users.clear();
     _friends.clear();
@@ -142,15 +175,41 @@ class AppStateProvider extends ChangeNotifier {
 
     notifyListeners();
 
+    bool focused = kIsWeb || await windowManager.isFocused();
+
+    if (!_preferenceProvider.recieveNotifications) return;
+
     // No notifications from your own messages
     if (message.sender == currentUser) return;
 
-    bool windowFocused = kIsWeb || await windowManager.isFocused();
+    if (focused && !_preferenceProvider.sameChatNotifications) {
+      bool onSelected = _selectedPage == 1 && message.chat == _selectedGroup;
+      bool onGlobal = _selectedPage == 0 && message.chat == 0;
 
-    MessageSoundMode soundMode = _preferenceProvider.messageSoundMode;
-    if (soundMode == MessageSoundMode.all ||
-        (soundMode == MessageSoundMode.unfocussed && !windowFocused)) {
+      if (onSelected || onGlobal) return;
+    }
+
+    // In-app notifications locked to enabled for web
+    if (!kIsWeb && (focused && (!_preferenceProvider.inAppNotifications))) {
+      return;
+    }
+
+    if (message.chat == 0 && !_preferenceProvider.globalNotifications) return;
+
+    if (_preferenceProvider.notificationSounds) {
       await player.play(AssetSource("audio/recieve-message.mp3"));
+    }
+
+    if (!kIsWeb && _preferenceProvider.desktopNotifications) {
+      NotificationMessage notificationMessage =
+          NotificationMessage.fromCustomTemplate(
+        "ToastGeneric",
+        launch: "${message.chat}",
+      );
+      _winNotifyPlugin.showNotificationCustomTemplate(
+        notificationMessage,
+        await messageNotification(user, message),
+      );
     }
 
     if (!kIsWeb && _preferenceProvider.taskbarFlashing) {
@@ -158,13 +217,6 @@ class AppStateProvider extends ChangeNotifier {
         mode: TaskbarFlashMode.all | TaskbarFlashMode.timernofg,
         timeout: const Duration(milliseconds: 500),
       );
-    }
-
-    if (!kIsWeb && !windowFocused && _preferenceProvider.desktopNotifications) {
-      NotificationMessage notificationMessage =
-          NotificationMessage.fromCustomTemplate("ToastGeneric");
-      _winNotifyPlugin.showNotificationCustomTemplate(
-          notificationMessage, await messageNotification(user, message));
     }
   }
 
@@ -392,5 +444,11 @@ class AppStateProvider extends ChangeNotifier {
     }
 
     groupChat.bucketsLoading.remove(bucket);
+  }
+
+  void lastRead(LastReadServer message) {
+    _lastRead.clear();
+    _lastRead.addAll(message.readData);
+    notifyListeners();
   }
 }

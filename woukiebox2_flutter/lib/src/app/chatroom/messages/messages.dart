@@ -23,6 +23,7 @@ class Messages extends StatelessWidget {
   Widget build(BuildContext context) {
     final scrollController = ScrollController();
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+    appStateProvider.readChat(chat);
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (scrollController.position.maxScrollExtent <= 200) {

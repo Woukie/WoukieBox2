@@ -37,188 +37,190 @@ class Settings extends StatelessWidget {
                         "Appearance",
                         style: TextStyle(fontSize: 22),
                       ),
-
-                      // Dark Mode
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Dark Mode"),
-                          Switch(
-                            value:
-                                preferenceProvider.themeMode == ThemeMode.dark,
-                            onChanged: (value) => preferenceProvider
-                                .toggleThemeMode(), // Toggle theme
-                          ),
-                        ],
+                      SettingWrapper(
+                        title: "Dark Mode",
+                        description: "Toggle between light and dark mode",
+                        child: Switch(
+                          value: preferenceProvider.themeMode == ThemeMode.dark,
+                          onChanged: (value) =>
+                              preferenceProvider.toggleThemeMode(),
+                        ),
                       ),
-                      const Text("Toggle between light and dark mode"),
-                      const Divider(),
-
-                      // Theme Color
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Theme Color"),
-                          FilledButton.tonalIcon(
-                            label: const Text("Edit"),
-                            icon: const Icon(Icons.edit),
-                            onPressed: () async {
-                              preferenceProvider.updateSelectedColor(
-                                await showColorPickerDialog(
-                                  context,
-                                  preferenceProvider.color,
-                                  pickersEnabled: <ColorPickerType, bool>{
-                                    ColorPickerType.accent: false,
-                                    ColorPickerType.primary: true,
-                                  },
-                                  enableShadesSelection: false,
-                                ),
-                              );
-                            },
-                          ),
-                        ],
+                      SettingWrapper(
+                        title: "Theme Color",
+                        description:
+                            "Select a color to be applied to the styling of the app",
+                        child: FilledButton.tonalIcon(
+                          label: const Text("Edit"),
+                          icon: const Icon(Icons.edit),
+                          onPressed: () async {
+                            preferenceProvider.setSelectedColor(
+                              await showColorPickerDialog(
+                                context,
+                                preferenceProvider.color,
+                                pickersEnabled: <ColorPickerType, bool>{
+                                  ColorPickerType.accent: false,
+                                  ColorPickerType.primary: true,
+                                },
+                                enableShadesSelection: false,
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                      const Text(
-                          "Select a color to be applied to the styling of the app"),
-                      const Divider(),
-
                       const Padding(padding: EdgeInsets.all(12)),
                       const Text(
                         "Notifications",
                         style: TextStyle(fontSize: 22),
                       ),
-
-                      // Message Sound Mode
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Message Sounds"),
-                          DropdownButton<MessageSoundMode>(
-                            value: preferenceProvider.messageSoundMode,
-                            items: const [
-                              DropdownMenuItem(
-                                value: MessageSoundMode.all,
-                                child: Text("All"),
-                              ),
-                              DropdownMenuItem(
-                                value: MessageSoundMode.unfocussed,
-                                child: Text("Unfocussed"),
-                              ),
-                              DropdownMenuItem(
-                                value: MessageSoundMode.none,
-                                child: Text("None"),
-                              )
-                            ],
-                            onChanged: (MessageSoundMode? value) {
-                              preferenceProvider.updateMessageSoundMode(value!);
-                            },
-                          )
-                        ],
+                      SettingWrapper(
+                        title: "Receive Notifications",
+                        description:
+                            "Toggle this off to disable all notifications entirely",
+                        child: Switch(
+                          value: preferenceProvider.recieveNotifications,
+                          onChanged: (value) =>
+                              preferenceProvider.setRecieveNotifications(value),
+                        ),
                       ),
-                      const Text(
-                          "Choose when to play message sounds. (Setting to unfocussed plays message sounds only when the app is not active)"),
-                      const Divider(),
-
-                      // Toggle Desktop Notifications
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Desktop Notifications"),
-                          Switch(
-                            value: preferenceProvider.desktopNotifications,
-                            onChanged: kIsWeb
-                                ? null
-                                : (value) => preferenceProvider
-                                    .updateDesktopNotifications(value),
-                          ),
-                        ],
+                      SettingWrapper(
+                        title: "In-App Notifications",
+                        description:
+                            "Enables notifications when in the app for chats that aren't selected",
+                        child: Switch(
+                          value:
+                              kIsWeb || !preferenceProvider.recieveNotifications
+                                  ? kIsWeb
+                                  : preferenceProvider.inAppNotifications,
+                          onChanged:
+                              kIsWeb || !preferenceProvider.recieveNotifications
+                                  ? null
+                                  : (value) => preferenceProvider
+                                      .setInAppNotifications(value),
+                        ),
                       ),
-                      const Text(
-                          "Enable desktop notifications for unread messages"),
-                      const Divider(),
-
-                      // Toggle Taskbar Flashing
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Taskbar Flashing"),
-                          Switch(
-                            value: preferenceProvider.taskbarFlashing,
-                            onChanged: kIsWeb
-                                ? null
-                                : (value) => preferenceProvider
-                                    .updateTaskbarFlashing(value),
-                          ),
-                        ],
+                      SettingWrapper(
+                        title: "Desktop Notifications",
+                        description: "Choose to recieve desktop notifications",
+                        child: Switch(
+                          value:
+                              kIsWeb || !preferenceProvider.recieveNotifications
+                                  ? false
+                                  : preferenceProvider.desktopNotifications,
+                          onChanged:
+                              kIsWeb || !preferenceProvider.recieveNotifications
+                                  ? null
+                                  : (value) => preferenceProvider
+                                      .setDesktopNotifications(value),
+                        ),
                       ),
-                      const Text(
-                          "Enables flashing of the taskbar icon for unread messages"),
-                      const Divider(),
-
+                      SettingWrapper(
+                        title: "Taskbar Flashing",
+                        description: "Toggles taskbar flashing on notification",
+                        child: Switch(
+                          value:
+                              kIsWeb || !preferenceProvider.recieveNotifications
+                                  ? false
+                                  : preferenceProvider.taskbarFlashing,
+                          onChanged: kIsWeb ||
+                                  !preferenceProvider.recieveNotifications
+                              ? null
+                              : (value) =>
+                                  preferenceProvider.setTaskbarFlashing(value),
+                        ),
+                      ),
+                      SettingWrapper(
+                        title: "Notification Sounds",
+                        description: "Toggle notification sounds",
+                        child: Switch(
+                          value: !preferenceProvider.recieveNotifications
+                              ? false
+                              : preferenceProvider.taskbarFlashing,
+                          onChanged: !preferenceProvider.recieveNotifications
+                              ? null
+                              : (value) =>
+                                  preferenceProvider.setTaskbarFlashing(value),
+                        ),
+                      ),
+                      SettingWrapper(
+                        title: "Same Chat Notifications",
+                        description:
+                            "Enables notifications for the chat that you are in",
+                        child: Switch(
+                          value: !preferenceProvider.recieveNotifications
+                              ? false
+                              : preferenceProvider.sameChatNotifications,
+                          onChanged: !preferenceProvider.recieveNotifications
+                              ? null
+                              : (value) => preferenceProvider
+                                  .setSameChatNotifications(value),
+                        ),
+                      ),
+                      SettingWrapper(
+                        title: "Global Notifications",
+                        description: "Recieve notifications from global chat",
+                        child: Switch(
+                          value: !preferenceProvider.recieveNotifications
+                              ? false
+                              : preferenceProvider.globalNotifications,
+                          onChanged: !preferenceProvider.recieveNotifications
+                              ? null
+                              : (value) => preferenceProvider
+                                  .setGlobalNotifications(value),
+                        ),
+                      ),
                       const Padding(padding: EdgeInsets.all(12)),
                       const Text(
                         "Advanced Styling",
                         style: TextStyle(fontSize: 22),
                       ),
-
-                      // Card margin
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Card Margin"),
-                          Row(
-                            children: [
-                              FilledButton.icon(
-                                onPressed: () =>
-                                    stylingProvider.updateCardMargin(12),
-                                label: const Text("Reset"),
-                                icon: const Icon(Icons.refresh),
-                              ),
-                              Slider(
-                                min: 0,
-                                max: 24,
-                                value: stylingProvider.cardMargin,
-                                onChanged: (value) =>
-                                    stylingProvider.updateCardMargin(value),
-                              ),
-                            ],
-                          ),
-                        ],
+                      SettingWrapper(
+                        title: "Card Margin",
+                        description:
+                            "Modify the margin of cards to your liking",
+                        child: Row(
+                          children: [
+                            FilledButton.icon(
+                              onPressed: () =>
+                                  stylingProvider.updateCardMargin(12),
+                              label: const Text("Reset"),
+                              icon: const Icon(Icons.refresh),
+                            ),
+                            Slider(
+                              min: 0,
+                              max: 24,
+                              value: stylingProvider.cardMargin,
+                              onChanged: (value) =>
+                                  stylingProvider.updateCardMargin(value),
+                            ),
+                          ],
+                        ),
                       ),
-                      const Text("Modify the margin of cards to your liking"),
-                      const Divider(),
-
                       const Padding(padding: EdgeInsets.all(12)),
                       const Text(
                         "Misc",
                         style: TextStyle(fontSize: 22),
                       ),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Log out"),
-                          FilledButton(
-                              onPressed: () {
-                                connectionStateProvider.closeConnection();
-                              },
-                              child: const Text("Log out")),
-                        ],
+                      SettingWrapper(
+                        title: "Log out",
+                        description: "Returns you to the log in screen",
+                        child: FilledButton(
+                          onPressed: () {
+                            connectionStateProvider.closeConnection();
+                          },
+                          child: const Text("Log out"),
+                        ),
                       ),
-                      const Divider(),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("idfk"),
-                          FilledButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("Fuck my whole shit up")),
-                        ],
+                      SettingWrapper(
+                        title: "idfk",
+                        description: "Dont press it",
+                        child: FilledButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("Fuck my whole shit up"),
+                        ),
                       ),
-                      const Divider(),
                     ],
                   ),
                 ),
@@ -227,6 +229,33 @@ class Settings extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class SettingWrapper extends StatelessWidget {
+  const SettingWrapper({
+    super.key,
+    this.title = "",
+    this.description = "",
+    required this.child,
+  });
+
+  final String title, description;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [Text(title), child],
+        ),
+        Text(description),
+        const Divider(),
+      ],
     );
   }
 }
