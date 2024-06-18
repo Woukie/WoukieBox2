@@ -9,41 +9,39 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ReadChatClient extends _i1.SerializableEntity {
   ReadChatClient._({required this.chat});
 
-  factory ReadChatClient({required DateTime chat}) = _ReadChatClientImpl;
+  factory ReadChatClient({required int chat}) = _ReadChatClientImpl;
 
   factory ReadChatClient.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
     return ReadChatClient(
-        chat: serializationManager
-            .deserialize<DateTime>(jsonSerialization['chat']));
+        chat: serializationManager.deserialize<int>(jsonSerialization['chat']));
   }
 
-  DateTime chat;
+  int chat;
 
-  ReadChatClient copyWith({DateTime? chat});
+  ReadChatClient copyWith({int? chat});
   @override
   Map<String, dynamic> toJson() {
-    return {'chat': chat.toJson()};
+    return {'chat': chat};
   }
 
   @override
   Map<String, dynamic> allToJson() {
-    return {'chat': chat.toJson()};
+    return {'chat': chat};
   }
 }
 
 class _ReadChatClientImpl extends ReadChatClient {
-  _ReadChatClientImpl({required DateTime chat}) : super._(chat: chat);
+  _ReadChatClientImpl({required int chat}) : super._(chat: chat);
 
   @override
-  ReadChatClient copyWith({DateTime? chat}) {
+  ReadChatClient copyWith({int? chat}) {
     return ReadChatClient(chat: chat ?? this.chat);
   }
 }

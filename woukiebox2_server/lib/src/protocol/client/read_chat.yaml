@@ -1,4 +1,4 @@
 class: ReadChatClient
 
 fields:
-  chat: DateTime
+  chat: int
