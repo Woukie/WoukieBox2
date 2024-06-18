@@ -183,8 +183,10 @@ class AppStateProvider extends ChangeNotifier {
     if (message.sender == currentUser) return;
 
     if (focused && !_preferenceProvider.sameChatNotifications) {
-      if (message.chat == _selectedGroup ||
-          (_selectedPage == 0 && message.chat != 0)) return;
+      bool onSelected = _selectedPage == 1 && message.chat == _selectedGroup;
+      bool onGlobal = _selectedPage == 0 && message.chat == 0;
+
+      if (onSelected || onGlobal) return;
     }
 
     // In-app notifications locked to enabled for web
