@@ -1,0 +1,4 @@
+class: LastViewedServer
+
+fields:
+  viewedData: Map<int, DateTime>

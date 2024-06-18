@@ -65,7 +65,7 @@ class SessionManager {
 
     UserInfo? senderInfo = await Util.getAuthUser(session);
 
-    // Give them their friend list and chat rooms
+    // Give them their friend list, chat rooms and last viewed data
     if (senderInfo != null) {
       UserPersistent userPersistent = (await Util.getPersistentData(session))!;
 
@@ -90,6 +90,17 @@ class SessionManager {
           outgoingFriendRequests: userPersistent.outgoingFriendRequests,
         ),
       );
+
+      List<LastRead> lastReadData = await LastRead.db.find(
+        session,
+        where: (t) => t.userInfoId.equals(senderInfo.id),
+      );
+
+      Map<int, DateTime> viewedData = {
+        for (var lastRead in lastReadData) lastRead.chatId: lastRead.readAt
+      };
+
+      sendStreamMessage(session, LastViewedServer(viewedData: viewedData));
     }
   }
 
