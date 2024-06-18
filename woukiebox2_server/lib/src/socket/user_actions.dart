@@ -191,6 +191,10 @@ class UserActions {
         session,
         where: (message) => message.chatId.equals(chat.id!),
       );
+      await LastRead.db.deleteWhere(
+        session,
+        where: (row) => row.chatId.equals(chat.id!),
+      );
       await Chat.db.deleteRow(session, chat);
       ChatMessageManager.deleteBucket(chat.id!);
     } else {
