@@ -133,7 +133,7 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
 
   leftMenu(
     selectedGroup,
-    appStateProvider,
+    AppStateProvider appStateProvider,
     StylingProvider stylingProvider,
   ) =>
       SizeTransition(
@@ -164,6 +164,7 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
                       selectedGroup: selectedGroup,
                       selectGroup: (value) {
                         setState(() {
+                          appStateProvider.readChat(value);
                           appStateProvider.setSelectedGroup(value);
                         });
                       },
