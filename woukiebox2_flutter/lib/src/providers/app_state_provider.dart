@@ -396,9 +396,9 @@ class AppStateProvider extends ChangeNotifier {
     groupChat.bucketsLoading.remove(bucket);
   }
 
-  void lastRead(LastViewedServer message) {
+  void lastRead(LastReadServer message) {
     _lastRead.clear();
-    _lastRead.addAll(message.viewedData);
+    _lastRead.addAll(message.readData);
     notifyListeners();
   }
 }

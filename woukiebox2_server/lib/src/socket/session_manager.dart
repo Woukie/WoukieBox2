@@ -100,7 +100,7 @@ class SessionManager {
         for (var lastRead in lastReadData) lastRead.chatId: lastRead.readAt
       };
 
-      sendStreamMessage(session, LastViewedServer(viewedData: viewedData));
+      sendStreamMessage(session, LastReadServer(readData: viewedData));
     }
   }
 

@@ -26,7 +26,7 @@ import 'server/chats.dart' as _i14;
 import 'server/create_chat.dart' as _i15;
 import 'server/friend_list.dart' as _i16;
 import 'server/join_chat.dart' as _i17;
-import 'server/last_viewed.dart' as _i18;
+import 'server/last_read.dart' as _i18;
 import 'server/leave_chat.dart' as _i19;
 import 'server/room_members.dart' as _i20;
 import 'server/self_identifier.dart' as _i21;
@@ -53,7 +53,7 @@ export 'server/chats.dart';
 export 'server/create_chat.dart';
 export 'server/friend_list.dart';
 export 'server/join_chat.dart';
-export 'server/last_viewed.dart';
+export 'server/last_read.dart';
 export 'server/leave_chat.dart';
 export 'server/room_members.dart';
 export 'server/self_identifier.dart';
@@ -129,8 +129,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i17.JoinChatServer) {
       return _i17.JoinChatServer.fromJson(data, this) as T;
     }
-    if (t == _i18.LastViewedServer) {
-      return _i18.LastViewedServer.fromJson(data, this) as T;
+    if (t == _i18.LastReadServer) {
+      return _i18.LastReadServer.fromJson(data, this) as T;
     }
     if (t == _i19.LeaveChatServer) {
       return _i19.LeaveChatServer.fromJson(data, this) as T;
@@ -214,8 +214,8 @@ class Protocol extends _i1.SerializationManager {
       return (data != null ? _i17.JoinChatServer.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i18.LastViewedServer?>()) {
-      return (data != null ? _i18.LastViewedServer.fromJson(data, this) : null)
+    if (t == _i1.getType<_i18.LastReadServer?>()) {
+      return (data != null ? _i18.LastReadServer.fromJson(data, this) : null)
           as T;
     }
     if (t == _i1.getType<_i19.LeaveChatServer?>()) {
@@ -332,8 +332,8 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i17.JoinChatServer) {
       return 'JoinChatServer';
     }
-    if (data is _i18.LastViewedServer) {
-      return 'LastViewedServer';
+    if (data is _i18.LastReadServer) {
+      return 'LastReadServer';
     }
     if (data is _i19.LeaveChatServer) {
       return 'LeaveChatServer';
@@ -413,8 +413,8 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'JoinChatServer') {
       return deserialize<_i17.JoinChatServer>(data['data']);
     }
-    if (data['className'] == 'LastViewedServer') {
-      return deserialize<_i18.LastViewedServer>(data['data']);
+    if (data['className'] == 'LastReadServer') {
+      return deserialize<_i18.LastReadServer>(data['data']);
     }
     if (data['className'] == 'LeaveChatServer') {
       return deserialize<_i19.LeaveChatServer>(data['data']);

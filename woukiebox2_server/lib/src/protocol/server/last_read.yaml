@@ -1,0 +1,4 @@
+class: LastReadServer
+
+fields:
+  readData: Map<int, DateTime>
