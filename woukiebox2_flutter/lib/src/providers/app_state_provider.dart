@@ -236,7 +236,7 @@ class AppStateProvider extends ChangeNotifier {
           ),
         );
 
-        readChat(chat.id);
+        if (_selectedGroup == chat.id) readChat(chat.id);
       }
     }
 
