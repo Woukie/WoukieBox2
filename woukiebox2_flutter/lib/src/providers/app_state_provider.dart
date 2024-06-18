@@ -52,12 +52,6 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> readChat(int chat) async {
-    _lastRead[chat] = DateTime.now();
-    await client.sockets.sendStreamMessage(ReadChatClient(chat: chat));
-    notifyListeners();
-  }
-
   void setSelectedPage(value) {
     _selectedPage = value;
     notifyListeners();
@@ -93,6 +87,12 @@ class AppStateProvider extends ChangeNotifier {
   AppStateProvider(BuildContext context) {
     _preferenceProvider =
         Provider.of<PreferenceProvider>(context, listen: false);
+  }
+
+  Future<void> readChat(int chat) async {
+    _lastRead[chat] = DateTime.now();
+    await client.sockets.sendStreamMessage(ReadChatClient(chat: chat));
+    notifyListeners();
   }
 
   resetData() {
