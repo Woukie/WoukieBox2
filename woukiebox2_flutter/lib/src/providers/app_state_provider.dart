@@ -149,6 +149,8 @@ class AppStateProvider extends ChangeNotifier {
 
       _chats[message.chat]?.messages.add(writtenMessage);
       _chats[message.chat]?.lastMessage = message.sentAt;
+
+      if (_selectedGroup == message.chat) readChat(message.chat);
     }
 
     notifyListeners();
@@ -233,6 +235,8 @@ class AppStateProvider extends ChangeNotifier {
             message.sentAt,
           ),
         );
+
+        readChat(chat.id);
       }
     }
 
@@ -350,6 +354,7 @@ class AppStateProvider extends ChangeNotifier {
     if (message.chat.creator == _currentUser) {
       _selectedGroup = message.chat.id;
       _selectedPage = 1;
+      readChat(message.chat.id!);
     }
 
     notifyListeners();
