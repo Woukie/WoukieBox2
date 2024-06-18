@@ -98,6 +98,8 @@ class AppStateProvider extends ChangeNotifier {
   resetData() {
     _currentUser = null;
     _messages.clear();
+    _selectedGroup = null;
+    _selectedPage = 0;
     _loadingUsers.clear();
     _lastRead.clear();
     _chats.clear();
