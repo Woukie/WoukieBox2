@@ -99,6 +99,7 @@ class AppStateProvider extends ChangeNotifier {
     _currentUser = null;
     _messages.clear();
     _loadingUsers.clear();
+    _lastRead.clear();
     _chats.clear();
     _users.clear();
     _friends.clear();
