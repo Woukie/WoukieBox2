@@ -17,7 +17,7 @@ class SessionManager {
       LeaveChatServer(
         chat: 0,
         sender: userId,
-        sentAt: DateTime.now(),
+        sentAt: DateTime.now().toUtc(),
       ),
     );
 
@@ -59,7 +59,7 @@ class SessionManager {
       JoinChatServer(
         sender: user,
         chat: 0,
-        sentAt: DateTime.now(),
+        sentAt: DateTime.now().toUtc(),
       ),
     );
 

@@ -37,7 +37,7 @@ class AppStateProvider extends ChangeNotifier {
 
   HashMap<int, UserClient> get users => _users;
   HashMap<int, GroupChat> get chats => _chats;
-  HashMap<int, DateTime> get lastReads => _lastRead;
+  HashMap<int, DateTime> get lastRead => _lastRead;
 
   List<dynamic> get messages => _messages;
   List<int> get friends => _friends;
@@ -113,7 +113,7 @@ class AppStateProvider extends ChangeNotifier {
   }
 
   Future<void> readChat(int chat) async {
-    _lastRead[chat] = DateTime.now();
+    _lastRead[chat] = DateTime.now().toUtc();
     notifyListeners();
     await client.sockets.sendStreamMessage(ReadChatClient(chat: chat));
     if (kDebugMode) print("Read chat $chat");
@@ -453,7 +453,7 @@ class AppStateProvider extends ChangeNotifier {
     groupChat.bucketsLoading.remove(bucket);
   }
 
-  void lastRead(LastReadServer message) {
+  void lastReadServer(LastReadServer message) {
     _lastRead.clear();
     _lastRead.addAll(message.readData);
     notifyListeners();

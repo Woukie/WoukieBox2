@@ -146,7 +146,7 @@ class UserActions {
         name: message.name.trim(),
         creator: senderInfo.id!,
         owners: message.owners,
-        lastMessage: DateTime.now(),
+        lastMessage: DateTime.now().toUtc(),
       ),
     );
 
@@ -202,7 +202,7 @@ class UserActions {
         chat.owners.add(chat.users.first);
       }
 
-      chat.lastMessage = DateTime.now();
+      chat.lastMessage = DateTime.now().toUtc();
       await Chat.db.updateRow(session, chat);
     }
 
@@ -278,11 +278,11 @@ class UserActions {
         LastRead(
           userInfoId: senderInfo.id!,
           chatId: message.chat,
-          readAt: DateTime.now(),
+          readAt: DateTime.now().toUtc(),
         ),
       );
     } else {
-      existingLastRead.readAt = DateTime.now();
+      existingLastRead.readAt = DateTime.now().toUtc();
       await LastRead.db.updateRow(session, existingLastRead);
     }
   }

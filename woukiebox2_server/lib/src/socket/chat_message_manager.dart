@@ -72,7 +72,7 @@ class ChatMessageManager {
 
     BucketData latestBucket = await getLatestBucket(session, message.target);
     ChatMessage databaseMessage = ChatMessage(
-      sentAt: DateTime.now(),
+      sentAt: DateTime.now().toUtc(),
       chatId: message.target,
       message: trimmedMessage,
       senderId: senderInfo.id!,
@@ -108,7 +108,7 @@ class ChatMessageManager {
     ChatMessageServer chatMessage = ChatMessageServer(
       sender: userId,
       chat: message.target,
-      sentAt: DateTime.now(),
+      sentAt: DateTime.now().toUtc(),
       message: trimmedMessage,
     );
 

@@ -78,7 +78,7 @@ class ConnectionStateProvider extends ChangeNotifier {
     } else if (message is CreateChatServer) {
       _appStateProvider.createChat(message);
     } else if (message is LastReadServer) {
-      _appStateProvider.lastRead(message);
+      _appStateProvider.lastReadServer(message);
     } else if (message is RenameChat) {
       _appStateProvider.renameChat(message);
     }

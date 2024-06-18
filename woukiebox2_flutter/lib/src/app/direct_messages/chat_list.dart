@@ -22,13 +22,12 @@ class ChatsList extends StatelessWidget {
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
     final List<GroupChat> groupChats = appStateProvider.chats.values.toList();
-    final HashMap<int, DateTime> lastReads = appStateProvider.lastReads;
     groupChats.sort(
       (chatA, chatB) {
-        bool unreadA = !lastReads.containsKey(chatA.id) ||
-            chatA.lastMessage.isAfter(lastReads[chatA.id]!);
-        bool unreadB = !lastReads.containsKey(chatB.id) ||
-            chatB.lastMessage.isAfter(lastReads[chatB.id]!);
+        bool unreadA = !appStateProvider.lastRead.containsKey(chatA.id) ||
+            chatA.lastMessage.isAfter(appStateProvider.lastRead[chatA.id]!);
+        bool unreadB = !appStateProvider.lastRead.containsKey(chatB.id) ||
+            chatB.lastMessage.isAfter(appStateProvider.lastRead[chatB.id]!);
         if (unreadA != unreadB) return unreadA ? -1 : 1;
 
         return chatB.lastMessage.compareTo(chatA.lastMessage);
@@ -51,8 +50,8 @@ class ChatsList extends StatelessWidget {
         GroupChat groupChat = groupChats[index];
         bool selected = groupChat.id == selectedGroup;
 
-        bool unread = !appStateProvider.lastReads.containsKey(groupChat.id) ||
-            appStateProvider.lastReads[groupChat.id]!
+        bool unread = !appStateProvider.lastRead.containsKey(groupChat.id) ||
+            appStateProvider.lastRead[groupChat.id]!
                 .isBefore(groupChat.lastMessage);
 
         return Padding(
