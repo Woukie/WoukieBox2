@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum MessageSoundMode { all, unfocussed, none }
-
 class PreferenceProvider extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.dark;
-  MessageSoundMode _messageSoundMode = MessageSoundMode.all;
+  bool _recieveNotifications = true;
+  bool _inAppNotifications = true;
+  bool _sameChatNotifications = false;
   bool _taskbarFlashing = true;
   bool _desktopNotifications = true;
+  bool _notificationSounds = true;
+  bool _globalNotifications = false;
+
+  ThemeMode _themeMode = ThemeMode.dark;
   Color _color = Colors.blue;
 
   PreferenceProvider() {
@@ -15,10 +18,14 @@ class PreferenceProvider extends ChangeNotifier {
   }
 
   ThemeMode get themeMode => _themeMode;
-  MessageSoundMode get messageSoundMode => _messageSoundMode;
   Color get color => _color;
   bool get taskbarFlashing => _taskbarFlashing;
   bool get desktopNotifications => _desktopNotifications;
+  bool get recieveNotifications => _recieveNotifications;
+  bool get inAppNotifications => _inAppNotifications;
+  bool get sameChatNotifications => _sameChatNotifications;
+  bool get notificationSounds => _notificationSounds;
+  bool get globalNotifications => _globalNotifications;
 
   void toggleThemeMode() {
     _themeMode =
@@ -27,26 +34,50 @@ class PreferenceProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateSelectedColor(Color color) {
-    _color = color;
-    _savePreferences();
-    notifyListeners();
-  }
-
-  void updateTaskbarFlashing(bool taskbarFlashing) {
+  void setTaskbarFlashing(bool taskbarFlashing) {
     _taskbarFlashing = taskbarFlashing;
     _savePreferences();
     notifyListeners();
   }
 
-  void updateDesktopNotifications(bool desktopNotifications) {
+  void setDesktopNotifications(bool desktopNotifications) {
     _desktopNotifications = desktopNotifications;
     _savePreferences();
     notifyListeners();
   }
 
-  void updateMessageSoundMode(MessageSoundMode mode) {
-    _messageSoundMode = mode;
+  void setRecieveNotifications(bool recieveNotifications) {
+    _recieveNotifications = recieveNotifications;
+    _savePreferences();
+    notifyListeners();
+  }
+
+  void setInAppNotifications(bool inAppNotifications) {
+    _inAppNotifications = inAppNotifications;
+    _savePreferences();
+    notifyListeners();
+  }
+
+  void setSameChatNotifications(bool sameChatNotifications) {
+    _sameChatNotifications = sameChatNotifications;
+    _savePreferences();
+    notifyListeners();
+  }
+
+  void setNotificationSounds(bool notificationSounds) {
+    _notificationSounds = notificationSounds;
+    _savePreferences();
+    notifyListeners();
+  }
+
+  void setGlobalNotifications(bool globalNotifications) {
+    _globalNotifications = globalNotifications;
+    _savePreferences();
+    notifyListeners();
+  }
+
+  void setSelectedColor(Color color) {
+    _color = color;
     _savePreferences();
     notifyListeners();
   }
@@ -55,22 +86,20 @@ class PreferenceProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final themeModeString = prefs.getString('themeMode');
     final colorString = prefs.getString('themeColor');
-    final desktopNotifications = prefs.getBool('desktopNotifications');
-    final taskbarFlashing = prefs.getBool('taskbarFlashing');
 
-    _messageSoundMode = switch (prefs.getString('messageSoundMode')) {
-      'all' => MessageSoundMode.all,
-      'none' => MessageSoundMode.none,
-      _ => MessageSoundMode.unfocussed,
-    };
-
-    if (desktopNotifications != null) {
-      _desktopNotifications = desktopNotifications;
-    }
-
-    if (taskbarFlashing != null) {
-      _taskbarFlashing = taskbarFlashing;
-    }
+    _taskbarFlashing = prefs.getBool('taskbarFlashing') ?? _taskbarFlashing;
+    _desktopNotifications =
+        prefs.getBool('desktopNotifications') ?? _desktopNotifications;
+    _recieveNotifications =
+        prefs.getBool('recieveNotifications') ?? _recieveNotifications;
+    _inAppNotifications =
+        prefs.getBool('inAppNotifications') ?? _inAppNotifications;
+    _sameChatNotifications =
+        prefs.getBool('sameChatNotifications') ?? _sameChatNotifications;
+    _notificationSounds =
+        prefs.getBool('notificationSounds') ?? _notificationSounds;
+    _globalNotifications =
+        prefs.getBool('globalNotifications') ?? _globalNotifications;
 
     if (themeModeString != null) {
       _themeMode = ThemeMode.values[int.parse(themeModeString)];
@@ -87,8 +116,13 @@ class PreferenceProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('themeMode', _themeMode.index.toString());
     prefs.setString('themeColor', _color.value.toString());
-    prefs.setString('messageSoundMode', _messageSoundMode.name);
-    prefs.setBool('desktopNotifications', _desktopNotifications);
+
     prefs.setBool('taskbarFlashing', _taskbarFlashing);
+    prefs.setBool('desktopNotifications', _desktopNotifications);
+    prefs.setBool('recieveNotifications', _recieveNotifications);
+    prefs.setBool('inAppNotifications', _inAppNotifications);
+    prefs.setBool('sameChatNotifications', _sameChatNotifications);
+    prefs.setBool('notificationSounds', _notificationSounds);
+    prefs.setBool('globalNotifications', _globalNotifications);
   }
 }

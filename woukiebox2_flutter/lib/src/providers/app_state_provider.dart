@@ -175,25 +175,30 @@ class AppStateProvider extends ChangeNotifier {
 
     notifyListeners();
 
+    bool focused = kIsWeb || await windowManager.isFocused();
+
+    if (!_preferenceProvider.recieveNotifications) return;
+
     // No notifications from your own messages
     if (message.sender == currentUser) return;
 
-    bool windowFocused = kIsWeb || await windowManager.isFocused();
+    if (focused && !_preferenceProvider.sameChatNotifications) {
+      if (message.chat == _selectedGroup ||
+          (_selectedPage == 0 && message.chat != 0)) return;
+    }
 
-    MessageSoundMode soundMode = _preferenceProvider.messageSoundMode;
-    if (soundMode == MessageSoundMode.all ||
-        (soundMode == MessageSoundMode.unfocussed && !windowFocused)) {
+    // In-app notifications locked to enabled for web
+    if (!kIsWeb && (focused && (!_preferenceProvider.inAppNotifications))) {
+      return;
+    }
+
+    if (message.chat == 0 && !_preferenceProvider.globalNotifications) return;
+
+    if (_preferenceProvider.notificationSounds) {
       await player.play(AssetSource("audio/recieve-message.mp3"));
     }
 
-    if (!kIsWeb && _preferenceProvider.taskbarFlashing) {
-      WindowsTaskbar.setFlashTaskbarAppIcon(
-        mode: TaskbarFlashMode.all | TaskbarFlashMode.timernofg,
-        timeout: const Duration(milliseconds: 500),
-      );
-    }
-
-    if (!kIsWeb && !windowFocused && _preferenceProvider.desktopNotifications) {
+    if (!kIsWeb && _preferenceProvider.desktopNotifications) {
       NotificationMessage notificationMessage =
           NotificationMessage.fromCustomTemplate(
         "ToastGeneric",
@@ -202,6 +207,13 @@ class AppStateProvider extends ChangeNotifier {
       _winNotifyPlugin.showNotificationCustomTemplate(
         notificationMessage,
         await messageNotification(user, message),
+      );
+    }
+
+    if (!kIsWeb && _preferenceProvider.taskbarFlashing) {
+      WindowsTaskbar.setFlashTaskbarAppIcon(
+        mode: TaskbarFlashMode.all | TaskbarFlashMode.timernofg,
+        timeout: const Duration(milliseconds: 500),
       );
     }
   }
