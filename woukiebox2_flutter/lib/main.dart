@@ -39,7 +39,7 @@ void main() async {
   }
 
   client = Client(
-    'http://localhost:8080/',
+    'https://api.woukiebox.woukie.net/',
     authenticationKeyManager: FlutterAuthenticationKeyManager(),
   )..connectivityMonitor = FlutterConnectivityMonitor();
 
