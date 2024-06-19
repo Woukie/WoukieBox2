@@ -19,14 +19,18 @@ class ChatsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+
+    bool chatUnread(GroupChat chat) {
+      return appStateProvider.selectedGroup != chat.id &&
+          (!appStateProvider.lastRead.containsKey(chat.id) ||
+              chat.lastMessage.isAfter(appStateProvider.lastRead[chat.id]!));
+    }
+
     final List<GroupChat> groupChats = appStateProvider.chats.values.toList();
     groupChats.sort(
       (chatA, chatB) {
-        bool unreadA = !appStateProvider.lastRead.containsKey(chatA.id) ||
-            chatA.lastMessage.isAfter(appStateProvider.lastRead[chatA.id]!);
-        bool unreadB = !appStateProvider.lastRead.containsKey(chatB.id) ||
-            chatB.lastMessage.isAfter(appStateProvider.lastRead[chatB.id]!);
-        if (unreadA != unreadB) return unreadA ? -1 : 1;
+        bool unreadA = chatUnread(chatA);
+        if (unreadA != chatUnread(chatB)) return unreadA ? -1 : 1;
 
         return chatB.lastMessage.compareTo(chatA.lastMessage);
       },
@@ -48,9 +52,7 @@ class ChatsList extends StatelessWidget {
         GroupChat groupChat = groupChats[index];
         bool selected = groupChat.id == selectedGroup;
 
-        bool unread = !appStateProvider.lastRead.containsKey(groupChat.id) ||
-            appStateProvider.lastRead[groupChat.id]!
-                .isBefore(groupChat.lastMessage);
+        bool unread = chatUnread(groupChat);
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 4),
