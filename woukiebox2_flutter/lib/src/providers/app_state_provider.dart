@@ -113,10 +113,7 @@ class AppStateProvider extends ChangeNotifier {
   }
 
   Future<void> readChat(int chat) async {
-    _lastRead[chat] = DateTime.now().toUtc();
-    notifyListeners();
     await client.sockets.sendStreamMessage(ReadChatClient(chat: chat));
-    if (kDebugMode) print("Read chat $chat");
   }
 
   resetData() {
@@ -456,6 +453,11 @@ class AppStateProvider extends ChangeNotifier {
   void lastReadServer(LastReadServer message) {
     _lastRead.clear();
     _lastRead.addAll(message.readData);
+    notifyListeners();
+  }
+
+  void readChatServer(ReadChatServer message) {
+    _lastRead[message.chat] = message.readAt;
     notifyListeners();
   }
 }
