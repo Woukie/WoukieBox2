@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -63,6 +62,7 @@ class Message extends StatelessWidget {
       return child
           ? ChildMessage(
               message: message.message,
+              sentAt: message.sentAt,
             )
           : HeadMessage(
               senderId: message.senderId,
@@ -80,7 +80,10 @@ class Message extends StatelessWidget {
       bool child = typeMatch && parentMessage.senderId == message.senderId;
 
       return child
-          ? ChildMessage(message: message.message)
+          ? ChildMessage(
+              message: message.message,
+              sentAt: message.sentAt,
+            )
           : HeadMessage(
               senderId: message.senderId,
               sentAt: message.sentAt,
@@ -187,13 +190,13 @@ class HeadMessage extends StatelessWidget {
   final int senderId;
   final String? username, image, color;
   final String message;
-  final DateTime sentAt;
+  final DateTime? sentAt;
 
   const HeadMessage({
     super.key,
     required this.senderId,
     required this.message,
-    required this.sentAt,
+    this.sentAt,
     this.image,
     this.username,
     this.color,
@@ -250,7 +253,7 @@ class HeadMessage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: Text(
-                          Message.getTimestamp(sentAt),
+                          sentAt == null ? "" : Message.getTimestamp(sentAt!),
                           style: TextStyle(
                             color: Theme.of(context)
                                 .colorScheme
@@ -272,28 +275,60 @@ class HeadMessage extends StatelessWidget {
   }
 }
 
-class ChildMessage extends StatelessWidget {
+class ChildMessage extends StatefulWidget {
+  final DateTime? sentAt;
   final String message;
 
-  const ChildMessage({super.key, required this.message});
+  const ChildMessage({
+    super.key,
+    required this.message,
+    this.sentAt,
+  });
+
+  @override
+  State<ChildMessage> createState() => _ChildMessageState();
+}
+
+class _ChildMessageState extends State<ChildMessage> {
+  bool hovering = false;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 12, right: 12),
-          child: Container(
-            width: 40,
+    return MouseRegion(
+      onEnter: (value) => setState(() {
+        hovering = true;
+      }),
+      onExit: (value) => setState(() {
+        hovering = false;
+      }),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 12, right: 12),
+            child: SizedBox(
+              width: 40,
+              child: Text(
+                widget.sentAt == null || !hovering
+                    ? ""
+                    : DateFormat('HH:mm').format(widget.sentAt!.toLocal()),
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onPrimaryContainer
+                      .withAlpha(75),
+                ),
+              ),
+            ),
           ),
-        ),
-        Expanded(
-          child: Text(
-            message,
+          Expanded(
+            child: Text(
+              widget.message,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
