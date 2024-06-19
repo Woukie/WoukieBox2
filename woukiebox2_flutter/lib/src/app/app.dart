@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/friends/friends.dart';
 import 'package:woukiebox2/src/app/settings.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 import 'chatroom/chat_room.dart';
 
@@ -26,6 +27,10 @@ class _AppState extends State<App> {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
     int selectedPage = appStateProvider.selectedPage;
 
+    UserClient? currentUser = appStateProvider.currentUser != null
+        ? appStateProvider.users[appStateProvider.currentUser!]
+        : null;
+
     return Row(
       children: [
         NavigationRail(
@@ -36,23 +41,25 @@ class _AppState extends State<App> {
           onDestinationSelected: (int index) {
             appStateProvider.setSelectedPage(index);
           },
-          destinations: const <NavigationRailDestination>[
-            NavigationRailDestination(
+          destinations: <NavigationRailDestination>[
+            const NavigationRailDestination(
               icon: Icon(Icons.public_outlined),
               selectedIcon: Icon(Icons.public),
               label: Text('Global'),
             ),
             NavigationRailDestination(
-              icon: Icon(Icons.chat_bubble_outline),
-              selectedIcon: Icon(Icons.chat_bubble),
-              label: Text('Messages'),
+              disabled: !(currentUser?.verified ?? false),
+              icon: const Icon(Icons.chat_bubble_outline),
+              selectedIcon: const Icon(Icons.chat_bubble),
+              label: const Text('Messages'),
             ),
             NavigationRailDestination(
-              icon: Icon(Icons.group_outlined),
-              selectedIcon: Icon(Icons.group),
-              label: Text('Friends'),
+              disabled: !(currentUser?.verified ?? false),
+              icon: const Icon(Icons.group_outlined),
+              selectedIcon: const Icon(Icons.group),
+              label: const Text('Friends'),
             ),
-            NavigationRailDestination(
+            const NavigationRailDestination(
               icon: Icon(Icons.settings_outlined),
               selectedIcon: Icon(Icons.settings),
               label: Text('Settings'),
