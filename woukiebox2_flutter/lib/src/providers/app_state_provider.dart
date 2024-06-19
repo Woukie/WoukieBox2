@@ -177,8 +177,9 @@ class AppStateProvider extends ChangeNotifier {
       _chats[message.chat]?.messages.add(writtenMessage);
       _chats[message.chat]?.lastMessage = message.sentAt;
 
-      readChat(message.chat);
-      if (_selectedGroup == message.chat && _selectedPage == 1) {}
+      if (_selectedGroup == message.chat && _selectedPage == 1) {
+        readChat(message.chat);
+      }
     }
 
     notifyListeners();
