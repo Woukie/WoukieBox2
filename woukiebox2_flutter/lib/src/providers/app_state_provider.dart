@@ -326,10 +326,10 @@ class AppStateProvider extends ChangeNotifier {
     if (message.username != null || message.colour != null) {
       _messages.add(
         ProfileMessage(
-          oldUsername: message.username ?? user.username,
-          oldColour: message.colour ?? user.colour,
-          newUsername: user.username,
-          newColour: user.colour,
+          oldUsername: user.username,
+          oldColour: user.colour,
+          newUsername: message.username,
+          newColour: message.colour,
           senderId: message.sender,
           sentAt: DateTime.now().toUtc(),
         ),
