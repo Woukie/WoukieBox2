@@ -52,7 +52,7 @@ class UserActions {
     session.messages.postMessage(
       'global',
       UpdateProfileServer(
-        sender: authUserId!,
+        sender: userId,
         username: message.username,
         bio: message.bio,
         colour: message.colour,
