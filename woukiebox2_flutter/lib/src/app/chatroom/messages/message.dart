@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
@@ -23,6 +25,30 @@ class Message extends StatelessWidget {
   final List<dynamic> messages;
   final int index;
 
+  static String getTimestamp(DateTime time) {
+    String prefix = "Today";
+
+    DateTime now = DateTime.now().toUtc();
+    bool sentToday =
+        time.day == now.day && time.month == now.month && time.year == now.year;
+
+    if (!sentToday) {
+      prefix = "Yesterday";
+
+      DateTime yesterday =
+          DateTime.now().subtract(const Duration(days: 1)).toUtc();
+      bool sentYesterday = time.day == yesterday.day &&
+          time.month == yesterday.month &&
+          time.year == yesterday.year;
+
+      if (!sentYesterday) {
+        prefix = DateFormat('EEE, MMM d, yyyy').format(time.toLocal());
+      }
+    }
+
+    return '$prefix at ${DateFormat('h:mm a').format(time.toLocal())}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final message = messages[index];
@@ -41,6 +67,7 @@ class Message extends StatelessWidget {
           : HeadMessage(
               senderId: message.senderId,
               message: message.message,
+              sentAt: message.sentAt,
               color: message.colour,
               image: message.image,
               username: message.username,
@@ -54,7 +81,11 @@ class Message extends StatelessWidget {
 
       return child
           ? ChildMessage(message: message.message)
-          : HeadMessage(senderId: message.senderId, message: message.message);
+          : HeadMessage(
+              senderId: message.senderId,
+              sentAt: message.sentAt,
+              message: message.message,
+            );
     }
 
     if (message is WrittenLeaveMessage) {
@@ -156,11 +187,13 @@ class HeadMessage extends StatelessWidget {
   final int senderId;
   final String? username, image, color;
   final String message;
+  final DateTime sentAt;
 
   const HeadMessage({
     super.key,
     required this.senderId,
     required this.message,
+    required this.sentAt,
     this.image,
     this.username,
     this.color,
@@ -205,11 +238,29 @@ class HeadMessage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  username ?? user.username,
-                  style: TextStyle(
-                    color: HexColor.fromHex(color ?? user.colour),
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      username ?? user.username,
+                      style: TextStyle(
+                        color: HexColor.fromHex(color ?? user.colour),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(
+                          Message.getTimestamp(sentAt),
+                          style: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer
+                                .withAlpha(75),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
                 Text(message),
               ],
