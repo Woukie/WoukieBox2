@@ -27,7 +27,7 @@ class SocketsEndpoint extends Endpoint {
     if (message is ChatMessageClient) {
       UserActions.chatMessage(session, message, getUserObject(session).id);
     } else if (message is UpdateProfileClient) {
-      UserActions.updateProfile(session, message);
+      UserActions.updateProfile(session, message, getUserObject(session).id);
     } else if (message is FriendRequestClient) {
       UserActions.friendRequest(session, message);
     } else if (message is CreateChatClient) {

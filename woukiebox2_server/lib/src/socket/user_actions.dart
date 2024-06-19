@@ -23,12 +23,13 @@ class UserActions {
   static Future<void> updateProfile(
     StreamingSession session,
     UpdateProfileClient message,
+    int userId,
   ) async {
     // Update the users profile on the database, also note that profile pics are neither cached or updated in UpdateProfile.
-    var userId = await session.auth.authenticatedUserId;
-    if (userId != null) {
+    var authUserId = await session.auth.authenticatedUserId;
+    if (authUserId != null) {
       UserPersistent extraUserData =
-          (await Util.getPersistentData(session, userId))!;
+          (await Util.getPersistentData(session, authUserId))!;
 
       extraUserData.bio = message.bio ?? extraUserData.bio;
       extraUserData.color = message.colour ?? extraUserData.color;
@@ -36,7 +37,7 @@ class UserActions {
       await UserPersistent.db.updateRow(session, extraUserData);
 
       if (message.username != null) {
-        Users.changeUserName(session, userId, message.username!);
+        Users.changeUserName(session, authUserId, message.username!);
       }
     }
 
@@ -51,7 +52,7 @@ class UserActions {
     session.messages.postMessage(
       'global',
       UpdateProfileServer(
-        sender: userId!,
+        sender: authUserId!,
         username: message.username,
         bio: message.bio,
         colour: message.colour,
