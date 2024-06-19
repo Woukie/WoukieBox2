@@ -52,9 +52,12 @@ class Users extends StatelessWidget {
       users.add(user);
     }
 
-    // app only renders if user passes null check
-    final UserClient localUser =
-        appStateProvider.users[appStateProvider.currentUser]!;
+    final UserClient? localUser = appStateProvider.currentUser != null
+        ? appStateProvider.users[appStateProvider.currentUser!]
+        : null;
+
+    if (localUser == null) return Container();
+
     users.removeWhere((user) => user == localUser);
     users.sort((userA, userB) {
       if (userA.visible != userB.visible) return userA.visible ? -1 : 1;
