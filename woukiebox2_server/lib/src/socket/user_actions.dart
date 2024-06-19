@@ -272,18 +272,25 @@ class UserActions {
           (row.userInfoId.equals(senderInfo.id)),
     );
 
+    DateTime readAt = DateTime.now().toUtc();
+
     if (existingLastRead == null) {
       await LastRead.db.insertRow(
         session,
         LastRead(
           userInfoId: senderInfo.id!,
           chatId: message.chat,
-          readAt: DateTime.now().toUtc(),
+          readAt: readAt,
         ),
       );
     } else {
-      existingLastRead.readAt = DateTime.now().toUtc();
+      existingLastRead.readAt = readAt;
       await LastRead.db.updateRow(session, existingLastRead);
     }
+
+    session.messages.postMessage(
+      senderInfo.id.toString(),
+      ReadChatServer(chat: message.chat, readAt: readAt),
+    );
   }
 }
