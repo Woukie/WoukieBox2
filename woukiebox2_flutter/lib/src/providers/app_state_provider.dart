@@ -13,7 +13,7 @@ import 'package:woukiebox2/src/providers/preference_provider.dart';
 import 'package:woukiebox2/src/util/assets.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
 import 'package:woukiebox2/src/util/written_message.dart';
-import 'package:woukiebox2_client/woukiebox2_client.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart' as protocol;
 import 'package:windows_taskbar/windows_taskbar.dart';
 
 class AppStateProvider extends ChangeNotifier {
@@ -21,10 +21,12 @@ class AppStateProvider extends ChangeNotifier {
   int? _selectedGroup;
   int? _currentUser;
   int _selectedPage = 0;
-  final HashMap<int, UserClient> _users = HashMap<int, UserClient>();
+  final HashMap<int, protocol.UserClient> _users =
+      HashMap<int, protocol.UserClient>();
   final HashMap<int, GroupChat> _chats = HashMap<int, GroupChat>();
+  final HashMap<int, DateTime> _lastRead = HashMap<int, DateTime>();
 
-  final List<dynamic> _messages = List.empty(growable: true);
+  final List<BaseMessage> _messages = List.empty(growable: true);
   final List<int> _friends = List.empty(growable: true);
   final List<int> _outgoingFriendRequests = List.empty(growable: true);
   final List<int> _incomingFriendRequests = List.empty(growable: true);
@@ -34,10 +36,11 @@ class AppStateProvider extends ChangeNotifier {
 
   late final PreferenceProvider _preferenceProvider;
 
-  HashMap<int, UserClient> get users => _users;
+  HashMap<int, protocol.UserClient> get users => _users;
   HashMap<int, GroupChat> get chats => _chats;
+  HashMap<int, DateTime> get lastRead => _lastRead;
 
-  List<dynamic> get messages => _messages;
+  List<BaseMessage> get messages => _messages;
   List<int> get friends => _friends;
   List<int> get outgoingFriendRequests => _outgoingFriendRequests;
   List<int> get incomingFriendRequests => _incomingFriendRequests;
@@ -47,6 +50,7 @@ class AppStateProvider extends ChangeNotifier {
 
   void setSelectedGroup(value) {
     _selectedGroup = value;
+    if (kDebugMode) print("Selected group $value");
     notifyListeners();
   }
 
@@ -62,8 +66,8 @@ class AppStateProvider extends ChangeNotifier {
   );
 
   Future<String> messageNotification(
-    UserClient sender,
-    ChatMessageServer message,
+    protocol.UserClient sender,
+    protocol.ChatMessageServer message,
   ) async {
     return '''
       <toast>
@@ -85,12 +89,41 @@ class AppStateProvider extends ChangeNotifier {
   AppStateProvider(BuildContext context) {
     _preferenceProvider =
         Provider.of<PreferenceProvider>(context, listen: false);
+    _winNotifyPlugin
+        .initNotificationCallBack((NotificationCallBackDetails details) {
+      int? group = int.tryParse(details.argrument ?? "");
+
+      // It can be null :)
+      // ignore: unnecessary_null_comparison
+      if (details.userInput == null || group == null) return;
+
+      windowManager.restore();
+      windowManager.focus();
+
+      if (group == 0) {
+        // Switch to global
+        _selectedPage = 0;
+        _selectedGroup = null;
+      } else {
+        _selectedPage = 1;
+        _selectedGroup = group;
+      }
+
+      notifyListeners();
+    });
+  }
+
+  Future<void> readChat(int chat) async {
+    await client.sockets.sendStreamMessage(protocol.ReadChatClient(chat: chat));
   }
 
   resetData() {
     _currentUser = null;
     _messages.clear();
+    _selectedGroup = null;
+    _selectedPage = 0;
     _loadingUsers.clear();
+    _lastRead.clear();
     _chats.clear();
     _users.clear();
     _friends.clear();
@@ -100,10 +133,10 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  initGroupChats(ChatsServer message) async {
+  initGroupChats(protocol.ChatsServer message) async {
     _chats.clear();
 
-    for (Chat chat in message.chats) {
+    for (protocol.Chat chat in message.chats) {
       if (chat.id == null) continue;
 
       _chats[chat.id!] = GroupChat(
@@ -117,36 +150,74 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  chatMessage(ChatMessageServer message) async {
-    UserClient? user = _users[message.sender];
+  chatMessage(protocol.ChatMessageServer message) async {
+    protocol.UserClient? user = _users[message.sender];
     if (user == null) return; // This will never happen. But who knows?
 
-    WrittenMessage writtenMessage = WrittenMessage(
-      user.id,
-      user.username,
-      message.message,
-      user.colour,
-      user.image,
-    );
-
     if (message.chat == 0) {
+      ChatMessage writtenMessage = ChatMessage(
+        username: user.username,
+        color: user.colour,
+        image: user.image,
+        bucket: 0,
+        message: message.message,
+        senderId: user.id,
+        sentAt: message.sentAt,
+      );
+
       _messages.add(writtenMessage);
     } else {
+      ChatMessage writtenMessage = ChatMessage(
+        bucket: message.bucket!,
+        senderId: message.sender,
+        message: message.message,
+        sentAt: message.sentAt,
+      );
+
       _chats[message.chat]?.messages.add(writtenMessage);
-      _chats[message.chat]?.lastMessage = DateTime.now();
+      _chats[message.chat]?.lastMessage = message.sentAt;
+
+      readChat(message.chat);
+      if (_selectedGroup == message.chat && _selectedPage == 1) {}
     }
 
     notifyListeners();
 
+    bool focused = kIsWeb || await windowManager.isFocused();
+
+    if (!_preferenceProvider.recieveNotifications) return;
+
     // No notifications from your own messages
     if (message.sender == currentUser) return;
 
-    bool windowFocused = kIsWeb || await windowManager.isFocused();
+    if (focused && !_preferenceProvider.sameChatNotifications) {
+      bool onSelected = _selectedPage == 1 && message.chat == _selectedGroup;
+      bool onGlobal = _selectedPage == 0 && message.chat == 0;
 
-    MessageSoundMode soundMode = _preferenceProvider.messageSoundMode;
-    if (soundMode == MessageSoundMode.all ||
-        (soundMode == MessageSoundMode.unfocussed && !windowFocused)) {
+      if (onSelected || onGlobal) return;
+    }
+
+    // In-app notifications locked to enabled for web
+    if (!kIsWeb && (focused && (!_preferenceProvider.inAppNotifications))) {
+      return;
+    }
+
+    if (message.chat == 0 && !_preferenceProvider.globalNotifications) return;
+
+    if (_preferenceProvider.notificationSounds) {
       await player.play(AssetSource("audio/recieve-message.mp3"));
+    }
+
+    if (!kIsWeb && _preferenceProvider.desktopNotifications) {
+      NotificationMessage notificationMessage =
+          NotificationMessage.fromCustomTemplate(
+        "ToastGeneric",
+        launch: "${message.chat}",
+      );
+      _winNotifyPlugin.showNotificationCustomTemplate(
+        notificationMessage,
+        await messageNotification(user, message),
+      );
     }
 
     if (!kIsWeb && _preferenceProvider.taskbarFlashing) {
@@ -155,22 +226,15 @@ class AppStateProvider extends ChangeNotifier {
         timeout: const Duration(milliseconds: 500),
       );
     }
-
-    if (!kIsWeb && !windowFocused && _preferenceProvider.desktopNotifications) {
-      NotificationMessage notificationMessage =
-          NotificationMessage.fromCustomTemplate("ToastGeneric");
-      _winNotifyPlugin.showNotificationCustomTemplate(
-          notificationMessage, await messageNotification(user, message));
-    }
   }
 
-  roomMembers(RoomMembersServer message) {
+  roomMembers(protocol.RoomMembersServer message) {
     _users.forEach((id, user) {
       user.visible = false;
     });
 
-    for (UserServer user in message.users) {
-      _users[user.id] = UserClient(
+    for (protocol.UserServer user in message.users) {
+      _users[user.id] = protocol.UserClient(
         id: user.id,
         username: user.username,
         bio: user.bio,
@@ -184,16 +248,17 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  leaveMessage(LeaveChatServer message) {
-    UserClient? user = _users[message.sender];
+  leaveMessage(protocol.LeaveChatServer message) {
+    protocol.UserClient? user = _users[message.sender];
     if (user == null) return; // This will never happen. But who knows?
 
     if (message.chat == 0) {
       _messages.add(
-        WrittenLeaveMessage(
-          message.sender,
-          user.username,
-          user.colour,
+        LeaveMessage(
+          colour: user.colour,
+          senderId: message.sender,
+          username: user.username,
+          sentAt: message.sentAt,
         ),
       );
 
@@ -206,14 +271,15 @@ class AppStateProvider extends ChangeNotifier {
         _selectedGroup = null;
         _chats.remove(chat.id);
       } else {
+        chat.lastMessage = message.sentAt;
         chat.owners = message.owners ?? chat.owners;
-        chat.lastMessage = DateTime.now();
         chat.users.remove(message.sender);
         chat.messages.add(
-          WrittenLeaveMessage(
-            message.sender,
-            user.username,
-            user.colour,
+          LeaveMessage(
+            colour: user.colour,
+            senderId: message.sender,
+            username: user.username,
+            sentAt: message.sentAt,
           ),
         );
       }
@@ -222,16 +288,17 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  joinMessage(JoinChatServer message) {
+  joinMessage(protocol.JoinChatServer message) {
     _messages.add(
-      WrittenJoinMessage(
-        message.sender.id,
-        message.sender.username,
-        message.sender.colour,
+      JoinMessage(
+        username: message.sender.username,
+        colour: message.sender.colour,
+        senderId: message.sender.id,
+        sentAt: message.sentAt,
       ),
     );
 
-    _users[message.sender.id] = UserClient(
+    _users[message.sender.id] = protocol.UserClient(
       id: message.sender.id,
       username: message.sender.username,
       bio: message.sender.bio,
@@ -244,25 +311,27 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  selfIdentifier(SelfIdentifierServer message) {
+  selfIdentifier(protocol.SelfIdentifierServer message) {
     _currentUser = message.id;
     notifyListeners();
   }
 
-  updateProfile(UpdateProfileServer message) {
-    UserClient? user = _users[message.sender];
+  updateProfile(protocol.UpdateProfileServer message) {
+    protocol.UserClient? user = _users[message.sender];
     // The server never sends a null sender, and all users are tracked. But who knows?
     if (user == null) return;
 
     // We only want to print name and colour changes to the chat
+    // TODO: Send time with message
     if (message.username != null || message.colour != null) {
       _messages.add(
-        WrittenProfileMessage(
-          message.sender,
-          user.username,
-          user.colour,
-          message.username,
-          message.colour,
+        ProfileMessage(
+          oldUsername: message.username ?? user.username,
+          oldColour: message.colour ?? user.colour,
+          newUsername: user.username,
+          newColour: user.colour,
+          senderId: message.sender,
+          sentAt: DateTime.now().toUtc(),
         ),
       );
     }
@@ -280,7 +349,7 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void friendList(FriendListServer message) {
+  void friendList(protocol.FriendListServer message) {
     _friends.clear();
     _friends.addAll(message.friends);
 
@@ -297,12 +366,12 @@ class AppStateProvider extends ChangeNotifier {
     if (_loadingUsers.contains(userId)) return;
     _loadingUsers.add(userId);
 
-    UserServer? user = await client.crud.getUser(userId);
+    protocol.UserServer? user = await client.crud.getUser(userId);
 
     // We double check the loading users array in case we have logged out, which clears the set
     if (_loadingUsers.contains(userId)) {
       if (user != null) {
-        _users[userId] = UserClient(
+        _users[userId] = protocol.UserClient(
           id: user.id,
           username: user.username,
           bio: user.bio,
@@ -319,7 +388,7 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> createChat(CreateChatServer message) async {
+  Future<void> createChat(protocol.CreateChatServer message) async {
     _chats[message.chat.id!] = GroupChat(
       message.chat.id!,
       message.chat.users,
@@ -332,13 +401,76 @@ class AppStateProvider extends ChangeNotifier {
     if (message.chat.creator == _currentUser) {
       _selectedGroup = message.chat.id;
       _selectedPage = 1;
+
+      readChat(message.chat.id!);
     }
 
     notifyListeners();
   }
 
-  void renameChat(RenameChat message) {
+  void renameChat(protocol.RenameChat message) {
     _chats[message.chat]?.name = message.name;
+    notifyListeners();
+  }
+
+  // call when needing to load more message history
+  Future<void> loadNextBucket(int chat) async {
+    if (chat == 0) return;
+
+    GroupChat? groupChat = _chats[chat];
+    if (groupChat == null) return;
+
+    // null to load latest bucket
+    int? bucket;
+    if (groupChat.messages.isEmpty) {
+      if (groupChat.bucketsLoading.contains(-1)) return;
+    } else {
+      bucket = groupChat.messages.firstWhere((message) {
+        return message is ChatMessage;
+      })!.bucket;
+
+      // cannot do -= for null safety
+      bucket = bucket! - 1;
+    }
+
+    if (bucket == 0 || groupChat.bucketsLoading.contains(bucket)) return;
+
+    groupChat.bucketsLoading.add(bucket ?? -1);
+
+    List<protocol.ChatMessage>? chatMessages =
+        await client.crud.getBucket(chat, bucket);
+
+    // We double check if the group chat still exists in case we logged out
+    // Add new messages to the group
+    if (_chats[chat] != null &&
+        chatMessages != null &&
+        chatMessages.isNotEmpty) {
+      List<ChatMessage> newMessages = chatMessages
+          .map(
+            (message) => ChatMessage(
+              bucket: message.bucket,
+              message: message.message,
+              senderId: message.senderId,
+              sentAt: message.sentAt,
+            ),
+          )
+          .toList();
+
+      groupChat.messages.insertAll(0, newMessages.reversed);
+      notifyListeners();
+    }
+
+    groupChat.bucketsLoading.remove(bucket);
+  }
+
+  void lastReadServer(protocol.LastReadServer message) {
+    _lastRead.clear();
+    _lastRead.addAll(message.readData);
+    notifyListeners();
+  }
+
+  void readChatServer(protocol.ReadChatServer message) {
+    _lastRead[message.chat] = message.readAt;
     notifyListeners();
   }
 }

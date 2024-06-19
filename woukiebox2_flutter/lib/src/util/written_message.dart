@@ -1,48 +1,65 @@
-// Helps to preserve state of message without having to send additional data per message.
-class WrittenMessage {
+abstract class BaseMessage {
   final int senderId;
-  final String username;
-  final String colour;
+  final DateTime sentAt;
+
+  BaseMessage({
+    required this.senderId,
+    required this.sentAt,
+  });
+}
+
+class ChatMessage extends BaseMessage {
+  final int bucket;
   final String message;
-  final String image; // Lead messages have images
+  final String? image, username, color;
 
-  WrittenMessage(
-    this.senderId,
-    this.username,
-    this.message,
-    this.colour,
+  ChatMessage({
     this.image,
-  );
+    this.username,
+    this.color,
+    required this.bucket,
+    required this.message,
+    required super.senderId,
+    required super.sentAt,
+  });
 }
 
-class WrittenJoinMessage {
-  final int senderId;
+class JoinMessage extends BaseMessage {
   final String username;
   final String colour;
 
-  WrittenJoinMessage(this.senderId, this.username, this.colour);
+  JoinMessage({
+    required this.username,
+    required this.colour,
+    required super.senderId,
+    required super.sentAt,
+  });
 }
 
-class WrittenLeaveMessage {
-  final int senderId;
+class LeaveMessage extends BaseMessage {
   final String username;
   final String colour;
 
-  WrittenLeaveMessage(this.senderId, this.username, this.colour);
+  LeaveMessage({
+    required this.username,
+    required this.colour,
+    required super.senderId,
+    required super.sentAt,
+  });
 }
 
-class WrittenProfileMessage {
-  final int senderId;
+class ProfileMessage extends BaseMessage {
   final String oldUsername;
   final String oldColour;
   final String? newUsername;
   final String? newColour;
 
-  WrittenProfileMessage(
-    this.senderId,
-    this.oldUsername,
-    this.oldColour,
+  ProfileMessage({
+    required this.oldUsername,
+    required this.oldColour,
     this.newUsername,
     this.newColour,
-  );
+    required super.senderId,
+    required super.sentAt,
+  });
 }

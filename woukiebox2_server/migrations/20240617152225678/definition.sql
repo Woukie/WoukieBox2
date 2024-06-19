@@ -13,6 +13,22 @@ CREATE TABLE "chat" (
 );
 
 --
+-- Class ChatMessage as table chatmessage
+--
+CREATE TABLE "chatmessage" (
+    "id" serial PRIMARY KEY,
+    "sentAt" timestamp without time zone NOT NULL,
+    "message" text NOT NULL,
+    "senderId" integer NOT NULL,
+    "chatId" integer NOT NULL,
+    "bucket" integer NOT NULL
+);
+
+-- Indexes
+CREATE INDEX "bucket_idx" ON "chatmessage" USING btree ("bucket");
+CREATE INDEX "chatmessage_chat_idx" ON "chatmessage" USING btree ("chatId");
+
+--
 -- Class UserPersistent as table userpersistent
 --
 CREATE TABLE "userpersistent" (
@@ -349,6 +365,22 @@ CREATE UNIQUE INDEX "serverpod_user_info_user_identifier" ON "serverpod_user_inf
 CREATE INDEX "serverpod_user_info_email" ON "serverpod_user_info" USING btree ("email");
 
 --
+-- Foreign relations for "chatmessage" table
+--
+ALTER TABLE ONLY "chatmessage"
+    ADD CONSTRAINT "chatmessage_fk_0"
+    FOREIGN KEY("senderId")
+    REFERENCES "userpersistent"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+ALTER TABLE ONLY "chatmessage"
+    ADD CONSTRAINT "chatmessage_fk_1"
+    FOREIGN KEY("chatId")
+    REFERENCES "chat"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
+--
 -- Foreign relations for "userpersistent" table
 --
 ALTER TABLE ONLY "userpersistent"
@@ -393,9 +425,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR woukiebox2
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('woukiebox2', '20240611123427026', now())
+    VALUES ('woukiebox2', '20240617152225678', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240611123427026', "timestamp" = now();
+    DO UPDATE SET "version" = '20240617152225678', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

@@ -2,8 +2,8 @@ import 'dart:math';
 import 'dart:core';
 
 import 'package:serverpod_auth_server/module.dart';
-import 'package:woukiebox2_server/src/endpoints/sockets.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
+import 'package:woukiebox2_server/src/socket/session_manager.dart';
 import 'package:woukiebox2_server/src/util.dart';
 import 'package:serverpod/serverpod.dart';
 
@@ -64,7 +64,7 @@ class ProfilePictureEndpoint extends Endpoint {
         ),
       );
 
-      SocketsEndpoint.connectedUsers
+      SessionManager.connectedUsers
           .firstWhere((user) => user.id == senderInfo.id)
           .image = imageUri.toString();
     }

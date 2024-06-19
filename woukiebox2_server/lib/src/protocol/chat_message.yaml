@@ -1,0 +1,14 @@
+class: ChatMessage
+
+table: chatmessage
+fields:
+  sentAt: DateTime
+  message: String
+  sender: UserPersistent?, relation
+  chat: Chat?, relation # (onDelete=Cascade) <- This implementation of referential actions just doesn't work so we have to do it by code
+  bucket: int
+indexes:
+  bucket_idx:
+    fields: bucket
+  chatmessage_chat_idx:
+    fields: chatId

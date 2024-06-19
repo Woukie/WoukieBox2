@@ -1,54 +1,28 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
-import 'package:woukiebox2_server/src/endpoints/sockets.dart';
 import 'package:woukiebox2_server/src/friend_manager.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
+import 'package:woukiebox2_server/src/socket/chat_message_manager.dart';
+import 'package:woukiebox2_server/src/socket/session_manager.dart';
 import 'package:woukiebox2_server/src/util.dart';
 
 // For a less confusing socket implementation
-class HandleSocketMessage {
+class UserActions {
   static chatMessage(
     Session session,
     ChatMessageClient message,
-    Function getUserObject,
+    int userId,
   ) async {
-    String trimmedMessage = message.message.trim();
-
-    if (trimmedMessage.isEmpty) return;
-
-    ChatMessageServer chatMessage = ChatMessageServer(
-      sender: getUserObject(session).id,
-      chat: message.target,
-      message: trimmedMessage,
-    );
-
     if (message.target == 0) {
-      session.messages.postMessage(
-        'global',
-        chatMessage,
-      );
+      ChatMessageManager.sendGlobalMessage(session, message, userId);
     } else {
-      Chat? groupChat = await Chat.db.findById(session, message.target);
-      if (groupChat == null) return;
-
-      if (!groupChat.users.contains(chatMessage.sender)) return;
-
-      groupChat.lastMessage = DateTime.now();
-
-      await Chat.db.updateRow(session, groupChat);
-      for (int user in groupChat.users) {
-        session.messages.postMessage(
-          user.toString(),
-          chatMessage,
-        );
-      }
+      ChatMessageManager.sendChatMessage(session, message);
     }
   }
 
   static Future<void> updateProfile(
     StreamingSession session,
     UpdateProfileClient message,
-    Function(Session session) getUserObject,
   ) async {
     // Update the users profile on the database, also note that profile pics are neither cached or updated in UpdateProfile.
     var userId = await session.auth.authenticatedUserId;
@@ -66,10 +40,9 @@ class HandleSocketMessage {
       }
     }
 
-    var sender = getUserObject(session).id;
     // Also update the cached user as some users are anonymous
     UserServer user =
-        SocketsEndpoint.connectedUsers.firstWhere((user) => user.id == sender);
+        SessionManager.connectedUsers.firstWhere((user) => user.id == userId);
     user.bio = message.bio ?? user.bio;
     user.username = message.username ?? user.username;
     user.colour = message.colour ?? user.colour;
@@ -78,7 +51,7 @@ class HandleSocketMessage {
     session.messages.postMessage(
       'global',
       UpdateProfileServer(
-        sender: sender,
+        sender: userId!,
         username: message.username,
         bio: message.bio,
         colour: message.colour,
@@ -173,7 +146,7 @@ class HandleSocketMessage {
         name: message.name.trim(),
         creator: senderInfo.id!,
         owners: message.owners,
-        lastMessage: DateTime.now(),
+        lastMessage: DateTime.now().toUtc(),
       ),
     );
 
@@ -197,7 +170,9 @@ class HandleSocketMessage {
   }
 
   static Future<void> leaveChat(
-      StreamingSession session, LeaveChatClient message) async {
+    StreamingSession session,
+    LeaveChatClient message,
+  ) async {
     UserInfo? senderInfo = await Util.getAuthUser(session);
     if (senderInfo == null) return;
 
@@ -212,21 +187,34 @@ class HandleSocketMessage {
     // Remove user from chat
     chat.users.remove(senderInfo.id);
     if (chat.users.isEmpty) {
+      await ChatMessage.db.deleteWhere(
+        session,
+        where: (message) => message.chatId.equals(chat.id!),
+      );
+      await LastRead.db.deleteWhere(
+        session,
+        where: (row) => row.chatId.equals(chat.id!),
+      );
       await Chat.db.deleteRow(session, chat);
+      ChatMessageManager.deleteBucket(chat.id!);
     } else {
       if (chat.owners.contains(senderInfo.id) && chat.owners.length == 1) {
         chat.owners.add(chat.users.first);
       }
+
+      chat.lastMessage = DateTime.now().toUtc();
       await Chat.db.updateRow(session, chat);
     }
 
     // Remove chat from user
     senderPersistent.chats.remove(message.chat);
+    LastRead.db.deleteWhere(session,
+        where: (row) =>
+            (row.chatId.equals(chat.id!)) &
+            (row.userInfoId.equals(senderInfo.id)));
     await UserPersistent.db.updateRow(session, senderPersistent);
 
-    // Short way to also send leave message to sender, doesn't actually save
     chat.users.add(senderInfo.id!);
-
     for (int user in chat.users) {
       session.messages.postMessage(
         user.toString(),
@@ -234,6 +222,7 @@ class HandleSocketMessage {
           chat: chat.id!,
           sender: senderInfo.id!,
           owners: chat.owners,
+          sentAt: chat.lastMessage,
         ),
       );
     }
@@ -264,5 +253,44 @@ class HandleSocketMessage {
         ),
       );
     }
+  }
+
+  static Future<void> readChat(
+      StreamingSession session, ReadChatClient message) async {
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return;
+
+    UserPersistent senderPersistent =
+        (await Util.getPersistentData(session, senderInfo.id))!;
+
+    if (!senderPersistent.chats.contains(message.chat)) return;
+
+    LastRead? existingLastRead = await LastRead.db.findFirstRow(
+      session,
+      where: (row) =>
+          (row.chatId.equals(message.chat)) &
+          (row.userInfoId.equals(senderInfo.id)),
+    );
+
+    DateTime readAt = DateTime.now().toUtc();
+
+    if (existingLastRead == null) {
+      await LastRead.db.insertRow(
+        session,
+        LastRead(
+          userInfoId: senderInfo.id!,
+          chatId: message.chat,
+          readAt: readAt,
+        ),
+      );
+    } else {
+      existingLastRead.readAt = readAt;
+      await LastRead.db.updateRow(session, existingLastRead);
+    }
+
+    session.messages.postMessage(
+      senderInfo.id.toString(),
+      ReadChatServer(chat: message.chat, readAt: readAt),
+    );
   }
 }

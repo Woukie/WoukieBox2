@@ -1,4 +1,3 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/friends/friends.dart';
@@ -17,6 +16,11 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  static final Animatable<double> _fadeOutTransition = Tween<double>(
+    begin: 1.0,
+    end: 0.0,
+  );
+
   @override
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
@@ -57,9 +61,43 @@ class _AppState extends State<App> {
         ),
         Expanded(
           child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 100),
+            duration: const Duration(milliseconds: 150),
+            switchInCurve: Curves.easeOut,
+            switchOutCurve: Curves.easeIn,
             transitionBuilder: (Widget child, Animation<double> animation) {
-              return FadeScaleTransition(animation: animation, child: child);
+              return DualTransitionBuilder(
+                animation: animation,
+                forwardBuilder: (
+                  BuildContext context,
+                  Animation<double> animation,
+                  Widget? child,
+                ) {
+                  return SlideTransition(
+                    position: Tween(
+                      begin: const Offset(0, 1),
+                      end: const Offset(0, 0),
+                    ).animate(animation),
+                    child: FadeTransition(opacity: animation, child: child),
+                  );
+                },
+                reverseBuilder: (
+                  BuildContext context,
+                  Animation<double> animation,
+                  Widget? child,
+                ) {
+                  return FadeTransition(
+                    opacity: _fadeOutTransition.animate(animation),
+                    child: SlideTransition(
+                      position: Tween(
+                        begin: const Offset(0, 0),
+                        end: const Offset(0, 0.1),
+                      ).animate(animation),
+                      child: child,
+                    ),
+                  );
+                },
+                child: child,
+              );
             },
             child: switch (selectedPage) {
               0 || 1 => ChatRoom(

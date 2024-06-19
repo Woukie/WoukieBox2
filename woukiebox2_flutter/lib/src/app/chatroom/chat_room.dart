@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/chatroom/message_box/message_box.dart';
 import 'package:woukiebox2/src/app/chatroom/messages/messages.dart';
@@ -7,6 +6,7 @@ import 'package:woukiebox2/src/app/chatroom/users/users.dart';
 import 'package:woukiebox2/src/app/direct_messages/chat_list.dart';
 import 'package:woukiebox2/src/app/direct_messages/select_friend_dialogue.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2/src/providers/styling_provider.dart';
 
 class ChatRoom extends StatefulWidget {
   const ChatRoom({
@@ -42,6 +42,7 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+    StylingProvider stylingProvider = Provider.of<StylingProvider>(context);
     int? selectedGroup = appStateProvider.selectedGroup;
     List<dynamic> globalMessages = appStateProvider.messages;
 
@@ -52,20 +53,31 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
     }
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 12, 12, 12),
+      padding: EdgeInsets.fromLTRB(
+        0,
+        stylingProvider.cardMargin,
+        stylingProvider.cardMargin,
+        stylingProvider.cardMargin,
+      ),
       child: Row(
         children: [
-          leftMenu(selectedGroup, appStateProvider),
-          rightMenu(globalMessages, appStateProvider, selectedGroup),
+          leftMenu(selectedGroup, appStateProvider, stylingProvider),
+          rightMenu(
+              globalMessages, appStateProvider, selectedGroup, stylingProvider),
         ],
       ),
     );
   }
 
-  rightMenu(globalMessages, AppStateProvider appStateProvider, selectedGroup) =>
+  rightMenu(
+    globalMessages,
+    AppStateProvider appStateProvider,
+    int? selectedGroup,
+    StylingProvider stylingProvider,
+  ) =>
       Expanded(
         child: Padding(
-          padding: const EdgeInsets.only(left: 12),
+          padding: EdgeInsets.only(left: stylingProvider.cardMargin),
           child: Column(
             children: [
               Expanded(
@@ -80,6 +92,7 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
                           children: [
                             Flexible(
                               child: Messages(
+                                chat: widget.global ? 0 : selectedGroup ?? -1,
                                 messages: widget.global
                                     ? globalMessages
                                     : appStateProvider
@@ -100,8 +113,10 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
                             : appStateProvider.chats[selectedGroup]?.users ??
                                 [],
                         showInvisible: !widget.global,
-                        owners:
-                            appStateProvider.chats[selectedGroup]?.owners ?? [],
+                        owners: widget.global
+                            ? []
+                            : appStateProvider.chats[selectedGroup]?.owners ??
+                                [],
                       ),
                     ),
                   ],
@@ -116,12 +131,17 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
         ),
       );
 
-  leftMenu(selectedGroup, appStateProvider) => SizeTransition(
+  leftMenu(
+    selectedGroup,
+    AppStateProvider appStateProvider,
+    StylingProvider stylingProvider,
+  ) =>
+      SizeTransition(
         sizeFactor: _animation,
         axis: Axis.horizontal,
         axisAlignment: -1,
         child: Padding(
-          padding: const EdgeInsets.only(left: 12),
+          padding: EdgeInsets.only(left: stylingProvider.cardMargin),
           child: SizedBox(
             width: 200,
             child: Card(
@@ -145,6 +165,7 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
                       selectGroup: (value) {
                         setState(() {
                           appStateProvider.setSelectedGroup(value);
+                          appStateProvider.readChat(value);
                         });
                       },
                       searchQuery: _searchController.text,

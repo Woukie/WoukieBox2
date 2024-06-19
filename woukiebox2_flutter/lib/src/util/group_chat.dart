@@ -4,15 +4,14 @@ import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class GroupChat {
-  final int id;
-  List<int> users;
-  List<int> owners;
+  final int id, creator;
+  List<int> users, owners;
   String name;
-  int creator;
   DateTime lastMessage;
 
-  // Built client-side
+  // Supports any type from written_message. Use WrittenChatMessage over WrittenGlobalMessage to display the latest user data
   final List<dynamic> messages = List.empty(growable: true);
+  final List<int> bucketsLoading = List.empty(growable: true);
 
   GroupChat(
     this.id,

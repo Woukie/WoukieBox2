@@ -9,6 +9,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:woukiebox2/src/app_bar.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/providers/connection_state_provider.dart';
+import 'package:woukiebox2/src/providers/styling_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/src/app/app.dart';
 import 'package:woukiebox2/src/authentication/onboarding.dart';
@@ -38,7 +39,7 @@ void main() async {
   }
 
   client = Client(
-    'http://localhost:8080/',
+    'https://api.woukiebox.woukie.net/',
     authenticationKeyManager: FlutterAuthenticationKeyManager(),
   )..connectivityMonitor = FlutterConnectivityMonitor();
 
@@ -58,6 +59,9 @@ void main() async {
       // Needs app state
       ChangeNotifierProvider(
         create: (context) => ConnectionStateProvider(context),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => StylingProvider(),
       ),
     ],
     child: MyApp(

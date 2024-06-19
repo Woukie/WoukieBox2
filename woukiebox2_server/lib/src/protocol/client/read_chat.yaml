@@ -1,0 +1,4 @@
+class: ReadChatClient
+
+fields:
+  chat: int

@@ -11,8 +11,9 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:woukiebox2_client/src/protocol/server/user.dart' as _i3;
-import 'package:serverpod_auth_client/module.dart' as _i4;
-import 'protocol.dart' as _i5;
+import 'package:woukiebox2_client/src/protocol/chat_message.dart' as _i4;
+import 'package:serverpod_auth_client/module.dart' as _i5;
+import 'protocol.dart' as _i6;
 
 /// {@category Endpoint}
 class EndpointCrud extends _i1.EndpointRef {
@@ -26,6 +27,19 @@ class EndpointCrud extends _i1.EndpointRef {
         'crud',
         'getUser',
         {'targetId': targetId},
+      );
+
+  _i2.Future<List<_i4.ChatMessage>?> getBucket(
+    int chat,
+    int? bucket,
+  ) =>
+      caller.callServerEndpoint<List<_i4.ChatMessage>?>(
+        'crud',
+        'getBucket',
+        {
+          'chat': chat,
+          'bucket': bucket,
+        },
       );
 }
 
@@ -60,10 +74,10 @@ class EndpointSockets extends _i1.EndpointRef {
 
 class _Modules {
   _Modules(Client client) {
-    auth = _i4.Caller(client);
+    auth = _i5.Caller(client);
   }
 
-  late final _i4.Caller auth;
+  late final _i5.Caller auth;
 }
 
 class Client extends _i1.ServerpodClient {
@@ -75,7 +89,7 @@ class Client extends _i1.ServerpodClient {
     Duration? connectionTimeout,
   }) : super(
           host,
-          _i5.Protocol(),
+          _i6.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,

@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
-import 'package:woukiebox2_server/src/endpoints/sockets.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 
 // Don't know how to have internal functions on an endpoint without also exposing them to the client. So this class handles a random assortment of things.
@@ -48,62 +47,6 @@ class Util {
     return extraUserData;
   }
 
-  // Sets and returns the user object and updates connectedUsers. User constructed with database values if authenticated
-  static Future<UserServer?> initUser(
-    StreamingSession session,
-    Function(Session, dynamic) setUserObject,
-  ) async {
-    UserInfo? senderInfo = await Util.getAuthUser(session);
-
-    if (senderInfo != null) {
-      if (SocketsEndpoint.connectedUsers.any(
-        (user) => user.id == senderInfo.id,
-      )) {
-        return null;
-      }
-
-      UserPersistent senderPersistant =
-          (await Util.getPersistentData(session))!;
-
-      Uri? imageUri = await session.storage.getPublicUrl(
-        storageId: 'public',
-        path: senderPersistant.image,
-      );
-
-      UserServer user = UserServer(
-        id: senderInfo.id!,
-        colour: senderPersistant.color,
-        username: senderInfo.userName,
-        image: imageUri.toString(),
-        bio: senderPersistant.bio,
-        verified: true,
-      );
-
-      SocketsEndpoint.connectedUsers.add(user);
-      setUserObject(session, (id: user.id));
-
-      print("Authenticated user joined!");
-
-      return user;
-    }
-
-    UserServer user = UserServer(
-      id: Random().nextInt(100000000),
-      colour: Util.randomColour(),
-      username: "Anonymous",
-      image: "",
-      bio: "",
-      verified: false,
-    );
-
-    SocketsEndpoint.connectedUsers.add(user);
-    setUserObject(session, (id: user.id));
-
-    print("Anonymous user joined!");
-
-    return user;
-  }
-
   static String randomColour() {
     double r = Random().nextDouble();
     double g = Random().nextDouble();
@@ -119,7 +62,7 @@ class Util {
     g *= 256;
     b *= 256;
 
-    String color = 'FF${r.floor().toRadixString(16).padLeft(2, '0')}'
+    String color = '${r.floor().toRadixString(16).padLeft(2, '0')}'
         '${g.floor().toRadixString(16).padLeft(2, '0')}'
         '${b.floor().toRadixString(16).padLeft(2, '0')}';
 

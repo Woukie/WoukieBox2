@@ -10,16 +10,19 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class JoinChatServer extends _i1.SerializableEntity {
   JoinChatServer._({
     required this.sender,
     required this.chat,
+    required this.sentAt,
   });
 
   factory JoinChatServer({
     required _i2.UserServer sender,
     required int chat,
+    required DateTime sentAt,
   }) = _JoinChatServerImpl;
 
   factory JoinChatServer.fromJson(
@@ -30,6 +33,8 @@ abstract class JoinChatServer extends _i1.SerializableEntity {
       sender: serializationManager
           .deserialize<_i2.UserServer>(jsonSerialization['sender']),
       chat: serializationManager.deserialize<int>(jsonSerialization['chat']),
+      sentAt: serializationManager
+          .deserialize<DateTime>(jsonSerialization['sentAt']),
     );
   }
 
@@ -37,15 +42,19 @@ abstract class JoinChatServer extends _i1.SerializableEntity {
 
   int chat;
 
+  DateTime sentAt;
+
   JoinChatServer copyWith({
     _i2.UserServer? sender,
     int? chat,
+    DateTime? sentAt,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'sender': sender.toJson(),
       'chat': chat,
+      'sentAt': sentAt.toJson(),
     };
   }
 
@@ -54,6 +63,7 @@ abstract class JoinChatServer extends _i1.SerializableEntity {
     return {
       'sender': sender.allToJson(),
       'chat': chat,
+      'sentAt': sentAt.toJson(),
     };
   }
 }
@@ -62,19 +72,23 @@ class _JoinChatServerImpl extends JoinChatServer {
   _JoinChatServerImpl({
     required _i2.UserServer sender,
     required int chat,
+    required DateTime sentAt,
   }) : super._(
           sender: sender,
           chat: chat,
+          sentAt: sentAt,
         );
 
   @override
   JoinChatServer copyWith({
     _i2.UserServer? sender,
     int? chat,
+    DateTime? sentAt,
   }) {
     return JoinChatServer(
       sender: sender ?? this.sender.copyWith(),
       chat: chat ?? this.chat,
+      sentAt: sentAt ?? this.sentAt,
     );
   }
 }
