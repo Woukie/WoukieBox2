@@ -25,6 +25,7 @@ class RenameChatDialogue {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           TextField(
+                            autofocus: true,
                             controller: controller,
                             keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
