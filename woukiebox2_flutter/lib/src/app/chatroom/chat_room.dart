@@ -191,6 +191,8 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
                                     ),
                                   );
                                 },
+                                "Create Chat",
+                                "Create",
                                 null,
                               );
                             },

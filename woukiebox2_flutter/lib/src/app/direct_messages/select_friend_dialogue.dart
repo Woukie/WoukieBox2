@@ -11,6 +11,8 @@ class SelectFriendDialogue {
   static Future<void> showDialogue(
     BuildContext context,
     Function(List<int>) callback,
+    String titleText,
+    String submitText,
     int? excludeChat,
   ) {
     HashMap<int, bool> friendsSelection = HashMap<int, bool>();
@@ -49,7 +51,7 @@ class SelectFriendDialogue {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text("Select Contacts"),
+                        Text(titleText),
                         SizedBox(
                           height: 250,
                           child: ListView.builder(
@@ -130,7 +132,7 @@ class SelectFriendDialogue {
                                 callback(List.of(friendsSelection.keys));
                                 Navigator.of(context).pop();
                               },
-                              child: const Text('Create'),
+                              child: Text(submitText),
                             )
                           ],
                         )

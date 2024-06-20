@@ -66,7 +66,7 @@ class DirectMessageDropdown extends StatelessWidget {
       items.add(getButton("Rename", Icons.edit, () {
         RenameChatDialogue.showDialogue(context, groupChat.id);
       }));
-      items.add(getButton("Add Users", Icons.person_add, () {
+      items.add(getButton("Add Friends", Icons.person_add, () {
         SelectFriendDialogue.showDialogue(
           context,
           (List<int> selectedFriends) {
@@ -77,6 +77,8 @@ class DirectMessageDropdown extends StatelessWidget {
               ),
             );
           },
+          "Add Friends",
+          "Add",
           groupChat.id,
         );
       }));
