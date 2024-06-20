@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/direct_messages/rename_chat_dialogue.dart';
+import 'package:woukiebox2/src/app/direct_messages/select_friend_dialogue.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
@@ -64,6 +65,20 @@ class DirectMessageDropdown extends StatelessWidget {
     if (owner) {
       items.add(getButton("Rename", Icons.edit, () {
         RenameChatDialogue.showDialogue(context, groupChat.id);
+      }));
+      items.add(getButton("Add Users", Icons.person_add, () {
+        SelectFriendDialogue.showDialogue(
+          context,
+          (List<int> selectedFriends) {
+            client.sockets.sendStreamMessage(
+              AddChatMembersClient(
+                users: selectedFriends,
+                chat: groupChat.id,
+              ),
+            );
+          },
+          groupChat.id,
+        );
       }));
     }
 

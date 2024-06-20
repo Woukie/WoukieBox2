@@ -2,14 +2,17 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class SelectFriendDialogue {
-  static Future<void> showDialogue(BuildContext context) {
+  static Future<void> showDialogue(
+    BuildContext context,
+    Function(List<int>) callback,
+    int? excludeChat,
+  ) {
     HashMap<int, bool> friendsSelection = HashMap<int, bool>();
 
     return showDialog<void>(
@@ -19,13 +22,19 @@ class SelectFriendDialogue {
             Provider.of<AppStateProvider>(context);
 
         List<int> friends = appStateProvider.friends;
+        List<int> exclude = appStateProvider.chats.containsKey(excludeChat)
+            ? appStateProvider.chats[excludeChat]!.users
+            : List.empty();
 
         HashMap<int, bool> updatedSelection = HashMap<int, bool>();
         for (var friend in friends) {
-          updatedSelection[friend] = friendsSelection[friend] ?? false;
+          if (!exclude.contains(friend)) {
+            updatedSelection[friend] = friendsSelection[friend] ?? false;
+          }
         }
         friendsSelection = updatedSelection;
 
+        var friendsList = friendsSelection.keys.toList();
         return StatefulBuilder(
           builder: (context, setState) => Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -44,9 +53,9 @@ class SelectFriendDialogue {
                         SizedBox(
                           height: 250,
                           child: ListView.builder(
-                            itemCount: friends.length,
+                            itemCount: friendsList.length,
                             itemBuilder: (BuildContext context, int index) {
-                              int friendId = friends[index];
+                              int friendId = friendsList[index];
 
                               UserClient? user =
                                   appStateProvider.users[friendId];
@@ -118,14 +127,7 @@ class SelectFriendDialogue {
                               onPressed: () {
                                 friendsSelection
                                     .removeWhere((user, selected) => !selected);
-                                client.sockets.sendStreamMessage(
-                                  CreateChatClient(
-                                    name: "",
-                                    owners: [],
-                                    users: List.of(friendsSelection.keys),
-                                  ),
-                                );
-
+                                callback(List.of(friendsSelection.keys));
                                 Navigator.of(context).pop();
                               },
                               child: const Text('Create'),

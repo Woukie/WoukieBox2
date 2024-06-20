@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/chatroom/message_box/message_box.dart';
 import 'package:woukiebox2/src/app/chatroom/messages/messages.dart';
 import 'package:woukiebox2/src/app/chatroom/users/users.dart';
@@ -7,6 +8,7 @@ import 'package:woukiebox2/src/app/direct_messages/chat_list.dart';
 import 'package:woukiebox2/src/app/direct_messages/select_friend_dialogue.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/providers/styling_provider.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class ChatRoom extends StatefulWidget {
   const ChatRoom({
@@ -178,7 +180,19 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
                           padding: const EdgeInsets.all(8),
                           child: FilledButton(
                             onPressed: () {
-                              SelectFriendDialogue.showDialogue(context);
+                              SelectFriendDialogue.showDialogue(
+                                context,
+                                (List<int> friendsSelection) {
+                                  client.sockets.sendStreamMessage(
+                                    CreateChatClient(
+                                      name: "",
+                                      owners: [],
+                                      users: friendsSelection,
+                                    ),
+                                  );
+                                },
+                                null,
+                              );
                             },
                             child: const Text("Create Group"),
                           ),

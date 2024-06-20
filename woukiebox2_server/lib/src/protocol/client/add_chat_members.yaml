@@ -1,0 +1,5 @@
+class: AddChatMembersClient
+
+fields:
+  users: List<int>
+  chat: int
