@@ -77,6 +77,102 @@ class Message extends StatelessWidget {
             ],
           ),
         );
+      } else if (message is KickMessage) {
+        client.UserClient sender = UserUtil.getUser(context, message.senderId);
+        client.UserClient target = UserUtil.getUser(context, message.target);
+
+        return SystemMessageWrapper(
+          child: TextSpan(
+            style: DefaultTextStyle.of(context).style,
+            children: [
+              TextSpan(
+                text: sender.username,
+                style: TextStyle(
+                  color: HexColor.fromHex(sender.colour),
+                ),
+              ),
+              const TextSpan(
+                text: " kicked ",
+              ),
+              TextSpan(
+                text: target.username,
+                style: TextStyle(
+                  color: HexColor.fromHex(target.colour),
+                ),
+              ),
+            ],
+          ),
+        );
+      } else if (message is PromoteMessage) {
+        client.UserClient sender = UserUtil.getUser(context, message.senderId);
+        client.UserClient target = UserUtil.getUser(context, message.target);
+
+        return SystemMessageWrapper(
+          child: TextSpan(
+            style: DefaultTextStyle.of(context).style,
+            children: [
+              TextSpan(
+                text: sender.username,
+                style: TextStyle(
+                  color: HexColor.fromHex(sender.colour),
+                ),
+              ),
+              const TextSpan(
+                text: " promoted ",
+              ),
+              TextSpan(
+                text: target.username,
+                style: TextStyle(
+                  color: HexColor.fromHex(target.colour),
+                ),
+              ),
+            ],
+          ),
+        );
+      } else if (message is AddUsersMessage) {
+        client.UserClient sender = UserUtil.getUser(context, message.senderId);
+
+        List<InlineSpan> usersList = [
+          TextSpan(
+            text: sender.username,
+            style: TextStyle(
+              color: HexColor.fromHex(sender.colour),
+            ),
+          ),
+          const TextSpan(
+            text: " invited ",
+          ),
+        ];
+
+        for (int userId in message.users) {
+          client.UserClient user = UserUtil.getUser(context, userId);
+
+          usersList.add(
+            TextSpan(
+              text: user.username,
+              style: TextStyle(
+                color: HexColor.fromHex(user.colour),
+              ),
+            ),
+          );
+
+          usersList.add(
+            TextSpan(
+              text: userId == message.users.last
+                  ? "."
+                  : userId == message.users[message.users.length - 2]
+                      ? "and "
+                      : ", ",
+            ),
+          );
+        }
+
+        return SystemMessageWrapper(
+          child: TextSpan(
+            style: DefaultTextStyle.of(context).style,
+            children: usersList,
+          ),
+        );
       } else if (message is JoinMessage) {
         return SystemMessageWrapper(
           child: TextSpan(

@@ -74,20 +74,20 @@ class AddUsersMessage extends BaseMessage {
   });
 }
 
-class KickUserMessage extends BaseMessage {
+class KickMessage extends BaseMessage {
   final int target;
 
-  KickUserMessage({
+  KickMessage({
     required super.senderId,
     required super.sentAt,
     required this.target,
   });
 }
 
-class PromoteUserMessage extends BaseMessage {
+class PromoteMessage extends BaseMessage {
   final int target;
 
-  PromoteUserMessage({
+  PromoteMessage({
     required super.senderId,
     required super.sentAt,
     required this.target,
