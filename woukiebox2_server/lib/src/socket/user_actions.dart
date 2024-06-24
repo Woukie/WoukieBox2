@@ -272,7 +272,7 @@ class UserActions {
     KickChatMemberClient message,
   ) async {
     UserInfo? senderInfo = await Util.getAuthUser(session);
-    if (senderInfo == null) return;
+    if (senderInfo == null || senderInfo.id == message.user) return;
 
     UserInfo? targetInfo = await Util.getAuthUser(session, message.user);
     if (targetInfo == null) return;
