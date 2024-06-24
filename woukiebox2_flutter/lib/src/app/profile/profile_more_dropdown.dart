@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2/src/util/group_chat.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class ProfileMoreDropdown extends StatelessWidget {
@@ -55,10 +56,14 @@ class ProfileMoreDropdown extends StatelessWidget {
     bool outgoing = appStateProvider.outgoingFriendRequests.contains(userId);
     bool incoming = appStateProvider.incomingFriendRequests.contains(userId);
 
-    bool showChatButtons = appStateProvider.selectedPage == 1 &&
-        appStateProvider.chats.containsKey(appStateProvider.selectedChat) &&
-        appStateProvider.chats[appStateProvider.selectedChat]!.owners
-            .contains(appStateProvider.currentUser);
+    GroupChat? chat = !appStateProvider.isGlobal()
+        ? appStateProvider.chats[appStateProvider.selectedChat]
+        : null;
+
+    bool admin = chat != null &&
+        chat.owners.contains(appStateProvider.currentUser) &&
+        userId != appStateProvider.currentUser &&
+        !chat.owners.contains(userId);
 
     UserClient currentUser =
         appStateProvider.users[appStateProvider.currentUser]!;
@@ -98,23 +103,18 @@ class ProfileMoreDropdown extends StatelessWidget {
       }
     }
 
-    if (showChatButtons) {
-      items.add(getButton("Kick", Icons.close, () => {}));
+    if (admin) {
+      items.add(getButton("Kick", Icons.hardware, () {
+        client.sockets.sendStreamMessage(
+          KickChatMemberClient(user: userId, chat: chat.id),
+        );
+      }));
+      items.add(getButton("Promote", Icons.hardware, () {
+        client.sockets.sendStreamMessage(
+          PromoteChatMemberClient(user: userId, chat: chat.id),
+        );
+      }));
     }
-
-    items.add(
-      const PopupMenuItem(
-        child: Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(right: 12),
-              child: Icon(Icons.hardware),
-            ),
-            Text('Kill'),
-          ],
-        ),
-      ),
-    );
 
     return items;
   }
