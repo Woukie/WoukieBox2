@@ -476,6 +476,35 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void kickChatMember(protocol.KickChatMemberServer message) {
+    if (message.target == currentUser) {
+      chats.remove(message.chat);
+      if (_selectedChat == message.chat) _selectedChat = 0;
+    } else {
+      chats[message.chat]?.users.remove(message.target);
+      chats[message.chat]?.lastMessage = message.sentAt;
+
+      if (isChatSelected() && _selectedChat == message.chat) {
+        readChat(message.chat);
+      }
+    }
+
+    notifyListeners();
+  }
+
+  void promoteChatMember(protocol.PromoteChatMemberServer message) {
+    chats[message.chat]?.owners.add(message.target);
+    chats[message.chat]?.lastMessage = message.sentAt;
+
+    if (isChatSelected() && _selectedChat == message.chat) {
+      readChat(message.chat);
+    }
+
+    notifyListeners();
+  }
+
+  void addChatMembers(protocol.AddChatMembersServer message) {}
+
   bool isGlobalChatSelected() {
     return _selectedPage == 0;
   }
