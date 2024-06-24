@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:woukiebox2/src/app/profile/profile_more_dropdown.dart';
-import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2/src/app/profile/profile_dropdown.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
@@ -22,7 +20,6 @@ class ProfilePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).primaryTextTheme.bodyMedium!;
-    AppStateProvider appdata = Provider.of<AppStateProvider>(context);
 
     return enabled
         ? InkWell(
@@ -71,18 +68,7 @@ class ProfilePreview extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                PopupMenuButton(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainerHigh,
-                                  tooltip: "More",
-                                  itemBuilder: (BuildContext context) =>
-                                      ProfileMoreDropdown.getDropdownElements(
-                                    appdata,
-                                    user.id,
-                                  ),
-                                  icon: const Icon(Icons.more_horiz),
-                                ),
+                                ProfileDropdown.moreButton(context, user.id),
                               ],
                             ),
                             Expanded(

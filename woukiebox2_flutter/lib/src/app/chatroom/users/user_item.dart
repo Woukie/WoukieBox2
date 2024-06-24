@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:woukiebox2/src/app/profile/profile_more_dropdown.dart';
+import 'package:woukiebox2/src/app/profile/profile_dropdown.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/user_util.dart';
@@ -24,14 +24,15 @@ class UserItem extends StatelessWidget {
 
     GroupChat? chat = appStateProvider.chats[appStateProvider.selectedChat];
 
-    bool crowned = !appStateProvider.isGlobal() &&
+    bool crowned = !appStateProvider.isGlobalChatSelected() &&
         chat != null &&
         chat.owners.contains(userId);
     int alpha = user.visible ? 255 : 90;
 
-    return ProfileMoreDropdown(
-      userId: userId,
-      child: Row(
+    return ProfileDropdown.rightClickWrapper(
+      context,
+      userId,
+      Row(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),

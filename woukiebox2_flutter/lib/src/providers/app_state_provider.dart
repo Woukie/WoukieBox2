@@ -477,7 +477,11 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isGlobal() {
+  bool isGlobalChatSelected() {
     return _selectedPage == 0;
+  }
+
+  bool isChatSelected() {
+    return _selectedPage == 1 && chats.containsKey(_selectedChat);
   }
 }

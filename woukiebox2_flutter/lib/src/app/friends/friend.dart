@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
-import 'package:woukiebox2/src/app/profile/profile_more_dropdown.dart';
+import 'package:woukiebox2/src/app/profile/profile_dropdown.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/user_util.dart';
@@ -39,10 +39,10 @@ class Friend extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-      child: ProfileMoreDropdown(
-        enabled: !loading,
-        userId: user.id,
-        child: Card(
+      child: ProfileDropdown.rightClickWrapper(
+        context,
+        user.id,
+        Card(
           color: Theme.of(context).colorScheme.surfaceContainer,
           elevation: .5,
           margin: EdgeInsets.zero,

@@ -22,8 +22,9 @@ class _MessageBoxState extends State<MessageBox> {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
 
     sendMessage(String message) {
-      int? target =
-          appStateProvider.isGlobal() ? 0 : appStateProvider.selectedChat;
+      int? target = appStateProvider.isGlobalChatSelected()
+          ? 0
+          : appStateProvider.selectedChat;
       if (target == null) return;
 
       client.sockets.sendStreamMessage(
@@ -43,7 +44,7 @@ class _MessageBoxState extends State<MessageBox> {
           controller: _controller,
           maxLines: null,
           decoration: InputDecoration(
-            enabled: appStateProvider.isGlobal() ||
+            enabled: appStateProvider.isGlobalChatSelected() ||
                 appStateProvider.selectedChat != null,
             isDense: true,
             border: InputBorder.none,

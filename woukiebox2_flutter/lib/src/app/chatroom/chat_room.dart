@@ -40,7 +40,7 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
     StylingProvider stylingProvider = Provider.of<StylingProvider>(context);
-    bool global = appStateProvider.isGlobal();
+    bool global = appStateProvider.isGlobalChatSelected();
 
     if (global) {
       _animationController.reverse();

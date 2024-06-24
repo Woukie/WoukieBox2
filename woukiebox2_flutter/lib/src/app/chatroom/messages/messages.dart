@@ -20,9 +20,10 @@ class Messages extends StatelessWidget {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
     final scrollController = ScrollController();
 
-    final int? chat =
-        appStateProvider.isGlobal() ? 0 : appStateProvider.selectedChat;
-    final List<BaseMessage> messages = appStateProvider.isGlobal()
+    final int? chat = appStateProvider.isGlobalChatSelected()
+        ? 0
+        : appStateProvider.selectedChat;
+    final List<BaseMessage> messages = appStateProvider.isGlobalChatSelected()
         ? appStateProvider.globalMessages
         : appStateProvider.chats[chat]?.messages ?? [];
 
@@ -77,9 +78,10 @@ class Messages extends StatelessWidget {
         );
       },
       child: ListView.builder(
-        key: Key(
-            (appStateProvider.isGlobal() ? 0 : appStateProvider.selectedChat)
-                .toString()),
+        key: Key((appStateProvider.isGlobalChatSelected()
+                ? 0
+                : appStateProvider.selectedChat)
+            .toString()),
         padding: const EdgeInsets.only(bottom: 12),
         controller: scrollController,
         itemCount: messages.length,

@@ -5,58 +5,14 @@ import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
-class ProfileMoreDropdown extends StatelessWidget {
-  const ProfileMoreDropdown({
-    super.key,
-    required this.child,
-    required this.userId,
-    this.enabled = true,
-  });
-
-  final Widget child;
-  final int userId;
-  final bool enabled;
-
-  // Wraps an element in an InkWell that opens the more dropdown on secondarry input
-  @override
-  Widget build(BuildContext context) {
-    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
-
-    return enabled
-        ? InkWell(
-            borderRadius: BorderRadius.circular(12),
-            child: child,
-            onSecondaryTapDown: (details) {
-              final screenSize = MediaQuery.of(context).size;
-              Offset offset = details.globalPosition;
-
-              showMenu(
-                context: context,
-                position: RelativeRect.fromLTRB(
-                  offset.dx,
-                  offset.dy,
-                  screenSize.width - offset.dx,
-                  screenSize.height - offset.dy,
-                ),
-                items: getDropdownElements(
-                  appStateProvider,
-                  userId,
-                ),
-              );
-            },
-          )
-        : Container(child: child);
-  }
-
-  static List<PopupMenuItem> getDropdownElements(
-    AppStateProvider appStateProvider,
-    int userId,
-  ) {
+class ProfileDropdown {
+  static List<PopupMenuEntry<dynamic>> _getDropdownElements(
+      AppStateProvider appStateProvider, int userId) {
     bool friendly = appStateProvider.friends.contains(userId);
     bool outgoing = appStateProvider.outgoingFriendRequests.contains(userId);
     bool incoming = appStateProvider.incomingFriendRequests.contains(userId);
 
-    GroupChat? chat = !appStateProvider.isGlobal()
+    GroupChat? chat = appStateProvider.isChatSelected()
         ? appStateProvider.chats[appStateProvider.selectedChat]
         : null;
 
@@ -75,6 +31,21 @@ class ProfileMoreDropdown extends StatelessWidget {
         currentUser.id != userId && currentUser.verified && targetUser.verified;
 
     List<PopupMenuItem> items = List.empty(growable: true);
+
+    getButton(String text, IconData iconData, void Function()? callback) {
+      return PopupMenuItem(
+        onTap: callback,
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Icon(iconData),
+            ),
+            Text(text),
+          ],
+        ),
+      );
+    }
 
     friend(bool positive) {
       client.sockets.sendStreamMessage(
@@ -119,18 +90,50 @@ class ProfileMoreDropdown extends StatelessWidget {
     return items;
   }
 
-  static getButton(String text, IconData iconData, void Function()? callback) {
-    return PopupMenuItem(
-      onTap: callback,
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: Icon(iconData),
-          ),
-          Text(text),
-        ],
+  // Returns a button that opens the more dropdown when pressed
+  static Widget moreButton(
+    BuildContext context,
+    int userId,
+  ) {
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+
+    return PopupMenuButton(
+      color: Theme.of(context).colorScheme.surfaceContainerHigh,
+      tooltip: "More",
+      itemBuilder: (BuildContext context) => _getDropdownElements(
+        appStateProvider,
+        userId,
       ),
+      icon: const Icon(Icons.more_horiz),
+    );
+  }
+
+  // Wraps an element in an InkWell that opens the 'more' dropdown on secondary input
+  static Widget rightClickWrapper(
+    BuildContext context,
+    int userId,
+    Widget child,
+  ) {
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      child: child,
+      onSecondaryTapDown: (details) async {
+        final screenSize = MediaQuery.of(context).size;
+        Offset offset = details.globalPosition;
+
+        await showMenu(
+          context: context,
+          position: RelativeRect.fromLTRB(
+            offset.dx,
+            offset.dy,
+            screenSize.width - offset.dx,
+            screenSize.height - offset.dy,
+          ),
+          items: _getDropdownElements(appStateProvider, userId),
+        );
+      },
     );
   }
 }
