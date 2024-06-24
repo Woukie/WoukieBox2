@@ -419,6 +419,8 @@ class UserActions {
         chat.owners.add(chat.users.first);
       }
 
+      chat.owners.remove(userInfo.id);
+
       chat.lastMessage = DateTime.now().toUtc();
       await Chat.db.updateRow(session, chat);
     }
