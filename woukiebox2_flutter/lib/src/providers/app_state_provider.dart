@@ -108,6 +108,7 @@ class AppStateProvider extends ChangeNotifier {
       } else {
         _selectedPage = 1;
         _selectedChat = group;
+        readChat(group);
       }
 
       notifyListeners();
