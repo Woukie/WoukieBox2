@@ -56,6 +56,7 @@ class UserActions {
         username: message.username,
         bio: message.bio,
         colour: message.colour,
+        sentAt: DateTime.now().toUtc(),
       ),
     );
   }

@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class UpdateProfileServer extends _i1.SerializableEntity {
   UpdateProfileServer._({
@@ -17,6 +18,7 @@ abstract class UpdateProfileServer extends _i1.SerializableEntity {
     this.bio,
     this.colour,
     this.image,
+    required this.sentAt,
   });
 
   factory UpdateProfileServer({
@@ -25,6 +27,7 @@ abstract class UpdateProfileServer extends _i1.SerializableEntity {
     String? bio,
     String? colour,
     String? image,
+    required DateTime sentAt,
   }) = _UpdateProfileServerImpl;
 
   factory UpdateProfileServer.fromJson(
@@ -41,6 +44,8 @@ abstract class UpdateProfileServer extends _i1.SerializableEntity {
           .deserialize<String?>(jsonSerialization['colour']),
       image:
           serializationManager.deserialize<String?>(jsonSerialization['image']),
+      sentAt: serializationManager
+          .deserialize<DateTime>(jsonSerialization['sentAt']),
     );
   }
 
@@ -54,12 +59,15 @@ abstract class UpdateProfileServer extends _i1.SerializableEntity {
 
   String? image;
 
+  DateTime sentAt;
+
   UpdateProfileServer copyWith({
     int? sender,
     String? username,
     String? bio,
     String? colour,
     String? image,
+    DateTime? sentAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -69,6 +77,7 @@ abstract class UpdateProfileServer extends _i1.SerializableEntity {
       if (bio != null) 'bio': bio,
       if (colour != null) 'colour': colour,
       if (image != null) 'image': image,
+      'sentAt': sentAt.toJson(),
     };
   }
 
@@ -80,6 +89,7 @@ abstract class UpdateProfileServer extends _i1.SerializableEntity {
       if (bio != null) 'bio': bio,
       if (colour != null) 'colour': colour,
       if (image != null) 'image': image,
+      'sentAt': sentAt.toJson(),
     };
   }
 }
@@ -93,12 +103,14 @@ class _UpdateProfileServerImpl extends UpdateProfileServer {
     String? bio,
     String? colour,
     String? image,
+    required DateTime sentAt,
   }) : super._(
           sender: sender,
           username: username,
           bio: bio,
           colour: colour,
           image: image,
+          sentAt: sentAt,
         );
 
   @override
@@ -108,6 +120,7 @@ class _UpdateProfileServerImpl extends UpdateProfileServer {
     Object? bio = _Undefined,
     Object? colour = _Undefined,
     Object? image = _Undefined,
+    DateTime? sentAt,
   }) {
     return UpdateProfileServer(
       sender: sender ?? this.sender,
@@ -115,6 +128,7 @@ class _UpdateProfileServerImpl extends UpdateProfileServer {
       bio: bio is String? ? bio : this.bio,
       colour: colour is String? ? colour : this.colour,
       image: image is String? ? image : this.image,
+      sentAt: sentAt ?? this.sentAt,
     );
   }
 }

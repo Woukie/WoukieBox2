@@ -61,6 +61,7 @@ class ProfilePictureEndpoint extends Endpoint {
         UpdateProfileServer(
           sender: senderInfo.id!,
           image: imageUri.toString(),
+          sentAt: DateTime.now().toUtc(),
         ),
       );
 

@@ -6,3 +6,4 @@ fields:
   bio: String?
   colour: String?
   image: String?
+  sentAt: DateTime

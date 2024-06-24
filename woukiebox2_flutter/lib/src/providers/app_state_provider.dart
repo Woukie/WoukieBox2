@@ -324,7 +324,6 @@ class AppStateProvider extends ChangeNotifier {
     if (user == null) return;
 
     // We only want to print name and colour changes to the chat
-    // TODO: Send time with message
     if (message.username != null || message.colour != null) {
       _messages.add(
         ProfileMessage(
@@ -333,7 +332,7 @@ class AppStateProvider extends ChangeNotifier {
           newUsername: message.username,
           newColour: message.colour,
           senderId: message.sender,
-          sentAt: DateTime.now().toUtc(),
+          sentAt: message.sentAt,
         ),
       );
     }
