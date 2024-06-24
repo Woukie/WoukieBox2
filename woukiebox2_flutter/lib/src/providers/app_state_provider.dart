@@ -479,8 +479,8 @@ class AppStateProvider extends ChangeNotifier {
 
   void kickChatMember(protocol.KickChatMemberServer message) {
     if (message.target == currentUser) {
+      if (_selectedChat == message.chat) _selectedChat = null;
       chats.remove(message.chat);
-      if (_selectedChat == message.chat) _selectedChat = 0;
     } else {
       chats[message.chat]?.users.remove(message.target);
       chats[message.chat]?.lastMessage = message.sentAt;
