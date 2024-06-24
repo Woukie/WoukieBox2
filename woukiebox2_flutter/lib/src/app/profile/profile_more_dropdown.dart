@@ -109,7 +109,7 @@ class ProfileMoreDropdown extends StatelessWidget {
           KickChatMemberClient(user: userId, chat: chat.id),
         );
       }));
-      items.add(getButton("Promote", Icons.hardware, () {
+      items.add(getButton("Promote", Icons.shield, () {
         client.sockets.sendStreamMessage(
           PromoteChatMemberClient(user: userId, chat: chat.id),
         );
