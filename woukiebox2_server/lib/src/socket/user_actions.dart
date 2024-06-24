@@ -343,11 +343,15 @@ class UserActions {
     UserInfo? senderInfo = await Util.getAuthUser(session);
     if (senderInfo == null) return;
 
+    UserPersistent senderPersistent =
+        (await Util.getPersistentData(session, senderInfo.id))!;
+
     Chat? chat = await Chat.db.findById(session, message.chat);
     if (chat == null || !chat.owners.contains(senderInfo.id)) return;
 
     for (int target in message.users) {
-      if (chat.users.contains(target)) return;
+      if (chat.users.contains(target) ||
+          !senderPersistent.friends.contains(target)) return;
 
       UserInfo? targetInfo = await Util.getAuthUser(session, target);
       if (targetInfo == null) return;
