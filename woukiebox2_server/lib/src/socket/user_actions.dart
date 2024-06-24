@@ -359,6 +359,7 @@ class UserActions {
           await Util.getPersistentData(session, target);
       if (targetPersistent == null) continue;
       targetPersistent.chats.add(chat.id!);
+      UserPersistent.db.updateRow(session, targetPersistent);
     }
     await Chat.db.updateRow(session, chat);
 
