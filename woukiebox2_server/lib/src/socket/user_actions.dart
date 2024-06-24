@@ -312,12 +312,15 @@ class UserActions {
     UserInfo? targetInfo = await Util.getAuthUser(session, message.user);
     if (targetInfo == null) return;
 
+    DateTime now = DateTime.now().toUtc();
+
     Chat? chat = await Chat.db.findById(session, message.chat);
     if (chat == null ||
         !chat.owners.contains(senderInfo.id) ||
         !chat.users.contains(targetInfo.id) ||
         chat.owners.contains(targetInfo.id)) return;
 
+    chat.lastMessage = now;
     chat.owners.add(targetInfo.id!);
     await Chat.db.updateRow(session, chat);
 
@@ -328,7 +331,7 @@ class UserActions {
           chat: chat.id!,
           sender: senderInfo.id!,
           target: targetInfo.id!,
-          sentAt: DateTime.now().toUtc(),
+          sentAt: now,
         ),
       );
     }
@@ -357,6 +360,7 @@ class UserActions {
       if (targetInfo == null) return;
     }
 
+    DateTime now = DateTime.now().toUtc();
     chat.users.addAll(message.users);
     for (int target in message.users) {
       UserPersistent? targetPersistent =
@@ -365,6 +369,7 @@ class UserActions {
       targetPersistent.chats.add(chat.id!);
       UserPersistent.db.updateRow(session, targetPersistent);
     }
+    chat.lastMessage = now;
     await Chat.db.updateRow(session, chat);
 
     for (int user in chat.users) {
@@ -374,7 +379,7 @@ class UserActions {
           chat: chat.id!,
           sender: senderInfo.id!,
           users: message.users,
-          sentAt: DateTime.now().toUtc(),
+          sentAt: now,
         ),
       );
     }
