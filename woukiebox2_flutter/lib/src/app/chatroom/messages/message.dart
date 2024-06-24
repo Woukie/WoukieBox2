@@ -2,21 +2,12 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2/src/util/user_util.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart' as client;
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/app/profile/profile_preview.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 import 'package:woukiebox2/src/util/written_message.dart';
-
-client.UserClient unknownUser = client.UserClient(
-  id: -1,
-  username: "Unknown User",
-  bio: "",
-  colour: "#FF0000",
-  image: "",
-  verified: false,
-  visible: false,
-);
 
 class Message extends StatelessWidget {
   const Message({super.key, required this.messages, required this.index});
@@ -204,15 +195,7 @@ class HeadMessage extends StatelessWidget {
       appStateProvider.scheduleGetUser(chatMessage.senderId);
     }
 
-    user ??= client.UserClient(
-      id: chatMessage.senderId,
-      username: "Loading...",
-      bio: "",
-      colour: Theme.of(context).primaryTextTheme.bodyMedium!.color!.toHex(),
-      image: "",
-      verified: false,
-      visible: false,
-    );
+    user ??= UserUtil.getLoading(context, chatMessage.senderId);
 
     return Padding(
       padding: const EdgeInsets.only(top: 12),

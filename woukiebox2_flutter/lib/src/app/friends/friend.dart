@@ -1,10 +1,10 @@
-import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/profile/profile_more_dropdown.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2/src/util/user_util.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
@@ -30,18 +30,8 @@ class Friend extends StatelessWidget {
 
     bool loading = appStateProvider.users[userId] == null;
 
-    UserClient user = appStateProvider.users[userId] ??
-        UserClient(
-          id: userId,
-          username: "Loading...",
-          bio: "Loading...",
-          colour:
-              (Theme.of(context).textTheme.labelMedium?.color ?? Colors.white)
-                  .hex,
-          image: "",
-          verified: true,
-          visible: false,
-        );
+    UserClient user =
+        appStateProvider.users[userId] ?? UserUtil.getLoading(context, userId);
 
     if (loading) {
       appStateProvider.scheduleGetUser(userId);

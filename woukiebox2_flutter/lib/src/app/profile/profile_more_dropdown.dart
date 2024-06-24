@@ -5,11 +5,12 @@ import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class ProfileMoreDropdown extends StatelessWidget {
-  const ProfileMoreDropdown(
-      {super.key,
-      required this.child,
-      required this.userId,
-      this.enabled = true});
+  const ProfileMoreDropdown({
+    super.key,
+    required this.child,
+    required this.userId,
+    this.enabled = true,
+  });
 
   final Widget child;
   final int userId;
@@ -18,7 +19,7 @@ class ProfileMoreDropdown extends StatelessWidget {
   // Wraps an element in an InkWell that opens the more dropdown on secondarry input
   @override
   Widget build(BuildContext context) {
-    AppStateProvider appData = Provider.of<AppStateProvider>(context);
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
 
     return enabled
         ? InkWell(
@@ -37,7 +38,7 @@ class ProfileMoreDropdown extends StatelessWidget {
                   screenSize.height - offset.dy,
                 ),
                 items: getDropdownElements(
-                  appData,
+                  appStateProvider,
                   userId,
                 ),
               );
@@ -53,6 +54,11 @@ class ProfileMoreDropdown extends StatelessWidget {
     bool friendly = appStateProvider.friends.contains(userId);
     bool outgoing = appStateProvider.outgoingFriendRequests.contains(userId);
     bool incoming = appStateProvider.incomingFriendRequests.contains(userId);
+
+    bool showChatButtons = appStateProvider.selectedPage == 1 &&
+        appStateProvider.chats.containsKey(appStateProvider.selectedChat) &&
+        appStateProvider.chats[appStateProvider.selectedChat]!.owners
+            .contains(appStateProvider.currentUser);
 
     UserClient currentUser =
         appStateProvider.users[appStateProvider.currentUser]!;
@@ -90,6 +96,10 @@ class ProfileMoreDropdown extends StatelessWidget {
         items.add(getButton(
             "Send Friend Request", Icons.outgoing_mail, () => friend(true)));
       }
+    }
+
+    if (showChatButtons) {
+      items.add(getButton("Kick", Icons.close, () => {}));
     }
 
     items.add(

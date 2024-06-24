@@ -1,27 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/profile/profile_more_dropdown.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
+import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2/src/util/user_util.dart';
+import 'package:woukiebox2/src/util/group_chat.dart';
+import 'package:woukiebox2/src/util/hex_color.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class UserItem extends StatelessWidget {
   const UserItem({
     super.key,
-    required this.username,
-    required this.colour,
-    required this.image,
     required this.userId,
-    this.crowned = false,
-    this.disabled = false,
   });
 
-  final String username;
-  final String image;
-  final Color colour;
   final int userId;
-  final bool crowned;
-  final bool disabled;
 
   @override
   Widget build(BuildContext context) {
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+
+    UserClient user = UserUtil.getUser(context, userId);
+
+    GroupChat? chat = appStateProvider.chats[appStateProvider.selectedChat];
+
+    bool crowned = appStateProvider.selectedPage == 1 && chat != null;
+    int alpha = user.visible ? 255 : 90;
+
     return ProfileMoreDropdown(
       userId: userId,
       child: Row(
@@ -29,8 +34,8 @@ class UserItem extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ProfilePic(
-              offline: disabled,
-              url: image,
+              offline: !user.visible,
+              url: user.image,
             ),
           ),
           Expanded(
@@ -40,10 +45,11 @@ class UserItem extends StatelessWidget {
                 softWrap: false,
                 overflow: TextOverflow.fade,
                 maxLines: 1,
-                username,
+                user.username,
                 style: TextStyle(
-                  color: Color.lerp(colour, Colors.grey, disabled ? 0.7 : 0)
-                      ?.withAlpha(disabled ? 90 : 255),
+                  color: Color.lerp(HexColor.fromHex(user.colour), Colors.grey,
+                          !user.visible ? 0.7 : 0)
+                      ?.withAlpha(alpha),
                 ),
               ),
             ),
@@ -56,7 +62,7 @@ class UserItem extends StatelessWidget {
                     color: Theme.of(context)
                         .colorScheme
                         .onSurfaceVariant
-                        .withAlpha(disabled ? 90 : 255),
+                        .withAlpha(alpha),
                   ),
                 )
               : Container(),

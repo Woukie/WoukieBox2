@@ -3,16 +3,12 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/chatroom/messages/message.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2/src/util/written_message.dart';
 
 class Messages extends StatelessWidget {
   const Messages({
     super.key,
-    required this.messages,
-    this.chat = 0,
   });
-
-  final List<dynamic> messages;
-  final int chat;
 
   static final Animatable<double> _fadeOutTransition = Tween<double>(
     begin: 1.0,
@@ -21,8 +17,14 @@ class Messages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scrollController = ScrollController();
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+    final scrollController = ScrollController();
+
+    final int? chat =
+        appStateProvider.isGlobal() ? 0 : appStateProvider.selectedChat;
+    final List<BaseMessage> messages = appStateProvider.isGlobal()
+        ? appStateProvider.globalMessages
+        : appStateProvider.chats[chat]?.messages ?? [];
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (scrollController.position.maxScrollExtent <= 200) {
@@ -75,7 +77,9 @@ class Messages extends StatelessWidget {
         );
       },
       child: ListView.builder(
-        key: Key(chat.toString()),
+        key: Key(
+            (appStateProvider.isGlobal() ? 0 : appStateProvider.selectedChat)
+                .toString()),
         padding: const EdgeInsets.only(bottom: 12),
         controller: scrollController,
         itemCount: messages.length,

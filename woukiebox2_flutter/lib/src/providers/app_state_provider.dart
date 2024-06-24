@@ -18,7 +18,7 @@ import 'package:windows_taskbar/windows_taskbar.dart';
 
 class AppStateProvider extends ChangeNotifier {
   // Need to control this for e.g. deleting/leaving groups and auto selecting when creating group.
-  int? _selectedGroup;
+  int? _selectedChat;
   int? _currentUser;
   int _selectedPage = 0;
   final HashMap<int, protocol.UserClient> _users =
@@ -40,17 +40,18 @@ class AppStateProvider extends ChangeNotifier {
   HashMap<int, GroupChat> get chats => _chats;
   HashMap<int, DateTime> get lastRead => _lastRead;
 
-  List<BaseMessage> get messages => _messages;
+  List<BaseMessage> get globalMessages => _messages;
   List<int> get friends => _friends;
   List<int> get outgoingFriendRequests => _outgoingFriendRequests;
   List<int> get incomingFriendRequests => _incomingFriendRequests;
   int? get currentUser => _currentUser;
-  int? get selectedGroup => _selectedGroup;
+  int? get selectedChat => _selectedChat;
   int get selectedPage => _selectedPage;
 
   void setSelectedGroup(value) {
-    _selectedGroup = value;
+    _selectedChat = value;
     if (kDebugMode) print("Selected group $value");
+    readChat(value);
     notifyListeners();
   }
 
@@ -103,10 +104,10 @@ class AppStateProvider extends ChangeNotifier {
       if (group == 0) {
         // Switch to global
         _selectedPage = 0;
-        _selectedGroup = null;
+        _selectedChat = null;
       } else {
         _selectedPage = 1;
-        _selectedGroup = group;
+        _selectedChat = group;
       }
 
       notifyListeners();
@@ -120,7 +121,7 @@ class AppStateProvider extends ChangeNotifier {
   resetData() {
     _currentUser = null;
     _messages.clear();
-    _selectedGroup = null;
+    _selectedChat = null;
     _selectedPage = 0;
     _loadingUsers.clear();
     _lastRead.clear();
@@ -177,7 +178,7 @@ class AppStateProvider extends ChangeNotifier {
       _chats[message.chat]?.messages.add(writtenMessage);
       _chats[message.chat]?.lastMessage = message.sentAt;
 
-      if (_selectedGroup == message.chat && _selectedPage == 1) {
+      if (_selectedChat == message.chat && _selectedPage == 1) {
         readChat(message.chat);
       }
     }
@@ -192,7 +193,7 @@ class AppStateProvider extends ChangeNotifier {
     if (message.sender == currentUser) return;
 
     if (focused && !_preferenceProvider.sameChatNotifications) {
-      bool onSelected = _selectedPage == 1 && message.chat == _selectedGroup;
+      bool onSelected = _selectedPage == 1 && message.chat == _selectedChat;
       bool onGlobal = _selectedPage == 0 && message.chat == 0;
 
       if (onSelected || onGlobal) return;
@@ -269,7 +270,7 @@ class AppStateProvider extends ChangeNotifier {
       if (chat == null) return;
 
       if (message.sender == currentUser) {
-        _selectedGroup = null;
+        _selectedChat = null;
         _chats.remove(chat.id);
       } else {
         chat.lastMessage = message.sentAt;
@@ -400,7 +401,7 @@ class AppStateProvider extends ChangeNotifier {
     );
 
     if (message.chat.creator == _currentUser) {
-      _selectedGroup = message.chat.id;
+      _selectedChat = message.chat.id;
       _selectedPage = 1;
 
       readChat(message.chat.id!);
@@ -415,8 +416,8 @@ class AppStateProvider extends ChangeNotifier {
   }
 
   // call when needing to load more message history
-  Future<void> loadNextBucket(int chat) async {
-    if (chat == 0) return;
+  Future<void> loadNextBucket(int? chat) async {
+    if (chat == 0 || chat == null) return;
 
     GroupChat? groupChat = _chats[chat];
     if (groupChat == null) return;
@@ -426,12 +427,13 @@ class AppStateProvider extends ChangeNotifier {
     if (groupChat.messages.isEmpty) {
       if (groupChat.bucketsLoading.contains(-1)) return;
     } else {
-      bucket = groupChat.messages.firstWhere((message) {
+      ChatMessage chatMessage = groupChat.messages.firstWhere((message) {
         return message is ChatMessage;
-      })!.bucket;
+      }) as ChatMessage;
+      bucket = chatMessage.bucket;
 
       // cannot do -= for null safety
-      bucket = bucket! - 1;
+      bucket = bucket - 1;
     }
 
     if (bucket == 0 || groupChat.bucketsLoading.contains(bucket)) return;
@@ -473,5 +475,9 @@ class AppStateProvider extends ChangeNotifier {
   void readChatServer(protocol.ReadChatServer message) {
     _lastRead[message.chat] = message.readAt;
     notifyListeners();
+  }
+
+  bool isGlobal() {
+    return _selectedPage == 0;
   }
 }

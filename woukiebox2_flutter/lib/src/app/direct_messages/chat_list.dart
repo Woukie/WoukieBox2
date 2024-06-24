@@ -7,30 +7,20 @@ import 'package:woukiebox2/src/util/group_chat.dart';
 class ChatsList extends StatelessWidget {
   const ChatsList({
     super.key,
-    required this.selectedGroup,
-    required this.selectGroup,
     this.searchQuery = "",
   });
 
-  final int? selectedGroup;
   final String searchQuery;
-  final Function(int) selectGroup;
 
   @override
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
 
-    bool chatUnread(GroupChat chat) {
-      return appStateProvider.selectedGroup != chat.id &&
-          (!appStateProvider.lastRead.containsKey(chat.id) ||
-              chat.lastMessage.isAfter(appStateProvider.lastRead[chat.id]!));
-    }
-
     final List<GroupChat> groupChats = appStateProvider.chats.values.toList();
     groupChats.sort(
       (chatA, chatB) {
-        bool unreadA = chatUnread(chatA);
-        if (unreadA != chatUnread(chatB)) return unreadA ? -1 : 1;
+        bool unreadA = chatA.hasNotifications(context);
+        if (unreadA != chatB.hasNotifications(context)) return unreadA ? -1 : 1;
 
         return chatB.lastMessage.compareTo(chatA.lastMessage);
       },
@@ -50,9 +40,7 @@ class ChatsList extends StatelessWidget {
       itemCount: groupChats.length,
       itemBuilder: (context, index) {
         GroupChat groupChat = groupChats[index];
-        bool selected = groupChat.id == selectedGroup;
-
-        bool unread = chatUnread(groupChat);
+        bool selected = groupChat.id == appStateProvider.selectedChat;
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 4),
@@ -67,7 +55,7 @@ class ChatsList extends StatelessWidget {
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
-                  selectGroup(groupChat.id);
+                  appStateProvider.setSelectedGroup(groupChat.id);
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -102,7 +90,7 @@ class ChatsList extends StatelessWidget {
                           overflow: TextOverflow.fade,
                         ),
                       ),
-                      unread
+                      groupChat.hasNotifications(context)
                           ? Padding(
                               padding: const EdgeInsets.only(left: 12),
                               child: Container(

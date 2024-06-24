@@ -107,12 +107,9 @@ class _AppState extends State<App> {
               );
             },
             child: switch (selectedPage) {
-              0 || 1 => ChatRoom(
-                  global: selectedPage == 0,
-                ),
               2 => const Friends(),
               3 => const Settings(),
-              _ => Container(),
+              _ => const ChatRoom(),
             },
           ),
         ),
