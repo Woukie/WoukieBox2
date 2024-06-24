@@ -24,7 +24,9 @@ class UserItem extends StatelessWidget {
 
     GroupChat? chat = appStateProvider.chats[appStateProvider.selectedChat];
 
-    bool crowned = appStateProvider.selectedPage == 1 && chat != null;
+    bool crowned = !appStateProvider.isGlobal() &&
+        chat != null &&
+        chat.owners.contains(userId);
     int alpha = user.visible ? 255 : 90;
 
     return ProfileMoreDropdown(

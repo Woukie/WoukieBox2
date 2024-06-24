@@ -11,12 +11,7 @@ import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'user_item.dart';
 
 class Users extends StatelessWidget {
-  const Users({
-    super.key,
-    required this.showInvisible,
-  });
-
-  final bool showInvisible;
+  const Users({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +23,7 @@ class Users extends StatelessWidget {
     List<UserClient> users = List.empty(growable: true);
     if (appStateProvider.selectedPage == 0) {
       users = appStateProvider.users.values.toList();
+      users.removeWhere((user) => !user.visible);
     } else if (appStateProvider.chats
         .containsKey(appStateProvider.selectedChat)) {
       for (int userId in groupChat!.users) {
@@ -37,8 +33,6 @@ class Users extends StatelessWidget {
           user = UserUtil.getLoading(context, userId);
           appStateProvider.scheduleGetUser(userId);
         }
-
-        if (!showInvisible && !user.visible) continue;
 
         users.add(user);
       }

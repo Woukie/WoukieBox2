@@ -71,9 +71,7 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
                       Container(
                         width: 200,
                         alignment: Alignment.topLeft,
-                        child: Users(
-                          showInvisible: !global,
-                        ),
+                        child: const Users(),
                       ),
                     ],
                   ),
@@ -84,7 +82,7 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
           ),
         );
 
-    friendsList() => SizeTransition(
+    chatList() => SizeTransition(
           sizeFactor: _animation,
           axis: Axis.horizontal,
           axisAlignment: -1,
@@ -157,7 +155,7 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
       ),
       child: Row(
         children: [
-          friendsList(),
+          chatList(),
           rightScreen(),
         ],
       ),
