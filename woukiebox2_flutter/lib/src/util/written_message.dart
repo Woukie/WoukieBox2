@@ -63,3 +63,33 @@ class ProfileMessage extends BaseMessage {
     required super.sentAt,
   });
 }
+
+class AddUsersMessage extends BaseMessage {
+  final List<int> users;
+
+  AddUsersMessage({
+    required super.senderId,
+    required super.sentAt,
+    required this.users,
+  });
+}
+
+class KickUserMessage extends BaseMessage {
+  final int target;
+
+  KickUserMessage({
+    required super.senderId,
+    required super.sentAt,
+    required this.target,
+  });
+}
+
+class PromoteUserMessage extends BaseMessage {
+  final int target;
+
+  PromoteUserMessage({
+    required super.senderId,
+    required super.sentAt,
+    required this.target,
+  });
+}
