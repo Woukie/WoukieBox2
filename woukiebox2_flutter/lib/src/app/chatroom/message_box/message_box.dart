@@ -15,6 +15,7 @@ class MessageBox extends StatefulWidget {
 
 class _MessageBoxState extends State<MessageBox> {
   final _controller = TextEditingController();
+  FocusNode? _focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +36,20 @@ class _MessageBoxState extends State<MessageBox> {
       );
     }
 
+    _focusNode ??= FocusNode(
+      onKeyEvent: (FocusNode node, KeyEvent event) {
+        if (event is KeyDownEvent &&
+            event.logicalKey.keyLabel == "Enter" &&
+            !HardwareKeyboard.instance.isShiftPressed) {
+          sendMessage(_controller.text);
+          _controller.clear();
+          return KeyEventResult.handled;
+        }
+
+        return KeyEventResult.ignored;
+      },
+    );
+
     return Card(
       elevation: 0,
       margin: EdgeInsets.only(top: stylingProvider.cardMargin),
@@ -54,19 +69,8 @@ class _MessageBoxState extends State<MessageBox> {
             sendMessage(_controller.text);
             _controller.clear();
           },
-          focusNode: FocusNode(
-            onKeyEvent: (FocusNode node, KeyEvent event) {
-              if (event is KeyDownEvent &&
-                  event.logicalKey.keyLabel == "Enter" &&
-                  !HardwareKeyboard.instance.isShiftPressed) {
-                sendMessage(_controller.text);
-                _controller.clear();
-                return KeyEventResult.handled;
-              }
-
-              return KeyEventResult.ignored;
-            },
-          ),
+          autofocus: true,
+          focusNode: _focusNode,
         ),
       ),
     );
