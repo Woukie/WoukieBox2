@@ -90,25 +90,23 @@ class ProfileDropdown {
     return items;
   }
 
-  // Returns a button that opens the more dropdown when pressed
+  // Returns a button that opens the dropdown when pressed
   static Widget moreButton(
     BuildContext context,
+    AppStateProvider appStateProvider,
     int userId,
   ) {
-    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
-
     return PopupMenuButton(
       color: Theme.of(context).colorScheme.surfaceContainerHigh,
       tooltip: "More",
-      itemBuilder: (BuildContext context) => _getDropdownElements(
-        appStateProvider,
-        userId,
-      ),
+      itemBuilder: (BuildContext _) {
+        return _getDropdownElements(appStateProvider, userId);
+      },
       icon: const Icon(Icons.more_horiz),
     );
   }
 
-  // Wraps an element in an InkWell that opens the 'more' dropdown on secondary input
+  // Wraps an element in an InkWell that opens the dropdown on secondary input
   static Widget rightClickWrapper(
     BuildContext context,
     int userId,
@@ -118,7 +116,6 @@ class ProfileDropdown {
 
     return InkWell(
       borderRadius: BorderRadius.circular(12),
-      child: child,
       onSecondaryTapDown: (details) async {
         final screenSize = MediaQuery.of(context).size;
         Offset offset = details.globalPosition;
@@ -134,6 +131,7 @@ class ProfileDropdown {
           items: _getDropdownElements(appStateProvider, userId),
         );
       },
+      child: child,
     );
   }
 }
