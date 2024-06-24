@@ -1,0 +1,7 @@
+class: KickChatMemberServer
+
+fields:
+  chat: int
+  sender: int
+  target: int
+  sentAt: DateTime

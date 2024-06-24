@@ -29,18 +29,19 @@ import 'server/chats.dart' as _i17;
 import 'server/create_chat.dart' as _i18;
 import 'server/friend_list.dart' as _i19;
 import 'server/join_chat.dart' as _i20;
-import 'server/last_read.dart' as _i21;
-import 'server/leave_chat.dart' as _i22;
-import 'server/read_chat.dart' as _i23;
-import 'server/room_members.dart' as _i24;
-import 'server/self_identifier.dart' as _i25;
-import 'server/update_profile.dart' as _i26;
-import 'server/user.dart' as _i27;
-import 'shared/rename_chat.dart' as _i28;
-import 'user_persistent.dart' as _i29;
-import 'protocol.dart' as _i30;
-import 'package:woukiebox2_client/src/protocol/chat_message.dart' as _i31;
-import 'package:serverpod_auth_client/module.dart' as _i32;
+import 'server/kick_chat_member.dart' as _i21;
+import 'server/last_read.dart' as _i22;
+import 'server/leave_chat.dart' as _i23;
+import 'server/read_chat.dart' as _i24;
+import 'server/room_members.dart' as _i25;
+import 'server/self_identifier.dart' as _i26;
+import 'server/update_profile.dart' as _i27;
+import 'server/user.dart' as _i28;
+import 'shared/rename_chat.dart' as _i29;
+import 'user_persistent.dart' as _i30;
+import 'protocol.dart' as _i31;
+import 'package:woukiebox2_client/src/protocol/chat_message.dart' as _i32;
+import 'package:serverpod_auth_client/module.dart' as _i33;
 export 'chat.dart';
 export 'chat_message.dart';
 export 'client/add_chat_members.dart';
@@ -60,6 +61,7 @@ export 'server/chats.dart';
 export 'server/create_chat.dart';
 export 'server/friend_list.dart';
 export 'server/join_chat.dart';
+export 'server/kick_chat_member.dart';
 export 'server/last_read.dart';
 export 'server/leave_chat.dart';
 export 'server/read_chat.dart';
@@ -146,32 +148,35 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i20.JoinChatServer) {
       return _i20.JoinChatServer.fromJson(data, this) as T;
     }
-    if (t == _i21.LastReadServer) {
-      return _i21.LastReadServer.fromJson(data, this) as T;
+    if (t == _i21.KickChatMemberServer) {
+      return _i21.KickChatMemberServer.fromJson(data, this) as T;
     }
-    if (t == _i22.LeaveChatServer) {
-      return _i22.LeaveChatServer.fromJson(data, this) as T;
+    if (t == _i22.LastReadServer) {
+      return _i22.LastReadServer.fromJson(data, this) as T;
     }
-    if (t == _i23.ReadChatServer) {
-      return _i23.ReadChatServer.fromJson(data, this) as T;
+    if (t == _i23.LeaveChatServer) {
+      return _i23.LeaveChatServer.fromJson(data, this) as T;
     }
-    if (t == _i24.RoomMembersServer) {
-      return _i24.RoomMembersServer.fromJson(data, this) as T;
+    if (t == _i24.ReadChatServer) {
+      return _i24.ReadChatServer.fromJson(data, this) as T;
     }
-    if (t == _i25.SelfIdentifierServer) {
-      return _i25.SelfIdentifierServer.fromJson(data, this) as T;
+    if (t == _i25.RoomMembersServer) {
+      return _i25.RoomMembersServer.fromJson(data, this) as T;
     }
-    if (t == _i26.UpdateProfileServer) {
-      return _i26.UpdateProfileServer.fromJson(data, this) as T;
+    if (t == _i26.SelfIdentifierServer) {
+      return _i26.SelfIdentifierServer.fromJson(data, this) as T;
     }
-    if (t == _i27.UserServer) {
-      return _i27.UserServer.fromJson(data, this) as T;
+    if (t == _i27.UpdateProfileServer) {
+      return _i27.UpdateProfileServer.fromJson(data, this) as T;
     }
-    if (t == _i28.RenameChat) {
-      return _i28.RenameChat.fromJson(data, this) as T;
+    if (t == _i28.UserServer) {
+      return _i28.UserServer.fromJson(data, this) as T;
     }
-    if (t == _i29.UserPersistent) {
-      return _i29.UserPersistent.fromJson(data, this) as T;
+    if (t == _i29.RenameChat) {
+      return _i29.RenameChat.fromJson(data, this) as T;
+    }
+    if (t == _i30.UserPersistent) {
+      return _i30.UserPersistent.fromJson(data, this) as T;
     }
     if (t == _i1.getType<_i2.Chat?>()) {
       return (data != null ? _i2.Chat.fromJson(data, this) : null) as T;
@@ -249,47 +254,52 @@ class Protocol extends _i1.SerializationManager {
       return (data != null ? _i20.JoinChatServer.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i21.LastReadServer?>()) {
-      return (data != null ? _i21.LastReadServer.fromJson(data, this) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i22.LeaveChatServer?>()) {
-      return (data != null ? _i22.LeaveChatServer.fromJson(data, this) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i23.ReadChatServer?>()) {
-      return (data != null ? _i23.ReadChatServer.fromJson(data, this) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i24.RoomMembersServer?>()) {
-      return (data != null ? _i24.RoomMembersServer.fromJson(data, this) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i25.SelfIdentifierServer?>()) {
+    if (t == _i1.getType<_i21.KickChatMemberServer?>()) {
       return (data != null
-          ? _i25.SelfIdentifierServer.fromJson(data, this)
+          ? _i21.KickChatMemberServer.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i26.UpdateProfileServer?>()) {
+    if (t == _i1.getType<_i22.LastReadServer?>()) {
+      return (data != null ? _i22.LastReadServer.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i23.LeaveChatServer?>()) {
+      return (data != null ? _i23.LeaveChatServer.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i24.ReadChatServer?>()) {
+      return (data != null ? _i24.ReadChatServer.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i25.RoomMembersServer?>()) {
+      return (data != null ? _i25.RoomMembersServer.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i26.SelfIdentifierServer?>()) {
       return (data != null
-          ? _i26.UpdateProfileServer.fromJson(data, this)
+          ? _i26.SelfIdentifierServer.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i27.UserServer?>()) {
-      return (data != null ? _i27.UserServer.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i27.UpdateProfileServer?>()) {
+      return (data != null
+          ? _i27.UpdateProfileServer.fromJson(data, this)
+          : null) as T;
     }
-    if (t == _i1.getType<_i28.RenameChat?>()) {
-      return (data != null ? _i28.RenameChat.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i28.UserServer?>()) {
+      return (data != null ? _i28.UserServer.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i29.UserPersistent?>()) {
-      return (data != null ? _i29.UserPersistent.fromJson(data, this) : null)
+    if (t == _i1.getType<_i29.RenameChat?>()) {
+      return (data != null ? _i29.RenameChat.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i30.UserPersistent?>()) {
+      return (data != null ? _i30.UserPersistent.fromJson(data, this) : null)
           as T;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
     }
-    if (t == List<_i30.Chat>) {
-      return (data as List).map((e) => deserialize<_i30.Chat>(e)).toList()
+    if (t == List<_i31.Chat>) {
+      return (data as List).map((e) => deserialize<_i31.Chat>(e)).toList()
           as dynamic;
     }
     if (t == Map<int, DateTime>) {
@@ -301,17 +311,17 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<int>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<_i30.UserServer>) {
-      return (data as List).map((e) => deserialize<_i30.UserServer>(e)).toList()
+    if (t == List<_i31.UserServer>) {
+      return (data as List).map((e) => deserialize<_i31.UserServer>(e)).toList()
           as dynamic;
     }
-    if (t == _i1.getType<List<_i31.ChatMessage>?>()) {
+    if (t == _i1.getType<List<_i32.ChatMessage>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i31.ChatMessage>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i32.ChatMessage>(e)).toList()
           : null) as dynamic;
     }
     try {
-      return _i32.Protocol().deserialize<T>(data, t);
+      return _i33.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -319,7 +329,7 @@ class Protocol extends _i1.SerializationManager {
   @override
   String? getClassNameForObject(Object data) {
     String? className;
-    className = _i32.Protocol().getClassNameForObject(data);
+    className = _i33.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
@@ -380,31 +390,34 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i20.JoinChatServer) {
       return 'JoinChatServer';
     }
-    if (data is _i21.LastReadServer) {
+    if (data is _i21.KickChatMemberServer) {
+      return 'KickChatMemberServer';
+    }
+    if (data is _i22.LastReadServer) {
       return 'LastReadServer';
     }
-    if (data is _i22.LeaveChatServer) {
+    if (data is _i23.LeaveChatServer) {
       return 'LeaveChatServer';
     }
-    if (data is _i23.ReadChatServer) {
+    if (data is _i24.ReadChatServer) {
       return 'ReadChatServer';
     }
-    if (data is _i24.RoomMembersServer) {
+    if (data is _i25.RoomMembersServer) {
       return 'RoomMembersServer';
     }
-    if (data is _i25.SelfIdentifierServer) {
+    if (data is _i26.SelfIdentifierServer) {
       return 'SelfIdentifierServer';
     }
-    if (data is _i26.UpdateProfileServer) {
+    if (data is _i27.UpdateProfileServer) {
       return 'UpdateProfileServer';
     }
-    if (data is _i27.UserServer) {
+    if (data is _i28.UserServer) {
       return 'UserServer';
     }
-    if (data is _i28.RenameChat) {
+    if (data is _i29.RenameChat) {
       return 'RenameChat';
     }
-    if (data is _i29.UserPersistent) {
+    if (data is _i30.UserPersistent) {
       return 'UserPersistent';
     }
     return super.getClassNameForObject(data);
@@ -414,7 +427,7 @@ class Protocol extends _i1.SerializationManager {
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
-      return _i32.Protocol().deserializeByClassName(data);
+      return _i33.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'Chat') {
       return deserialize<_i2.Chat>(data['data']);
@@ -473,32 +486,35 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'JoinChatServer') {
       return deserialize<_i20.JoinChatServer>(data['data']);
     }
+    if (data['className'] == 'KickChatMemberServer') {
+      return deserialize<_i21.KickChatMemberServer>(data['data']);
+    }
     if (data['className'] == 'LastReadServer') {
-      return deserialize<_i21.LastReadServer>(data['data']);
+      return deserialize<_i22.LastReadServer>(data['data']);
     }
     if (data['className'] == 'LeaveChatServer') {
-      return deserialize<_i22.LeaveChatServer>(data['data']);
+      return deserialize<_i23.LeaveChatServer>(data['data']);
     }
     if (data['className'] == 'ReadChatServer') {
-      return deserialize<_i23.ReadChatServer>(data['data']);
+      return deserialize<_i24.ReadChatServer>(data['data']);
     }
     if (data['className'] == 'RoomMembersServer') {
-      return deserialize<_i24.RoomMembersServer>(data['data']);
+      return deserialize<_i25.RoomMembersServer>(data['data']);
     }
     if (data['className'] == 'SelfIdentifierServer') {
-      return deserialize<_i25.SelfIdentifierServer>(data['data']);
+      return deserialize<_i26.SelfIdentifierServer>(data['data']);
     }
     if (data['className'] == 'UpdateProfileServer') {
-      return deserialize<_i26.UpdateProfileServer>(data['data']);
+      return deserialize<_i27.UpdateProfileServer>(data['data']);
     }
     if (data['className'] == 'UserServer') {
-      return deserialize<_i27.UserServer>(data['data']);
+      return deserialize<_i28.UserServer>(data['data']);
     }
     if (data['className'] == 'RenameChat') {
-      return deserialize<_i28.RenameChat>(data['data']);
+      return deserialize<_i29.RenameChat>(data['data']);
     }
     if (data['className'] == 'UserPersistent') {
-      return deserialize<_i29.UserPersistent>(data['data']);
+      return deserialize<_i30.UserPersistent>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

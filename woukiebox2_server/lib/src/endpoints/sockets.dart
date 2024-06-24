@@ -36,6 +36,12 @@ class SocketsEndpoint extends Endpoint {
       UserActions.leaveChat(session, message);
     } else if (message is RenameChat) {
       UserActions.renameChat(session, message);
+    } else if (message is KickChatMemberClient) {
+      UserActions.kickChatMember(session, message);
+    } else if (message is PromoteChatMemberClient) {
+      UserActions.promoteChatMember(session, message);
+    } else if (message is AddChatMembersClient) {
+      UserActions.addChatMembers(session, message);
     } else if (message is ReadChatClient) {
       UserActions.readChat(session, message);
     }
