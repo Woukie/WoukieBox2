@@ -334,10 +334,46 @@ class UserActions {
     }
   }
 
-  static void addChatMembers(
+  static Future<void> addChatMembers(
     StreamingSession session,
     AddChatMembersClient message,
-  ) {}
+  ) async {
+    if (message.users.isEmpty) return;
+
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return;
+
+    Chat? chat = await Chat.db.findById(session, message.chat);
+    if (chat == null || !chat.owners.contains(senderInfo.id)) return;
+
+    for (int target in message.users) {
+      if (chat.users.contains(target)) return;
+
+      UserInfo? targetInfo = await Util.getAuthUser(session, target);
+      if (targetInfo == null) return;
+    }
+
+    chat.users.addAll(message.users);
+    for (int target in message.users) {
+      UserPersistent? targetPersistent =
+          await Util.getPersistentData(session, target);
+      if (targetPersistent == null) continue;
+      targetPersistent.chats.add(chat.id!);
+    }
+    await Chat.db.updateRow(session, chat);
+
+    for (int user in chat.users) {
+      session.messages.postMessage(
+        user.toString(),
+        AddChatMembersServer(
+          chat: chat.id!,
+          sender: senderInfo.id!,
+          users: message.users,
+          sentAt: DateTime.now().toUtc(),
+        ),
+      );
+    }
+  }
 
   static Future<void> _removeUserFromChat(
     Chat chat,
