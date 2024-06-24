@@ -374,15 +374,24 @@ class UserActions {
     await Chat.db.updateRow(session, chat);
 
     for (int user in chat.users) {
-      session.messages.postMessage(
-        user.toString(),
-        AddChatMembersServer(
-          chat: chat.id!,
-          sender: senderInfo.id!,
-          users: message.users,
-          sentAt: now,
-        ),
-      );
+      if (message.users.contains(user)) {
+        session.messages.postMessage(
+          user.toString(),
+          CreateChatServer(
+            chat: chat,
+          ),
+        );
+      } else {
+        session.messages.postMessage(
+          user.toString(),
+          AddChatMembersServer(
+            chat: chat.id!,
+            sender: senderInfo.id!,
+            users: message.users,
+            sentAt: now,
+          ),
+        );
+      }
     }
   }
 

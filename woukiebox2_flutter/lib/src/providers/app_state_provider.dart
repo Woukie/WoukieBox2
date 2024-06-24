@@ -504,7 +504,16 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addChatMembers(protocol.AddChatMembersServer message) {}
+  void addChatMembers(protocol.AddChatMembersServer message) {
+    _chats[message.chat]?.users.addAll(message.users);
+    chats[message.chat]?.lastMessage = message.sentAt;
+
+    if (isChatSelected() && _selectedChat == message.chat) {
+      readChat(message.chat);
+    }
+
+    notifyListeners();
+  }
 
   bool isGlobalChatSelected() {
     return _selectedPage == 0;

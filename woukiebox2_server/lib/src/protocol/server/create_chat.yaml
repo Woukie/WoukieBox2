@@ -1,4 +1,5 @@
 class: CreateChatServer
 
+# Sent to users when a chat is created AND when a user is added to a chat
 fields:
   chat: Chat
