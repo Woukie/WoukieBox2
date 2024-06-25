@@ -117,36 +117,36 @@ class ChatManager {
 
   static void kickUser({
     required StreamingSession session,
-    required int chat,
-    required int target,
-    required int sender,
+    required int chatId,
+    required int targetId,
+    required int senderId,
   }) {}
 
   static void leaveChat({
     required StreamingSession session,
-    required int chat,
-    required int sender,
+    required int chatId,
+    required int senderId,
   }) {}
 
   static void promoteUser({
     required StreamingSession session,
-    required int chat,
-    required int target,
-    required int sender,
+    required int chatId,
+    required int targetId,
+    required int senderId,
   }) {}
 
   static void addFriends({
     required StreamingSession session,
-    required int chat,
-    required List<int> targets,
-    required int sender,
+    required int chatId,
+    required List<int> targetIds,
+    required int senderId,
   }) {}
 
   static void renameChat({
     required StreamingSession session,
     required String name,
-    required int chat,
-    required int sender,
+    required int chatId,
+    required int senderId,
   }) {}
 
   static Future<ChatMessage> _writeMessageToDatabase({

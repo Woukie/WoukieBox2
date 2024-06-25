@@ -40,36 +40,41 @@ class SocketsEndpoint extends Endpoint {
           ChatManager.renameChat(
             session: session,
             name: message.message!,
-            chat: message.chat,
+            chatId: message.chat,
+            senderId: getUserObject(session).id,
           );
           break;
         case MessageType.Kick:
           if (message.targets == null || message.targets!.isEmpty) return;
           ChatManager.kickUser(
             session: session,
-            chat: message.chat,
-            target: message.targets!.first,
+            chatId: message.chat,
+            targetId: message.targets!.first,
+            senderId: getUserObject(session).id,
           );
           break;
         case MessageType.Leave:
           ChatManager.leaveChat(
             session: session,
-            chat: message.chat,
+            chatId: message.chat,
+            senderId: getUserObject(session).id,
           );
           break;
         case MessageType.Promote:
           ChatManager.promoteUser(
             session: session,
-            chat: message.chat,
-            target: message.targets!.first,
+            chatId: message.chat,
+            targetId: message.targets!.first,
+            senderId: getUserObject(session).id,
           );
           break;
         case MessageType.AddFriends:
           if (message.targets == null || message.targets!.isEmpty) return;
           ChatManager.addFriends(
             session: session,
-            chat: message.chat,
-            targets: message.targets!,
+            chatId: message.chat,
+            targetIds: message.targets!,
+            senderId: getUserObject(session).id,
           );
           break;
         default:
