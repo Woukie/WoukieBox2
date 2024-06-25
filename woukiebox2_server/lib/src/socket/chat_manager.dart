@@ -97,7 +97,6 @@ class ChatManager {
       senderId: senderId,
       chatId: chatId,
       sentAt: now,
-      message: null,
     );
 
     for (int user in groupChat.users) {
@@ -115,12 +114,62 @@ class ChatManager {
     }
   }
 
-  static void kickUser({
+  static Future<void> kickUser({
     required StreamingSession session,
     required int chatId,
     required int targetId,
     required int senderId,
-  }) {}
+  }) async {
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return;
+
+    UserInfo? targetInfo = await Util.getAuthUser(session);
+    if (targetInfo == null) return;
+
+    UserPersistent targetPersistent =
+        (await Util.getPersistentData(session, targetId))!;
+
+    Chat? groupChat = await Chat.db.findById(session, chatId);
+    if (groupChat == null) return;
+
+    if (!groupChat.owners.contains(senderId)) return;
+    if (groupChat.owners.contains(targetId)) return;
+    if (!groupChat.users.contains(targetId)) return;
+
+    bool deleted = await _removeUserFromChat(
+      session: session,
+      userPersistent: targetPersistent,
+      userInfo: targetInfo,
+      chat: groupChat,
+    );
+
+    ChatMessage? chatMessage;
+    if (!deleted) {
+      chatMessage = await _writeMessageToDatabase(
+        session: session,
+        action: MessageType.Kick,
+        senderId: senderId,
+        targets: [targetId],
+        chatId: chatId,
+        sentAt: DateTime.now().toUtc(),
+      );
+    }
+
+    groupChat.users.add(targetInfo.id!);
+    for (int user in groupChat.users) {
+      session.messages.postMessage(
+        user.toString(),
+        NetworkChatMessage(
+          chat: chatId,
+          action: MessageType.Kick,
+          bucket: chatMessage?.bucket,
+          sentAt: chatMessage?.sentAt,
+          sender: senderId,
+          targets: [targetId],
+        ),
+      );
+    }
+  }
 
   static void leaveChat({
     required StreamingSession session,
@@ -149,28 +198,95 @@ class ChatManager {
     required int senderId,
   }) {}
 
+  /// Writes a message to the database.
+  ///
+  /// Handles incrementing the bucket automatically, also updates the [Chat]'s lastMessage.
+  ///
+  /// Returns the [ChatMessage] that was written to the database.
   static Future<ChatMessage> _writeMessageToDatabase({
     required Session session,
     required MessageType action,
     required int senderId,
     required int chatId,
     required DateTime sentAt,
-    required String? message,
+    List<int>? targets,
+    String? message,
   }) async {
+    Chat groupChat = (await Chat.db.findById(session, chatId))!;
+
     BucketData latestBucket = await getLatestBucket(session, chatId);
     ChatMessage databaseMessage = ChatMessage(
-      action: MessageType.Message,
+      action: action,
       sentAt: sentAt,
       message: message,
+      targets: targets,
       bucket: latestBucket.bucket,
       senderId: senderId,
       chatId: chatId,
     );
 
+    groupChat.lastMessage = sentAt;
+
+    await Chat.db.updateRow(session, groupChat);
     await ChatMessage.db.insertRow(session, databaseMessage);
 
     _incrementBucket(session, chatId);
 
     return databaseMessage;
+  }
+
+  /// Removes the user from the chat on the database.
+  ///
+  /// 1. Removes the chat from the [userPersistent].
+  /// 2. Removes related last-read timestamps from the [LastRead] table.
+  /// 3. Removes references to the user from the given [chat].
+  /// 4. Deletes the [chat] from the [Chat] table and all related messages if chat is made empty.
+  ///
+  /// Does not log messages.
+  ///
+  /// Returns whether the chat was deleted as a result of removing the user.
+  static Future<bool> _removeUserFromChat({
+    required Session session,
+    required UserPersistent userPersistent,
+    required UserInfo userInfo,
+    required Chat chat,
+  }) async {
+    // Remove chat from user
+    userPersistent.chats.remove(chat.id);
+
+    // Remove last read timestamps
+    LastRead.db.deleteWhere(session,
+        where: (row) =>
+            (row.chatId.equals(chat.id!)) &
+            (row.userInfoId.equals(userInfo.id)));
+    await UserPersistent.db.updateRow(session, userPersistent);
+
+    // Remove user from chat
+    chat.users.remove(userInfo.id);
+    if (chat.users.isEmpty) {
+      await ChatMessage.db.deleteWhere(
+        session,
+        where: (message) => message.chatId.equals(chat.id!),
+      );
+      await LastRead.db.deleteWhere(
+        session,
+        where: (row) => row.chatId.equals(chat.id!),
+      );
+      await Chat.db.deleteRow(session, chat);
+      ChatManager.deleteBucket(chat.id!);
+    } else {
+      if (chat.owners.contains(userInfo.id) && chat.owners.length == 1) {
+        chat.owners.add(chat.users.first);
+      }
+
+      chat.owners.remove(userInfo.id);
+
+      chat.lastMessage = DateTime.now().toUtc();
+      await Chat.db.updateRow(session, chat);
+
+      return true;
+    }
+
+    return false;
   }
 }
