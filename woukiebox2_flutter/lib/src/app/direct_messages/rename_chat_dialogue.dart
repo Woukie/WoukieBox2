@@ -55,8 +55,9 @@ class RenameChatDialogue {
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                   client.sockets.sendStreamMessage(
-                                    RenameChat(
-                                      name: controller.text,
+                                    NetworkChatMessage(
+                                      action: MessageType.Leave,
+                                      message: controller.text,
                                       chat: chat,
                                     ),
                                   );
