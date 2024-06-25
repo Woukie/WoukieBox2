@@ -225,41 +225,6 @@ class UserActions {
     );
   }
 
-  static void promoteChatMember(
-    StreamingSession session,
-    PromoteChatMemberClient message,
-  ) async {
-    UserInfo? senderInfo = await Util.getAuthUser(session);
-    if (senderInfo == null) return;
-
-    UserInfo? targetInfo = await Util.getAuthUser(session, message.user);
-    if (targetInfo == null) return;
-
-    DateTime now = DateTime.now().toUtc();
-
-    Chat? chat = await Chat.db.findById(session, message.chat);
-    if (chat == null ||
-        !chat.owners.contains(senderInfo.id) ||
-        !chat.users.contains(targetInfo.id) ||
-        chat.owners.contains(targetInfo.id)) return;
-
-    chat.lastMessage = now;
-    chat.owners.add(targetInfo.id!);
-    await Chat.db.updateRow(session, chat);
-
-    for (int user in chat.users) {
-      session.messages.postMessage(
-        user.toString(),
-        PromoteChatMemberServer(
-          chat: chat.id!,
-          sender: senderInfo.id!,
-          target: targetInfo.id!,
-          sentAt: now,
-        ),
-      );
-    }
-  }
-
   static Future<void> addChatMembers(
     StreamingSession session,
     AddChatMembersClient message,

@@ -220,12 +220,54 @@ class ChatManager {
     }
   }
 
-  static void promoteUser({
+  static Future<void> promoteUser({
     required StreamingSession session,
     required int chatId,
     required int targetId,
     required int senderId,
-  }) {}
+  }) async {
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return;
+
+    UserInfo? targetInfo = await Util.getAuthUser(session, targetId);
+    if (targetInfo == null) return;
+
+    DateTime now = DateTime.now().toUtc();
+
+    Chat? groupChat = await Chat.db.findById(session, chatId);
+    if (groupChat == null) return;
+
+    if (!groupChat.owners.contains(senderId)) return;
+    if (groupChat.owners.contains(targetId)) return;
+    if (!groupChat.users.contains(targetId)) return;
+
+    groupChat.lastMessage = now;
+    groupChat.owners.add(targetInfo.id!);
+    await Chat.db.updateRow(session, groupChat);
+
+    ChatMessage chatMessage = await _writeMessageToDatabase(
+      session: session,
+      action: MessageType.Promote,
+      senderId: senderId,
+      targets: [targetId],
+      chatId: chatId,
+      sentAt: DateTime.now().toUtc(),
+    );
+
+    for (int user in groupChat.users) {
+      session.messages.postMessage(
+        user.toString(),
+        NetworkChatMessage(
+          action: MessageType.Promote,
+          sender: senderId,
+          targets: [targetId],
+          chat: chatId,
+          sentAt: chatMessage.sentAt,
+          bucket: chatMessage.bucket,
+        ),
+      );
+    }
+  }
 
   static void addFriends({
     required StreamingSession session,
