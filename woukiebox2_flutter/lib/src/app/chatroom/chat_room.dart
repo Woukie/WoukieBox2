@@ -121,10 +121,11 @@ class _ChatRoomState extends State<ChatRoom> with TickerProviderStateMixin {
                                   context,
                                   (List<int> friendsSelection) {
                                     client.sockets.sendStreamMessage(
-                                      CreateChatClient(
-                                        name: "",
-                                        owners: [],
-                                        users: friendsSelection,
+                                      NetworkChatMessage(
+                                        action: MessageType.Create,
+                                        message: "",
+                                        targets: friendsSelection,
+                                        chat: 0,
                                       ),
                                     );
                                   },
