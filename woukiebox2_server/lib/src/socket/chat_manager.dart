@@ -171,11 +171,54 @@ class ChatManager {
     }
   }
 
-  static void leaveChat({
+  static Future<void> leaveChat({
     required StreamingSession session,
     required int chatId,
     required int senderId,
-  }) {}
+  }) async {
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return;
+
+    UserPersistent senderPersistent =
+        (await Util.getPersistentData(session, senderInfo.id))!;
+
+    if (!senderPersistent.chats.contains(chatId)) return;
+
+    Chat? chat = await Chat.db.findById(session, chatId);
+    if (chat == null) return;
+
+    bool deleted = await _removeUserFromChat(
+      session: session,
+      userPersistent: senderPersistent,
+      userInfo: senderInfo,
+      chat: chat,
+    );
+
+    ChatMessage? chatMessage;
+    if (!deleted) {
+      chatMessage = await _writeMessageToDatabase(
+        session: session,
+        action: MessageType.Leave,
+        senderId: senderId,
+        chatId: chatId,
+        sentAt: DateTime.now().toUtc(),
+      );
+    }
+
+    chat.users.add(senderInfo.id!);
+    for (int user in chat.users) {
+      session.messages.postMessage(
+        user.toString(),
+        NetworkChatMessage(
+          action: MessageType.Leave,
+          bucket: chatMessage?.bucket,
+          sentAt: chatMessage?.sentAt,
+          sender: senderId,
+          chat: chatId,
+        ),
+      );
+    }
+  }
 
   static void promoteUser({
     required StreamingSession session,

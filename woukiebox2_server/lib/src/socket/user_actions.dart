@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
-import 'package:woukiebox2_server/src/friend_manager.dart';
+import 'package:woukiebox2_server/src/socket/friend_manager.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 import 'package:woukiebox2_server/src/socket/chat_manager.dart';
 import 'package:woukiebox2_server/src/socket/session_manager.dart';
@@ -8,18 +8,6 @@ import 'package:woukiebox2_server/src/util.dart';
 
 // For a less confusing socket implementation
 class UserActions {
-  static chatMessage(
-    Session session,
-    NetworkChatMessage message,
-    int userId,
-  ) async {
-    if (message.chat == 0) {
-      ChatManager.sendGlobalMessage(session, message, userId);
-    } else {
-      ChatManager.sendChatMessage(session, message);
-    }
-  }
-
   static Future<void> updateProfile(
     StreamingSession session,
     UpdateProfileClient message,
@@ -171,44 +159,6 @@ class UserActions {
     }
   }
 
-  static Future<void> leaveChat(
-    StreamingSession session,
-    message,
-  ) async {
-    UserInfo? senderInfo = await Util.getAuthUser(session);
-    if (senderInfo == null) return;
-
-    UserPersistent senderPersistent =
-        (await Util.getPersistentData(session, senderInfo.id))!;
-
-    if (!senderPersistent.chats.contains(message.chat)) return;
-
-    Chat? chat = await Chat.db.findById(session, message.chat);
-    if (chat == null) return;
-
-    await _removeUserFromChat(chat, senderInfo, senderPersistent, session);
-
-    chat.users.add(senderInfo.id!);
-    for (int user in chat.users) {
-      session.messages.postMessage(
-        user.toString(),
-        ChatMessage(
-          chat: chat.id!,
-          bucket: bucket,
-          left: true,
-          sender: senderInfo.id!,
-          sentAt: chat.lastMessage,
-        ),
-        LeaveChatServer(
-          chat: chat.id!,
-          sender: senderInfo.id!,
-          owners: chat.owners,
-          sentAt: chat.lastMessage,
-        ),
-      );
-    }
-  }
-
   static Future<void> renameChat(
       StreamingSession session, RenameChat message) async {
     UserInfo? senderInfo = await Util.getAuthUser(session);
@@ -273,55 +223,6 @@ class UserActions {
       senderInfo.id.toString(),
       ReadChatServer(chat: message.chat, readAt: readAt),
     );
-  }
-
-  static Future<void> kickChatMember(
-    StreamingSession session,
-    KickChatMemberClient message,
-  ) async {
-    UserInfo? senderInfo = await Util.getAuthUser(session);
-    if (senderInfo == null || senderInfo.id == message.user) return;
-
-    UserInfo? targetInfo = await Util.getAuthUser(session, message.user);
-    if (targetInfo == null) return;
-
-    UserPersistent targetPersistent =
-        (await Util.getPersistentData(session, targetInfo.id))!;
-
-    Chat? chat = await Chat.db.findById(session, message.chat);
-    if (chat == null ||
-        !chat.owners.contains(senderInfo.id) ||
-        !chat.users.contains(targetInfo.id) ||
-        chat.owners.contains(targetInfo.id)) return;
-
-    int bucket = 0;
-    if (!await _removeUserFromChat(
-        chat, targetInfo, targetPersistent, session)) {
-      bucket = (await ChatManager.recordMessage(
-        null,
-        null,
-        targetInfo.id!,
-        null,
-        senderInfo.id!,
-        chat.id!,
-      ))
-          .bucket;
-    }
-
-    chat.users.add(targetInfo.id!);
-    for (int user in chat.users) {
-      session.messages.postMessage(
-        user.toString(),
-        ChatMessageServer(
-          chat: chat.id!,
-          bucket: bucket,
-          left: false,
-          sender: senderInfo.id!,
-          kickTarget: targetInfo.id!,
-          sentAt: DateTime.now().toUtc(),
-        ),
-      );
-    }
   }
 
   static void promoteChatMember(
