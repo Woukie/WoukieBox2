@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2/src/util/user.dart';
 import 'package:woukiebox2/src/util/written_message.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
@@ -13,7 +14,7 @@ class GroupChat {
   DateTime lastMessage;
 
   // Supports any type from written_message. Use WrittenChatMessage over WrittenGlobalMessage to display the latest user data
-  final List<BaseMessage> messages = List.empty(growable: true);
+  final List<GlobalMessage> messages = List.empty(growable: true);
   final List<int> bucketsLoading = List.empty(growable: true);
 
   GroupChat(
@@ -34,7 +35,7 @@ class GroupChat {
     String name = "";
     for (int i = 0; i < min(members.length, 3); i++) {
       int member = members[i];
-      UserClient? user = appStateProvider.users[member];
+      User user = User.getUser(context, id);
       if (user == null) appStateProvider.scheduleGetUser(member);
       name += "${user?.username ?? "Loading..."}, ";
     }

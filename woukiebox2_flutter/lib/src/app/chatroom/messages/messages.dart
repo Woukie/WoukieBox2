@@ -3,7 +3,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/chatroom/messages/message.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
-import 'package:woukiebox2/src/util/written_message.dart';
 
 class Messages extends StatelessWidget {
   const Messages({
@@ -23,7 +22,7 @@ class Messages extends StatelessWidget {
     final int? chat = appStateProvider.isGlobalChatSelected()
         ? 0
         : appStateProvider.selectedChat;
-    final List<BaseMessage> messages = appStateProvider.isGlobalChatSelected()
+    final List<GlobalMessage> messages = appStateProvider.isGlobalChatSelected()
         ? appStateProvider.globalMessages
         : appStateProvider.chats[chat]?.messages ?? [];
 

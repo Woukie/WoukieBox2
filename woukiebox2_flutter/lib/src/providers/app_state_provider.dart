@@ -26,7 +26,7 @@ class AppStateProvider extends ChangeNotifier {
   final HashMap<int, GroupChat> _chats = HashMap<int, GroupChat>();
   final HashMap<int, DateTime> _lastRead = HashMap<int, DateTime>();
 
-  final List<BaseMessage> _messages = List.empty(growable: true);
+  final List<GlobalMessage> _messages = List.empty(growable: true);
   final List<int> _friends = List.empty(growable: true);
   final List<int> _outgoingFriendRequests = List.empty(growable: true);
   final List<int> _incomingFriendRequests = List.empty(growable: true);
@@ -40,7 +40,7 @@ class AppStateProvider extends ChangeNotifier {
   HashMap<int, GroupChat> get chats => _chats;
   HashMap<int, DateTime> get lastRead => _lastRead;
 
-  List<BaseMessage> get globalMessages => _messages;
+  List<GlobalMessage> get globalMessages => _messages;
   List<int> get friends => _friends;
   List<int> get outgoingFriendRequests => _outgoingFriendRequests;
   List<int> get incomingFriendRequests => _incomingFriendRequests;
@@ -448,8 +448,8 @@ class AppStateProvider extends ChangeNotifier {
     if (_chats[chat] != null &&
         chatMessages != null &&
         chatMessages.isNotEmpty) {
-      List<BaseMessage> newMessages = chatMessages.map((message) {
-        return BaseMessage.serverToWritten(message);
+      List<GlobalMessage> newMessages = chatMessages.map((message) {
+        return GlobalMessage.networkToWritten(message);
       }).toList();
 
       groupChat.messages.insertAll(0, newMessages.reversed);

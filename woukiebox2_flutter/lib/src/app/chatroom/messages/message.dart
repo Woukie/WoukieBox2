@@ -1,18 +1,15 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:woukiebox2/src/providers/app_state_provider.dart';
-import 'package:woukiebox2/src/util/user_util.dart';
-import 'package:woukiebox2_client/woukiebox2_client.dart' as client;
-import 'package:woukiebox2/src/app/profile/profile_pic.dart';
-import 'package:woukiebox2/src/app/profile/profile_preview.dart';
-import 'package:woukiebox2/src/util/hex_color.dart';
-import 'package:woukiebox2/src/util/written_message.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart';
+
+import 'child_message.dart';
+import 'head_message.dart';
+import 'system_message.dart';
 
 class Message extends StatelessWidget {
   const Message({super.key, required this.messages, required this.index});
 
-  final List<BaseMessage> messages;
+  final List<NetworkChatMessage> messages;
   final int index;
 
   static String getTimestamp(DateTime time) {
@@ -32,7 +29,7 @@ class Message extends StatelessWidget {
           time.year == yesterday.year;
 
       if (!sentYesterday) {
-        prefix = DateFormat('EEE, MMM d, yyyy').format(time.toLocal());
+        prefix = DateFormat('MMM d, yyyy').format(time.toLocal());
       }
     }
 
@@ -41,181 +38,62 @@ class Message extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final BaseMessage message = messages[index];
-    final BaseMessage? parentMessage =
+    final NetworkChatMessage message = messages[index];
+    final NetworkChatMessage? parentMessage =
         index != messages.length - 1 ? messages[index + 1] : null;
 
-    bool newDay =
-        parentMessage != null && parentMessage.sentAt.day != message.sentAt.day;
+    bool newDay = parentMessage != null &&
+        parentMessage.sentAt?.day != message.sentAt?.day;
 
     Widget getRenderedWidget() {
-      if (message is ChatMessage) {
-        bool child = parentMessage is ChatMessage &&
-            parentMessage.senderId == message.senderId &&
-            !newDay &&
-            !parentMessage.sentAt
-                .add(const Duration(minutes: 1, seconds: 30))
-                .isBefore(message.sentAt);
+      switch (message.action) {
+        case MessageType.Message:
+          bool child = parentMessage?.action == MessageType.Message &&
+              parentMessage!.sender == message.sender &&
+              !newDay &&
+              !parentMessage.sentAt!
+                  .add(const Duration(minutes: 1, seconds: 30))
+                  .isBefore(message.sentAt!);
 
-        return child
-            ? ChildMessage(chatMessage: message)
-            : HeadMessage(chatMessage: message);
-      } else if (message is LeaveMessage) {
-        return SystemMessageWrapper(
-          child: TextSpan(
-            style: DefaultTextStyle.of(context).style,
-            children: [
-              TextSpan(
-                text: message.username,
-                style: TextStyle(
-                  color: HexColor.fromHex(message.colour),
-                ),
-              ),
-              const TextSpan(
-                text: " left the chat",
-              ),
-            ],
-          ),
-        );
-      } else if (message is KickMessage) {
-        client.UserClient sender = UserUtil.getUser(context, message.senderId);
-        client.UserClient target = UserUtil.getUser(context, message.target);
-
-        return SystemMessageWrapper(
-          child: TextSpan(
-            style: DefaultTextStyle.of(context).style,
-            children: [
-              TextSpan(
-                text: sender.username,
-                style: TextStyle(
-                  color: HexColor.fromHex(sender.colour),
-                ),
-              ),
-              const TextSpan(
-                text: " kicked ",
-              ),
-              TextSpan(
-                text: target.username,
-                style: TextStyle(
-                  color: HexColor.fromHex(target.colour),
-                ),
-              ),
-            ],
-          ),
-        );
-      } else if (message is PromoteMessage) {
-        client.UserClient sender = UserUtil.getUser(context, message.senderId);
-        client.UserClient target = UserUtil.getUser(context, message.target);
-
-        return SystemMessageWrapper(
-          child: TextSpan(
-            style: DefaultTextStyle.of(context).style,
-            children: [
-              TextSpan(
-                text: sender.username,
-                style: TextStyle(
-                  color: HexColor.fromHex(sender.colour),
-                ),
-              ),
-              const TextSpan(
-                text: " promoted ",
-              ),
-              TextSpan(
-                text: target.username,
-                style: TextStyle(
-                  color: HexColor.fromHex(target.colour),
-                ),
-              ),
-            ],
-          ),
-        );
-      } else if (message is AddUsersMessage) {
-        client.UserClient sender = UserUtil.getUser(context, message.senderId);
-
-        List<InlineSpan> usersList = [
-          TextSpan(
-            text: sender.username,
-            style: TextStyle(
-              color: HexColor.fromHex(sender.colour),
-            ),
-          ),
-          const TextSpan(
-            text: " invited ",
-          ),
-        ];
-
-        for (int userId in message.users) {
-          client.UserClient user = UserUtil.getUser(context, userId);
-
-          usersList.add(
-            TextSpan(
-              text: user.username,
-              style: TextStyle(
-                color: HexColor.fromHex(user.colour),
-              ),
-            ),
+          return child
+              ? ChildMessage(chatMessage: message)
+              : HeadMessage(chatMessage: message);
+        case MessageType.AddFriends:
+          return SystemMessage(
+            senderId: message.sender,
+            actionText: " added ",
+            targetIds: message.targets,
           );
-
-          usersList.add(
-            TextSpan(
-              text: userId == message.users.last
-                  ? "."
-                  : userId == message.users[message.users.length - 2]
-                      ? "and "
-                      : ", ",
-            ),
+        case MessageType.Rename:
+          return SystemMessage(
+            senderId: message.sender,
+            actionText: " renamed the chat to '${message.message}'",
           );
-        }
-
-        return SystemMessageWrapper(
-          child: TextSpan(
-            style: DefaultTextStyle.of(context).style,
-            children: usersList,
-          ),
-        );
-      } else if (message is JoinMessage) {
-        return SystemMessageWrapper(
-          child: TextSpan(
-            style: DefaultTextStyle.of(context).style,
-            children: [
-              TextSpan(
-                text: message.username,
-                style: TextStyle(
-                  color: HexColor.fromHex(message.colour),
-                ),
-              ),
-              const TextSpan(
-                text: " joined the chat",
-              ),
-            ],
-          ),
-        );
-      } else if (message is ProfileMessage) {
-        return SystemMessageWrapper(
-          child: TextSpan(
-            style: DefaultTextStyle.of(context).style,
-            children: [
-              TextSpan(
-                text: message.oldUsername,
-                style: TextStyle(
-                  color: HexColor.fromHex(message.oldColour),
-                ),
-              ),
-              const TextSpan(text: " is now known as "),
-              TextSpan(
-                text: message.newUsername ?? message.oldUsername,
-                style: TextStyle(
-                  color:
-                      HexColor.fromHex(message.newColour ?? message.oldColour),
-                ),
-              ),
-            ],
-          ),
-        );
+        case MessageType.Create:
+          return SystemMessage(
+            senderId: message.sender,
+            actionText: " created the chat",
+          );
+        case MessageType.Kick:
+          return SystemMessage(
+            senderId: message.sender,
+            actionText: " kicked ",
+            targetIds: message.targets,
+          );
+        case MessageType.Leave:
+          return SystemMessage(
+            senderId: message.sender,
+            actionText: " left the chat",
+          );
+        case MessageType.Promote:
+          return SystemMessage(
+            senderId: message.sender,
+            actionText: " promoted ",
+            targetIds: message.targets,
+          );
+        default:
+          return const Text("unknown chat message :)");
       }
-
-      // This literally cannot happen
-      return const Text("unknown chat message :)");
     }
 
     return Column(
@@ -229,7 +107,7 @@ class Message extends StatelessWidget {
                       child: Divider(),
                     ),
                   ),
-                  Text(DateFormat('MMMM d, y').format(message.sentAt)),
+                  Text(DateFormat('MMMM d, y').format(message.sentAt!)),
                   const Expanded(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 12),
@@ -241,167 +119,6 @@ class Message extends StatelessWidget {
             : Container(),
         getRenderedWidget(),
       ],
-    );
-  }
-}
-
-class SystemMessageWrapper extends StatelessWidget {
-  final TextSpan child;
-
-  const SystemMessageWrapper({super.key, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 12, left: 8, right: 8),
-        child: Card(
-          color: Theme.of(context).colorScheme.surfaceContainerHigh,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8, right: 8),
-            child: RichText(
-              text: TextSpan(
-                style: const TextStyle(fontStyle: FontStyle.italic),
-                children: [
-                  child,
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class HeadMessage extends StatelessWidget {
-  final ChatMessage chatMessage;
-
-  const HeadMessage({
-    super.key,
-    required this.chatMessage,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
-    client.UserClient? user = appStateProvider.users[chatMessage.senderId];
-
-    if (user == null) {
-      appStateProvider.scheduleGetUser(chatMessage.senderId);
-    }
-
-    user ??= UserUtil.getLoading(context, chatMessage.senderId);
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 12, right: 12),
-            child: ProfilePreview(
-              user: user,
-              child: ProfilePic(
-                url: chatMessage.image ?? user.image,
-                offline: false,
-                showIndicator: false,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      chatMessage.username ?? user.username,
-                      style: TextStyle(
-                        color:
-                            HexColor.fromHex(chatMessage.color ?? user.colour),
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          Message.getTimestamp(chatMessage.sentAt),
-                          style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer
-                                .withAlpha(75),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                Text(chatMessage.message),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ChildMessage extends StatefulWidget {
-  final ChatMessage chatMessage;
-
-  const ChildMessage({
-    super.key,
-    required this.chatMessage,
-  });
-
-  @override
-  State<ChildMessage> createState() => _ChildMessageState();
-}
-
-class _ChildMessageState extends State<ChildMessage> {
-  bool hovering = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (value) => setState(() {
-        hovering = true;
-      }),
-      onExit: (value) => setState(() {
-        hovering = false;
-      }),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 12, right: 12),
-            child: SizedBox(
-              width: 40,
-              child: Text(
-                !hovering
-                    ? ""
-                    : DateFormat('HH:mm').format(
-                        widget.chatMessage.sentAt.toLocal(),
-                      ),
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onPrimaryContainer
-                      .withAlpha(75),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              widget.chatMessage.message,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

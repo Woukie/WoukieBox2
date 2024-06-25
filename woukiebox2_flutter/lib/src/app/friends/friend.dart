@@ -4,7 +4,7 @@ import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/profile/profile_dropdown.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
-import 'package:woukiebox2/src/util/user_util.dart';
+import 'package:woukiebox2/src/util/user.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 

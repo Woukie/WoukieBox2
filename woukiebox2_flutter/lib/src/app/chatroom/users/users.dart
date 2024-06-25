@@ -4,7 +4,7 @@ import 'package:woukiebox2/src/app/profile/profile_editor.dart';
 import 'package:woukiebox2/src/app/profile/profile_preview.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/providers/styling_provider.dart';
-import 'package:woukiebox2/src/util/user_util.dart';
+import 'package:woukiebox2/src/util/user.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
