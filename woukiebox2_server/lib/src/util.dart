@@ -4,7 +4,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 
-// Don't know how to have internal functions on an endpoint without also exposing them to the client. So this class handles a random assortment of things.
+/// Assortment of usefull functions used across the codebase
 class Util {
   static Future<UserInfo?> getAuthUser(Session session, [int? id]) async {
     int? senderId = id ?? await session.auth.authenticatedUserId;
