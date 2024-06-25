@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
+import 'package:woukiebox2/src/util/user.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class ProfileDropdown {
@@ -21,9 +22,8 @@ class ProfileDropdown {
         userId != appStateProvider.currentUser &&
         !chat.owners.contains(userId);
 
-    UserClient currentUser =
-        appStateProvider.users[appStateProvider.currentUser]!;
-    UserClient? targetUser = appStateProvider.users[userId];
+    User currentUser = appStateProvider.users[appStateProvider.currentUser]!;
+    User? targetUser = appStateProvider.users[userId];
 
     if (targetUser == null) return [];
 
@@ -77,12 +77,21 @@ class ProfileDropdown {
     if (admin) {
       items.add(getButton("Kick", Icons.hardware, () {
         client.sockets.sendStreamMessage(
-          KickChatMemberClient(user: userId, chat: chat.id),
+          NetworkChatMessage(
+            action: MessageType.Kick,
+            targets: [userId],
+            chat: chat.id,
+          ),
         );
       }));
+
       items.add(getButton("Promote", Icons.shield, () {
         client.sockets.sendStreamMessage(
-          PromoteChatMemberClient(user: userId, chat: chat.id),
+          NetworkChatMessage(
+            action: MessageType.Promote,
+            targets: [userId],
+            chat: chat.id,
+          ),
         );
       }));
     }

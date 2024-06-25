@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
+import 'package:woukiebox2/src/util/user.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
@@ -17,7 +18,7 @@ class ProfileEditor extends StatelessWidget {
     required this.child,
   });
 
-  final UserClient user;
+  final User user;
   final Widget child;
 
   @override
@@ -56,7 +57,7 @@ class ProfileEditor extends StatelessWidget {
 class EditorWidget extends StatefulWidget {
   const EditorWidget({super.key, required this.user, required this.child});
 
-  final UserClient user;
+  final User user;
   final Widget child;
 
   @override
@@ -74,8 +75,7 @@ class _EditorWidgetState extends State<EditorWidget> {
   Widget build(BuildContext context) {
     final appStateProvider = Provider.of<AppStateProvider>(context);
     // User is never null as app is conditionally rendered based on user null check
-    final UserClient user =
-        appStateProvider.users[appStateProvider.currentUser]!;
+    final User user = appStateProvider.users[appStateProvider.currentUser]!;
 
     nameController ??= TextEditingController(text: user.username);
     bioController ??= TextEditingController(text: user.bio);
@@ -249,7 +249,7 @@ class _EditorWidgetState extends State<EditorWidget> {
     });
   }
 
-  void updateProfile(UserClient originalUser) async {
+  void updateProfile(User originalUser) async {
     client.sockets.sendStreamMessage(
       UpdateProfileClient(
         bio: bioController?.text != originalUser.bio
