@@ -71,9 +71,10 @@ class DirectMessageDropdown extends StatelessWidget {
           context,
           (List<int> selectedFriends) {
             client.sockets.sendStreamMessage(
-              AddChatMembersClient(
-                users: selectedFriends,
+              NetworkChatMessage(
+                action: MessageType.AddFriends,
                 chat: groupChat.id,
+                targets: selectedFriends,
               ),
             );
           },
@@ -85,7 +86,12 @@ class DirectMessageDropdown extends StatelessWidget {
     }
 
     items.add(getButton("Leave", Icons.exit_to_app, () {
-      client.sockets.sendStreamMessage(LeaveChatClient(chat: groupChat.id));
+      client.sockets.sendStreamMessage(
+        NetworkChatMessage(
+          action: MessageType.Leave,
+          chat: groupChat.id,
+        ),
+      );
     }));
 
     return items;
