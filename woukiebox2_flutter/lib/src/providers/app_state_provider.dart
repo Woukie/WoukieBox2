@@ -12,8 +12,8 @@ import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/providers/preference_provider.dart';
 import 'package:woukiebox2/src/util/assets.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
-import 'package:woukiebox2/src/util/written_message.dart';
-import 'package:woukiebox2_client/woukiebox2_client.dart' as protocol;
+import 'package:woukiebox2/src/util/user.dart';
+import 'package:woukiebox2_client/woukiebox2_client.dart';
 import 'package:windows_taskbar/windows_taskbar.dart';
 
 class AppStateProvider extends ChangeNotifier {
@@ -21,12 +21,11 @@ class AppStateProvider extends ChangeNotifier {
   int? _selectedChat;
   int? _currentUser;
   int _selectedPage = 0;
-  final HashMap<int, protocol.UserClient> _users =
-      HashMap<int, protocol.UserClient>();
+  final HashMap<int, User> _users = HashMap<int, User>();
   final HashMap<int, GroupChat> _chats = HashMap<int, GroupChat>();
   final HashMap<int, DateTime> _lastRead = HashMap<int, DateTime>();
 
-  final List<GlobalMessage> _messages = List.empty(growable: true);
+  final List<NetworkChatMessage> _messages = List.empty(growable: true);
   final List<int> _friends = List.empty(growable: true);
   final List<int> _outgoingFriendRequests = List.empty(growable: true);
   final List<int> _incomingFriendRequests = List.empty(growable: true);
@@ -36,11 +35,11 @@ class AppStateProvider extends ChangeNotifier {
 
   late final PreferenceProvider _preferenceProvider;
 
-  HashMap<int, protocol.UserClient> get users => _users;
+  HashMap<int, User> get users => _users;
   HashMap<int, GroupChat> get chats => _chats;
   HashMap<int, DateTime> get lastRead => _lastRead;
 
-  List<GlobalMessage> get globalMessages => _messages;
+  List<NetworkChatMessage> get globalMessages => _messages;
   List<int> get friends => _friends;
   List<int> get outgoingFriendRequests => _outgoingFriendRequests;
   List<int> get incomingFriendRequests => _incomingFriendRequests;
