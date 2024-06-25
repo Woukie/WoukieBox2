@@ -337,12 +337,50 @@ class ChatManager {
     }
   }
 
-  static void renameChat({
+  static Future<void> renameChat({
     required StreamingSession session,
     required String name,
     required int chatId,
     required int senderId,
-  }) {}
+  }) async {
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return;
+
+    UserPersistent senderPersistent =
+        (await Util.getPersistentData(session, senderInfo.id))!;
+
+    if (!senderPersistent.chats.contains(chatId)) return;
+
+    Chat? chat = await Chat.db.findById(session, chatId);
+    if (chat == null || !chat.owners.contains(senderInfo.id)) return;
+
+    name = name.trim();
+    chat.name = name;
+    await Chat.db.updateRow(session, chat);
+
+    ChatMessage chatMessage = await _writeMessageToDatabase(
+      session: session,
+      action: MessageType.Rename,
+      message: name,
+      senderId: senderId,
+      chatId: chatId,
+      sentAt: DateTime.now().toUtc(),
+    );
+
+    for (int user in chat.users) {
+      session.messages.postMessage(
+        user.toString(),
+        NetworkChatMessage(
+          action: MessageType.Rename,
+          sender: senderId,
+          chat: chatId,
+          bucket: chatMessage.bucket,
+          message: name,
+          sentAt: chatMessage.sentAt,
+        ),
+      );
+    }
+  }
 
   /// Writes a message to the database.
   ///
