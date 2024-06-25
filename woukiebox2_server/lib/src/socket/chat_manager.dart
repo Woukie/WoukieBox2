@@ -57,69 +57,120 @@ class ChatManager {
     }
   }
 
-  // Must be authed, hence no userId required
-  static sendChatMessage(Session session, NetworkChatMessage message) async {
-    String trimmedMessage = message.message!.trim();
+  static Future<void> sendMessage({
+    required StreamingSession session,
+    required String message,
+    required int chatId,
+    required int senderId,
+  }) async {
+    String trimmedMessage = message.trim();
     if (trimmedMessage.isEmpty) return;
+
+    DateTime now = DateTime.now().toUtc();
+
+    if (chatId == 0) {
+      session.messages.postMessage(
+        'global',
+        NetworkChatMessage(
+          action: MessageType.Message,
+          sentAt: now,
+          sender: senderId,
+          chat: chatId,
+          message: trimmedMessage,
+        ),
+      );
+
+      return;
+    }
 
     UserInfo? senderInfo = await Util.getAuthUser(session);
     if (senderInfo == null) return;
 
-    Chat? groupChat = await Chat.db.findById(session, message.chat);
+    Chat? groupChat = await Chat.db.findById(session, chatId);
     if (groupChat == null) return;
 
     if (!groupChat.users.contains(senderInfo.id!)) return;
 
-    BucketData latestBucket = await getLatestBucket(session, message.chat);
-    ChatMessage databaseMessage = ChatMessage(
-      sentAt: DateTime.now().toUtc(),
-      message: trimmedMessage,
-      senderId: senderInfo.id!,
-      bucket: latestBucket.bucket,
-      sender: message.sender,
-      chat: message.chat,
-      left: false,
+    ChatMessage writtenMessage = await _writeMessageToDatabase(
+      action: MessageType.Message,
+      session: session,
+      senderId: senderId,
+      chatId: chatId,
+      sentAt: now,
+      message: null,
     );
-
-    await ChatMessage.db.insertRow(session, databaseMessage);
-
-    _incrementBucket(session, message.target);
 
     for (int user in groupChat.users) {
       session.messages.postMessage(
         user.toString(),
-        ChatMessageServer(
-          sentAt: databaseMessage.sentAt,
-          sender: databaseMessage.senderId,
-          chat: databaseMessage.chatId,
-          message: databaseMessage.message!,
-          bucket: databaseMessage.bucket,
+        NetworkChatMessage(
+          action: writtenMessage.action,
+          sender: writtenMessage.senderId,
+          chat: writtenMessage.chatId,
+          sentAt: writtenMessage.sentAt,
+          message: writtenMessage.message!,
+          bucket: writtenMessage.bucket,
         ),
       );
     }
   }
 
-  // Adds a chat message to a chat and returns the message recorded to the database, used for system messages like kick, join and promote
-  static Future<ChatMessage> recordMessage(NetworkChatMessage chatMessage) {}
+  static void kickUser({
+    required StreamingSession session,
+    required int chat,
+    required int target,
+    required int sender,
+  }) {}
 
-  static sendGlobalMessage(
-    Session session,
-    ChatMessageClient message,
-    int userId,
-  ) {
-    String trimmedMessage = message.message.trim();
-    if (trimmedMessage.isEmpty) return;
+  static void leaveChat({
+    required StreamingSession session,
+    required int chat,
+    required int sender,
+  }) {}
 
-    ChatMessageServer chatMessage = ChatMessageServer(
-      sender: userId,
-      chat: message.target,
-      sentAt: DateTime.now().toUtc(),
-      message: trimmedMessage,
+  static void promoteUser({
+    required StreamingSession session,
+    required int chat,
+    required int target,
+    required int sender,
+  }) {}
+
+  static void addFriends({
+    required StreamingSession session,
+    required int chat,
+    required List<int> targets,
+    required int sender,
+  }) {}
+
+  static void renameChat({
+    required StreamingSession session,
+    required String name,
+    required int chat,
+    required int sender,
+  }) {}
+
+  static Future<ChatMessage> _writeMessageToDatabase({
+    required Session session,
+    required MessageType action,
+    required int senderId,
+    required int chatId,
+    required DateTime sentAt,
+    required String? message,
+  }) async {
+    BucketData latestBucket = await getLatestBucket(session, chatId);
+    ChatMessage databaseMessage = ChatMessage(
+      action: MessageType.Message,
+      sentAt: sentAt,
+      message: message,
+      bucket: latestBucket.bucket,
+      senderId: senderId,
+      chatId: chatId,
     );
 
-    session.messages.postMessage(
-      'global',
-      chatMessage,
-    );
+    await ChatMessage.db.insertRow(session, databaseMessage);
+
+    _incrementBucket(session, chatId);
+
+    return databaseMessage;
   }
 }

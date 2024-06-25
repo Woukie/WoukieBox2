@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:woukiebox2_server/src/generated/protocol.dart';
+import 'package:woukiebox2_server/src/socket/chat_manager.dart';
 import 'package:woukiebox2_server/src/socket/session_manager.dart';
 import 'package:woukiebox2_server/src/socket/user_actions.dart';
 import 'package:serverpod/serverpod.dart';
@@ -26,19 +27,50 @@ class SocketsEndpoint extends Endpoint {
     if (message is NetworkChatMessage) {
       switch (message.action) {
         case MessageType.Message:
-          UserActions.chatMessage(session, message, getUserObject(session).id);
-          break;
-        case MessageType.Kick:
-          UserActions.kickUser(session, message);
-          break;
-        case MessageType.Leave:
-          UserActions.leaveChat(session, message);
-          break;
-        case MessageType.Promote:
-          UserActions.promoteChatMember(session, message);
+          if (message.message == null) return;
+          ChatManager.sendMessage(
+            session: session,
+            message: message.message!,
+            chatId: message.chat,
+            senderId: getUserObject(session).id,
+          );
           break;
         case MessageType.Rename:
-          UserActions.renameChat(session, message);
+          if (message.message == null) return;
+          ChatManager.renameChat(
+            session: session,
+            name: message.message!,
+            chat: message.chat,
+          );
+          break;
+        case MessageType.Kick:
+          if (message.targets == null || message.targets!.isEmpty) return;
+          ChatManager.kickUser(
+            session: session,
+            chat: message.chat,
+            target: message.targets!.first,
+          );
+          break;
+        case MessageType.Leave:
+          ChatManager.leaveChat(
+            session: session,
+            chat: message.chat,
+          );
+          break;
+        case MessageType.Promote:
+          ChatManager.promoteUser(
+            session: session,
+            chat: message.chat,
+            target: message.targets!.first,
+          );
+          break;
+        case MessageType.AddFriends:
+          if (message.targets == null || message.targets!.isEmpty) return;
+          ChatManager.addFriends(
+            session: session,
+            chat: message.chat,
+            targets: message.targets!,
+          );
           break;
         default:
       }

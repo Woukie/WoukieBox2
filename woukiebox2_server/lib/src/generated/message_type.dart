@@ -15,7 +15,8 @@ enum MessageType with _i1.SerializableEntity {
   Rename,
   Leave,
   Kick,
-  Promote;
+  Promote,
+  AddFriends;
 
   static MessageType? fromJson(String name) {
     switch (name) {
@@ -29,6 +30,8 @@ enum MessageType with _i1.SerializableEntity {
         return Kick;
       case 'Promote':
         return Promote;
+      case 'AddFriends':
+        return AddFriends;
       default:
         return null;
     }

@@ -30,8 +30,7 @@ import 'network/server/user.dart' as _i18;
 import 'network/shared/chat_message.dart' as _i19;
 import 'user_persistent.dart' as _i20;
 import 'protocol.dart' as _i21;
-import 'package:woukiebox2_client/src/protocol/chat_message.dart' as _i22;
-import 'package:serverpod_auth_client/module.dart' as _i23;
+import 'package:serverpod_auth_client/module.dart' as _i22;
 export 'chat.dart';
 export 'last_read.dart';
 export 'message_type.dart';
@@ -224,13 +223,8 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<int>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i22.ChatMessage>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<_i22.ChatMessage>(e)).toList()
-          : null) as dynamic;
-    }
     try {
-      return _i23.Protocol().deserialize<T>(data, t);
+      return _i22.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -238,7 +232,7 @@ class Protocol extends _i1.SerializationManager {
   @override
   String? getClassNameForObject(Object data) {
     String? className;
-    className = _i23.Protocol().getClassNameForObject(data);
+    className = _i22.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
@@ -306,7 +300,7 @@ class Protocol extends _i1.SerializationManager {
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
-      return _i23.Protocol().deserializeByClassName(data);
+      return _i22.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'Chat') {
       return deserialize<_i2.Chat>(data['data']);

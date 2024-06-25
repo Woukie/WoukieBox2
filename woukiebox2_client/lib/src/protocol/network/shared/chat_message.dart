@@ -18,7 +18,7 @@ abstract class NetworkChatMessage extends _i1.SerializableEntity {
     this.sentAt,
     required this.chat,
     this.message,
-    this.target,
+    this.targets,
     this.bucket,
   });
 
@@ -28,7 +28,7 @@ abstract class NetworkChatMessage extends _i1.SerializableEntity {
     DateTime? sentAt,
     required int chat,
     String? message,
-    List<int>? target,
+    List<int>? targets,
     int? bucket,
   }) = _NetworkChatMessageImpl;
 
@@ -46,8 +46,8 @@ abstract class NetworkChatMessage extends _i1.SerializableEntity {
       chat: serializationManager.deserialize<int>(jsonSerialization['chat']),
       message: serializationManager
           .deserialize<String?>(jsonSerialization['message']),
-      target: serializationManager
-          .deserialize<List<int>?>(jsonSerialization['target']),
+      targets: serializationManager
+          .deserialize<List<int>?>(jsonSerialization['targets']),
       bucket:
           serializationManager.deserialize<int?>(jsonSerialization['bucket']),
     );
@@ -69,7 +69,7 @@ abstract class NetworkChatMessage extends _i1.SerializableEntity {
   String? message;
 
   /// Target list corresponding to the ID of the user target(s) of an action, if applicable.
-  List<int>? target;
+  List<int>? targets;
 
   /// Not null when recieved by the server or for global messages, indicates what bucket the message was stored in on the server.
   int? bucket;
@@ -80,7 +80,7 @@ abstract class NetworkChatMessage extends _i1.SerializableEntity {
     DateTime? sentAt,
     int? chat,
     String? message,
-    List<int>? target,
+    List<int>? targets,
     int? bucket,
   });
   @override
@@ -91,7 +91,7 @@ abstract class NetworkChatMessage extends _i1.SerializableEntity {
       if (sentAt != null) 'sentAt': sentAt?.toJson(),
       'chat': chat,
       if (message != null) 'message': message,
-      if (target != null) 'target': target?.toJson(),
+      if (targets != null) 'targets': targets?.toJson(),
       if (bucket != null) 'bucket': bucket,
     };
   }
@@ -106,7 +106,7 @@ class _NetworkChatMessageImpl extends NetworkChatMessage {
     DateTime? sentAt,
     required int chat,
     String? message,
-    List<int>? target,
+    List<int>? targets,
     int? bucket,
   }) : super._(
           action: action,
@@ -114,7 +114,7 @@ class _NetworkChatMessageImpl extends NetworkChatMessage {
           sentAt: sentAt,
           chat: chat,
           message: message,
-          target: target,
+          targets: targets,
           bucket: bucket,
         );
 
@@ -125,7 +125,7 @@ class _NetworkChatMessageImpl extends NetworkChatMessage {
     Object? sentAt = _Undefined,
     int? chat,
     Object? message = _Undefined,
-    Object? target = _Undefined,
+    Object? targets = _Undefined,
     Object? bucket = _Undefined,
   }) {
     return NetworkChatMessage(
@@ -134,7 +134,7 @@ class _NetworkChatMessageImpl extends NetworkChatMessage {
       sentAt: sentAt is DateTime? ? sentAt : this.sentAt,
       chat: chat ?? this.chat,
       message: message is String? ? message : this.message,
-      target: target is List<int>? ? target : this.target?.clone(),
+      targets: targets is List<int>? ? targets : this.targets?.clone(),
       bucket: bucket is int? ? bucket : this.bucket,
     );
   }

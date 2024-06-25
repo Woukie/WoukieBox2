@@ -9,75 +9,20 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/crud.dart' as _i2;
-import '../endpoints/profile_picture.dart' as _i3;
-import 'package:serverpod_auth_server/module.dart' as _i4;
+import '../endpoints/profile_picture.dart' as _i2;
+import 'package:serverpod_auth_server/module.dart' as _i3;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     var endpoints = <String, _i1.Endpoint>{
-      'crud': _i2.CrudEndpoint()
-        ..initialize(
-          server,
-          'crud',
-          null,
-        ),
-      'profilePicture': _i3.ProfilePictureEndpoint()
+      'profilePicture': _i2.ProfilePictureEndpoint()
         ..initialize(
           server,
           'profilePicture',
           null,
-        ),
+        )
     };
-    connectors['crud'] = _i1.EndpointConnector(
-      name: 'crud',
-      endpoint: endpoints['crud']!,
-      methodConnectors: {
-        'getUser': _i1.MethodConnector(
-          name: 'getUser',
-          params: {
-            'targetId': _i1.ParameterDescription(
-              name: 'targetId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['crud'] as _i2.CrudEndpoint).getUser(
-            session,
-            params['targetId'],
-          ),
-        ),
-        'getBucket': _i1.MethodConnector(
-          name: 'getBucket',
-          params: {
-            'chat': _i1.ParameterDescription(
-              name: 'chat',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-            'bucket': _i1.ParameterDescription(
-              name: 'bucket',
-              type: _i1.getType<int?>(),
-              nullable: true,
-            ),
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['crud'] as _i2.CrudEndpoint).getBucket(
-            session,
-            params['chat'],
-            params['bucket'],
-          ),
-        ),
-      },
-    );
     connectors['profilePicture'] = _i1.EndpointConnector(
       name: 'profilePicture',
       endpoint: endpoints['profilePicture']!,
@@ -89,7 +34,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['profilePicture'] as _i3.ProfilePictureEndpoint)
+              (endpoints['profilePicture'] as _i2.ProfilePictureEndpoint)
                   .getUploadDescription(session),
         ),
         'verifyUpload': _i1.MethodConnector(
@@ -99,11 +44,11 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['profilePicture'] as _i3.ProfilePictureEndpoint)
+              (endpoints['profilePicture'] as _i2.ProfilePictureEndpoint)
                   .verifyUpload(session),
         ),
       },
     );
-    modules['serverpod_auth'] = _i4.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i3.Endpoints()..initializeEndpoints(server);
   }
 }

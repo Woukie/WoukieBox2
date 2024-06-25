@@ -34,7 +34,7 @@ class CrudEndpoint extends Endpoint {
   }
 
   // Get a whole bucket of chat messages by the chat id and bucket. If no bucket is specified, the latest will be returned.
-  Future<List<ChatMessage>?> getBucket(
+  Future<List<NetworkChatMessage>?> getBucket(
       Session session, int chat, int? bucket) async {
     UserInfo? senderInfo = await Util.getAuthUser(session);
     if (senderInfo == null) return null;
@@ -45,11 +45,25 @@ class CrudEndpoint extends Endpoint {
 
     bucket ??= (await ChatManager.getLatestBucket(session, chat)).bucket;
 
-    return (await ChatMessage.db.find(
+    List<ChatMessage> databaseMessages = await ChatMessage.db.find(
       session,
       where: (t) => (t.chatId.equals(chat)) & (t.bucket.equals(bucket)),
       orderBy: (t) => t.sentAt,
       orderDescending: true,
-    ));
+    );
+
+    return databaseMessages
+        .map(
+          (databaseMessage) => NetworkChatMessage(
+            action: databaseMessage.action,
+            sender: senderInfo.id!,
+            chat: chat,
+            bucket: bucket,
+            message: databaseMessage.message,
+            sentAt: databaseMessage.sentAt,
+            targets: databaseMessage.targets,
+          ),
+        )
+        .toList();
   }
 }

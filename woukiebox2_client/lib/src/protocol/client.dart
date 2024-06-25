@@ -10,38 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'package:woukiebox2_client/src/protocol/network/server/user.dart' as _i3;
-import 'package:woukiebox2_client/src/protocol/chat_message.dart' as _i4;
-import 'package:serverpod_auth_client/module.dart' as _i5;
-import 'protocol.dart' as _i6;
-
-/// {@category Endpoint}
-class EndpointCrud extends _i1.EndpointRef {
-  EndpointCrud(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'crud';
-
-  _i2.Future<_i3.UserServer?> getUser(int targetId) =>
-      caller.callServerEndpoint<_i3.UserServer?>(
-        'crud',
-        'getUser',
-        {'targetId': targetId},
-      );
-
-  _i2.Future<List<_i4.ChatMessage>?> getBucket(
-    int chat,
-    int? bucket,
-  ) =>
-      caller.callServerEndpoint<List<_i4.ChatMessage>?>(
-        'crud',
-        'getBucket',
-        {
-          'chat': chat,
-          'bucket': bucket,
-        },
-      );
-}
+import 'package:serverpod_auth_client/module.dart' as _i3;
+import 'protocol.dart' as _i4;
 
 /// {@category Endpoint}
 class EndpointProfilePicture extends _i1.EndpointRef {
@@ -66,10 +36,10 @@ class EndpointProfilePicture extends _i1.EndpointRef {
 
 class _Modules {
   _Modules(Client client) {
-    auth = _i5.Caller(client);
+    auth = _i3.Caller(client);
   }
 
-  late final _i5.Caller auth;
+  late final _i3.Caller auth;
 }
 
 class Client extends _i1.ServerpodClient {
@@ -81,28 +51,23 @@ class Client extends _i1.ServerpodClient {
     Duration? connectionTimeout,
   }) : super(
           host,
-          _i6.Protocol(),
+          _i4.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
           connectionTimeout: connectionTimeout,
         ) {
-    crud = EndpointCrud(this);
     profilePicture = EndpointProfilePicture(this);
     modules = _Modules(this);
   }
-
-  late final EndpointCrud crud;
 
   late final EndpointProfilePicture profilePicture;
 
   late final _Modules modules;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {
-        'crud': crud,
-        'profilePicture': profilePicture,
-      };
+  Map<String, _i1.EndpointRef> get endpointRefLookup =>
+      {'profilePicture': profilePicture};
 
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup =>

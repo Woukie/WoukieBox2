@@ -13,6 +13,6 @@ fields:
   ### The content of an action if needed, potentially message, or rename chat action.
   message: String?
   ### Target list corresponding to the ID of the user target(s) of an action, if applicable.
-  target: List<int>?
+  targets: List<int>?
   ### Not null when recieved by the server or for global messages, indicates what bucket the message was stored in on the server.
   bucket: int?
