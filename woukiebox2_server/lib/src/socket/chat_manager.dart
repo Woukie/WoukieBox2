@@ -382,6 +382,93 @@ class ChatManager {
     }
   }
 
+  static Future<void> createChat({
+    required StreamingSession session,
+    required String name,
+    required int senderId,
+    required List<int> targetIds,
+  }) async {
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return;
+
+    UserPersistent senderPersistent = (await Util.getPersistentData(session))!;
+
+    // Can only create a group with friends
+    for (var target in targetIds) {
+      if (!senderPersistent.friends.contains(target)) return;
+    }
+
+    targetIds.add(senderInfo.id!);
+
+    Chat chat = await Chat.db.insertRow(
+      session,
+      Chat(
+        users: targetIds,
+        name: name.trim(),
+        creator: senderId,
+        owners: [senderId],
+        lastMessage: DateTime.now().toUtc(),
+      ),
+    );
+
+    for (int target in targetIds) {
+      UserPersistent? targetPersistent = await Util.getPersistentData(
+        session,
+        target,
+      );
+
+      if (targetPersistent == null) continue;
+
+      targetPersistent.chats.add(chat.id!);
+      await UserPersistent.db.updateRow(session, targetPersistent);
+
+      session.messages.postMessage(
+        target.toString(),
+        CreateChatServer(chat: chat),
+      );
+    }
+  }
+
+  static Future<void> readChat({
+    required StreamingSession session,
+    required int chat,
+  }) async {
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return;
+
+    UserPersistent senderPersistent =
+        (await Util.getPersistentData(session, senderInfo.id))!;
+
+    if (!senderPersistent.chats.contains(chat)) return;
+
+    LastRead? existingLastRead = await LastRead.db.findFirstRow(
+      session,
+      where: (row) =>
+          (row.chatId.equals(chat)) & (row.userInfoId.equals(senderInfo.id)),
+    );
+
+    DateTime readAt = DateTime.now().toUtc();
+
+    if (existingLastRead == null) {
+      await LastRead.db.insertRow(
+        session,
+        LastRead(
+          userInfoId: senderInfo.id!,
+          chatId: chat,
+          readAt: readAt,
+        ),
+      );
+    } else {
+      existingLastRead.readAt = readAt;
+      await LastRead.db.updateRow(session, existingLastRead);
+    }
+
+    session.messages.postMessage(
+      senderInfo.id.toString(),
+      ReadChatServer(chat: chat, readAt: readAt),
+    );
+  }
+
   /// Writes a message to the database.
   ///
   /// Handles incrementing the bucket automatically, also updates the [Chat]'s lastMessage.

@@ -1,3 +1,6 @@
+crud:
+  - getUser:
+  - getBucket:
 profilePicture:
   - getUploadDescription:
   - verifyUpload:

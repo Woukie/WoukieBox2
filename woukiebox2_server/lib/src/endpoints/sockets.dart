@@ -2,8 +2,9 @@ import 'dart:core';
 
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 import 'package:woukiebox2_server/src/socket/chat_manager.dart';
+import 'package:woukiebox2_server/src/socket/friend_manager.dart';
 import 'package:woukiebox2_server/src/socket/session_manager.dart';
-import 'package:woukiebox2_server/src/socket/user_actions.dart';
+import 'package:woukiebox2_server/src/socket/profile_manager.dart';
 import 'package:serverpod/serverpod.dart';
 
 class SocketsEndpoint extends Endpoint {
@@ -77,16 +78,30 @@ class SocketsEndpoint extends Endpoint {
             senderId: getUserObject(session).id,
           );
           break;
+        case MessageType.Create:
+          if (message.message == null || message.targets == null) return;
+          ChatManager.createChat(
+            session: session,
+            name: message.message!,
+            senderId: getUserObject(session).id,
+            targetIds: message.targets!,
+          );
+          break;
         default:
       }
     } else if (message is UpdateProfileClient) {
-      UserActions.updateProfile(session, message, getUserObject(session).id);
+      ProfileManager.updateProfile(session, message, getUserObject(session).id);
     } else if (message is FriendRequestClient) {
-      UserActions.friendRequest(session, message);
-    } else if (message is CreateChatClient) {
-      UserActions.createChat(session, message);
+      FriendManager.friendRequest(
+        session: session,
+        positive: message.positive,
+        targetId: message.target,
+      );
     } else if (message is ReadChatClient) {
-      UserActions.readChat(session, message);
+      ChatManager.readChat(
+        session: session,
+        chat: message.chat,
+      );
     }
   }
 }
