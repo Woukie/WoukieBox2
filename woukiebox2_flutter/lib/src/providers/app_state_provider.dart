@@ -66,8 +66,8 @@ class AppStateProvider extends ChangeNotifier {
   );
 
   Future<String> messageNotification(
-    protocol.UserClient sender,
-    protocol.ChatMessageServer message,
+    User sender,
+    NetworkChatMessage message,
   ) async {
     return '''
       <toast>
@@ -115,7 +115,7 @@ class AppStateProvider extends ChangeNotifier {
   }
 
   Future<void> readChat(int chat) async {
-    await client.sockets.sendStreamMessage(protocol.ReadChatClient(chat: chat));
+    await client.sockets.sendStreamMessage(ReadChatClient(chat: chat));
   }
 
   resetData() {
@@ -134,49 +134,70 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  initGroupChats(protocol.ChatsServer message) async {
+  initGroupChats(ChatsServer message) async {
     _chats.clear();
 
-    for (protocol.Chat chat in message.chats) {
+    for (Chat chat in message.chats) {
       if (chat.id == null) continue;
 
       _chats[chat.id!] = GroupChat(
-        chat.id!,
-        chat.users,
-        chat.name,
-        chat.owners,
-        chat.creator,
-        chat.lastMessage,
+        id: chat.id!,
+        users: chat.users,
+        name: chat.name,
+        owners: chat.owners,
+        creator: chat.creator,
+        lastMessage: chat.lastMessage,
       );
     }
   }
 
-  chatMessage(protocol.ChatMessageServer message) async {
-    protocol.UserClient? user = _users[message.sender];
-    if (user == null) return; // This will never happen. But who knows?
+  chatMessage(NetworkChatMessage message) async {
+    User? user = _users[message.sender];
+    if (user == null) return;
+
+    switch (message.action) {
+      case MessageType.AddFriends:
+        _chats[message.chat]?.users.addAll(message.targets!);
+
+        if (isChatSelected() && _selectedChat == message.chat) {
+          readChat(message.chat);
+        }
+
+        break;
+      case MessageType.Kick:
+        removeUser(
+          message.targets!.first,
+          message.chat,
+          message.sentAt!,
+          null,
+        );
+        break;
+      case MessageType.Leave:
+        removeUser(
+          message.sender!,
+          message.chat,
+          message.sentAt!,
+          message.targets,
+        );
+        break;
+      case MessageType.Promote:
+        chats[message.chat]?.owners.add(message.targets!.first);
+
+        if (isChatSelected() && _selectedChat == message.chat) {
+          readChat(message.chat);
+        }
+        break;
+      case MessageType.Rename:
+        _chats[message.chat]?.name = message.message!;
+        break;
+      default:
+    }
 
     if (message.chat == 0) {
-      ChatMessage writtenMessage = ChatMessage(
-        username: user.username,
-        color: user.colour,
-        image: user.image,
-        bucket: 0,
-        message: message.message,
-        senderId: user.id,
-        sentAt: message.sentAt,
-      );
-
-      _messages.add(writtenMessage);
+      _messages.add(message);
     } else {
-      ChatMessage writtenMessage = ChatMessage(
-        bucket: message.bucket!,
-        senderId: message.sender,
-        message: message.message,
-        sentAt: message.sentAt,
-      );
-
-      _chats[message.chat]?.messages.add(writtenMessage);
-      _chats[message.chat]?.lastMessage = message.sentAt;
+      _chats[message.chat]?.messages.add(message);
+      _chats[message.chat]?.lastMessage = message.sentAt!;
 
       if (_selectedChat == message.chat && _selectedPage == 1) {
         readChat(message.chat);
@@ -230,13 +251,13 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  roomMembers(protocol.RoomMembersServer message) {
+  roomMembers(RoomMembersServer message) {
     _users.forEach((id, user) {
       user.visible = false;
     });
 
-    for (protocol.UserServer user in message.users) {
-      _users[user.id] = protocol.UserClient(
+    for (UserServer user in message.users) {
+      _users[user.id] = User(
         id: user.id,
         username: user.username,
         bio: user.bio,
@@ -250,57 +271,10 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  leaveMessage(protocol.LeaveChatServer message) {
-    protocol.UserClient? user = _users[message.sender];
-    if (user == null) return; // This will never happen. But who knows?
+  joinMessage(JoinChatServer message) {
+    // TODO: log global join messages
 
-    if (message.chat == 0) {
-      _messages.add(
-        LeaveMessage(
-          colour: user.colour,
-          senderId: message.sender,
-          username: user.username,
-          sentAt: message.sentAt,
-        ),
-      );
-
-      _users[message.sender]?.visible = false;
-    } else {
-      GroupChat? chat = _chats[message.chat];
-      if (chat == null) return;
-
-      if (message.sender == currentUser) {
-        _selectedChat = null;
-        _chats.remove(chat.id);
-      } else {
-        chat.lastMessage = message.sentAt;
-        chat.owners = message.owners ?? chat.owners;
-        chat.users.remove(message.sender);
-        chat.messages.add(
-          LeaveMessage(
-            colour: user.colour,
-            senderId: message.sender,
-            username: user.username,
-            sentAt: message.sentAt,
-          ),
-        );
-      }
-    }
-
-    notifyListeners();
-  }
-
-  joinMessage(protocol.JoinChatServer message) {
-    _messages.add(
-      JoinMessage(
-        username: message.sender.username,
-        colour: message.sender.colour,
-        senderId: message.sender.id,
-        sentAt: message.sentAt,
-      ),
-    );
-
-    _users[message.sender.id] = protocol.UserClient(
+    _users[message.sender.id] = User(
       id: message.sender.id,
       username: message.sender.username,
       bio: message.sender.bio,
@@ -313,44 +287,39 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  selfIdentifier(protocol.SelfIdentifierServer message) {
+  selfIdentifier(SelfIdentifierServer message) {
     _currentUser = message.id;
     notifyListeners();
   }
 
-  updateProfile(protocol.UpdateProfileServer message) {
-    protocol.UserClient? user = _users[message.sender];
-    // The server never sends a null sender, and all users are tracked. But who knows?
+  updateProfile(UpdateProfileServer message) {
+    User? user = _users[message.sender];
     if (user == null) return;
 
     // We only want to print name and colour changes to the chat
-    if (message.username != null || message.colour != null) {
-      _messages.add(
-        ProfileMessage(
-          oldUsername: user.username,
-          oldColour: user.colour,
-          newUsername: message.username,
-          newColour: message.colour,
-          senderId: message.sender,
-          sentAt: message.sentAt,
-        ),
-      );
-    }
+    // TODO: log global profile changes
+    // if (message.username != null || message.colour != null) {
+    //   _messages.add(
+    //     ProfileMessage(
+    //       oldUsername: user.username,
+    //       oldColour: user.colour,
+    //       newUsername: message.username,
+    //       newColour: message.colour,
+    //       senderId: message.sender,
+    //       sentAt: message.sentAt,
+    //     ),
+    //   );
+    // }
 
-    _users.update(
-      message.sender,
-      (user) => user.copyWith(
-        bio: message.bio,
-        colour: message.colour,
-        username: message.username,
-        image: message.image,
-      ),
-    );
+    user.bio = message.bio ?? user.bio;
+    user.colour = message.colour ?? user.colour;
+    user.username = message.username ?? user.username;
+    user.image = message.image ?? user.image;
 
     notifyListeners();
   }
 
-  void friendList(protocol.FriendListServer message) {
+  void friendList(FriendListServer message) {
     _friends.clear();
     _friends.addAll(message.friends);
 
@@ -367,12 +336,12 @@ class AppStateProvider extends ChangeNotifier {
     if (_loadingUsers.contains(userId)) return;
     _loadingUsers.add(userId);
 
-    protocol.UserServer? user = await client.crud.getUser(userId);
+    UserServer? user = await client.crud.getUser(userId);
 
     // We double check the loading users array in case we have logged out, which clears the set
     if (_loadingUsers.contains(userId)) {
       if (user != null) {
-        _users[userId] = protocol.UserClient(
+        _users[userId] = User(
           id: user.id,
           username: user.username,
           bio: user.bio,
@@ -389,14 +358,14 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> createChat(protocol.CreateChatServer message) async {
+  Future<void> createChat(CreateChatServer message) async {
     _chats[message.chat.id!] = GroupChat(
-      message.chat.id!,
-      message.chat.users,
-      message.chat.name,
-      message.chat.owners,
-      message.chat.creator,
-      message.chat.lastMessage,
+      id: message.chat.id!,
+      users: message.chat.users,
+      name: message.chat.name,
+      owners: message.chat.owners,
+      creator: message.chat.creator,
+      lastMessage: message.chat.lastMessage,
     );
 
     if (message.chat.creator == _currentUser) {
@@ -406,11 +375,6 @@ class AppStateProvider extends ChangeNotifier {
       readChat(message.chat.id!);
     }
 
-    notifyListeners();
-  }
-
-  void renameChat(protocol.RenameChat message) {
-    _chats[message.chat]?.name = message.name;
     notifyListeners();
   }
 
@@ -426,20 +390,14 @@ class AppStateProvider extends ChangeNotifier {
     if (groupChat.messages.isEmpty) {
       if (groupChat.bucketsLoading.contains(-1)) return;
     } else {
-      ChatMessage chatMessage = groupChat.messages.firstWhere((message) {
-        return message is ChatMessage;
-      }) as ChatMessage;
-      bucket = chatMessage.bucket;
-
-      // cannot do -= for null safety
-      bucket = bucket - 1;
+      bucket = groupChat.messages.first.bucket! - 1;
     }
 
     if (bucket == 0 || groupChat.bucketsLoading.contains(bucket)) return;
 
     groupChat.bucketsLoading.add(bucket ?? -1);
 
-    List<protocol.ChatMessage>? chatMessages =
+    List<NetworkChatMessage>? chatMessages =
         await client.crud.getBucket(chat, bucket);
 
     // We double check if the group chat still exists in case we logged out
@@ -447,87 +405,21 @@ class AppStateProvider extends ChangeNotifier {
     if (_chats[chat] != null &&
         chatMessages != null &&
         chatMessages.isNotEmpty) {
-      List<GlobalMessage> newMessages = chatMessages.map((message) {
-        return GlobalMessage.networkToWritten(message);
-      }).toList();
-
-      groupChat.messages.insertAll(0, newMessages.reversed);
+      groupChat.messages.insertAll(0, chatMessages.reversed);
       notifyListeners();
     }
 
     groupChat.bucketsLoading.remove(bucket);
   }
 
-  void lastReadServer(protocol.LastReadServer message) {
+  void lastReadServer(LastReadServer message) {
     _lastRead.clear();
     _lastRead.addAll(message.readData);
     notifyListeners();
   }
 
-  void readChatServer(protocol.ReadChatServer message) {
+  void readChatServer(ReadChatServer message) {
     _lastRead[message.chat] = message.readAt;
-    notifyListeners();
-  }
-
-  void kickChatMember(protocol.KickChatMemberServer message) {
-    if (message.target == currentUser) {
-      if (_selectedChat == message.chat) _selectedChat = null;
-      chats.remove(message.chat);
-    } else {
-      chats[message.chat]?.users.remove(message.target);
-      chats[message.chat]?.lastMessage = message.sentAt;
-      chats[message.chat]?.messages.add(
-            KickMessage(
-              bucket: message.bucket,
-              senderId: message.sender,
-              sentAt: message.sentAt,
-              target: message.target,
-            ),
-          );
-
-      if (isChatSelected() && _selectedChat == message.chat) {
-        readChat(message.chat);
-      }
-    }
-
-    notifyListeners();
-  }
-
-  void promoteChatMember(protocol.PromoteChatMemberServer message) {
-    chats[message.chat]?.owners.add(message.target);
-    chats[message.chat]?.lastMessage = message.sentAt;
-    chats[message.chat]?.messages.add(
-          PromoteMessage(
-            bucket: message.bucket,
-            senderId: message.sender,
-            sentAt: message.sentAt,
-            target: message.target,
-          ),
-        );
-
-    if (isChatSelected() && _selectedChat == message.chat) {
-      readChat(message.chat);
-    }
-
-    notifyListeners();
-  }
-
-  void addChatMembers(protocol.AddChatMembersServer message) {
-    _chats[message.chat]?.users.addAll(message.users);
-    chats[message.chat]?.lastMessage = message.sentAt;
-    chats[message.chat]?.messages.add(
-          AddUsersMessage(
-            bucket: message.bucket,
-            senderId: message.sender,
-            sentAt: message.sentAt,
-            users: message.users,
-          ),
-        );
-
-    if (isChatSelected() && _selectedChat == message.chat) {
-      readChat(message.chat);
-    }
-
     notifyListeners();
   }
 
@@ -537,5 +429,29 @@ class AppStateProvider extends ChangeNotifier {
 
   bool isChatSelected() {
     return _selectedPage == 1 && chats.containsKey(_selectedChat);
+  }
+
+  void removeUser(
+      int kickedUser, int chat, DateTime sentAt, List<int>? newOwners) {
+    User? user = _users[kickedUser];
+    if (user == null) return;
+
+    if (chat == 0) {
+      _users[kickedUser]?.visible = false;
+    } else {
+      GroupChat? groupChat = _chats[chat];
+      if (groupChat == null) return;
+
+      if (kickedUser == currentUser) {
+        _selectedChat = null;
+        _chats.remove(groupChat.id);
+      } else {
+        groupChat.lastMessage = sentAt;
+        groupChat.owners = newOwners ?? groupChat.owners;
+        groupChat.users.remove(kickedUser);
+      }
+    }
+
+    notifyListeners();
   }
 }

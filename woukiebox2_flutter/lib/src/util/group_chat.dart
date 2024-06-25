@@ -16,14 +16,14 @@ class GroupChat {
   final List<NetworkChatMessage> messages = List.empty(growable: true);
   final List<int> bucketsLoading = List.empty(growable: true);
 
-  GroupChat(
-    this.id,
-    this.users,
-    this.name,
-    this.owners,
-    this.creator,
-    this.lastMessage,
-  );
+  GroupChat({
+    required this.id,
+    required this.users,
+    required this.name,
+    required this.owners,
+    required this.creator,
+    required this.lastMessage,
+  });
 
   String _generateGroupName(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);

@@ -213,6 +213,7 @@ class ChatManager {
           action: MessageType.Leave,
           bucket: chatMessage?.bucket,
           sentAt: chatMessage?.sentAt,
+          targets: chat.owners,
           sender: senderId,
           chat: chatId,
         ),
@@ -409,6 +410,14 @@ class ChatManager {
         owners: [senderId],
         lastMessage: DateTime.now().toUtc(),
       ),
+    );
+
+    _writeMessageToDatabase(
+      session: session,
+      action: MessageType.Create,
+      senderId: senderId,
+      chatId: chat.id!,
+      sentAt: chat.lastMessage,
     );
 
     for (int target in targetIds) {
