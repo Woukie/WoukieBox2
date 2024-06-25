@@ -28,7 +28,8 @@ class ChatsList extends StatelessWidget {
 
     groupChats.removeWhere((chat) {
       if (chat.name.isEmpty) {
-        return !GroupChat.generateGroupName(chat, appStateProvider)
+        return !chat
+            .getName(context)
             .toLowerCase()
             .contains(searchQuery.toLowerCase());
       }
@@ -83,10 +84,7 @@ class ChatsList extends StatelessWidget {
                       Expanded(
                         child: Text(
                           softWrap: false,
-                          groupChat.name.isEmpty
-                              ? GroupChat.generateGroupName(
-                                  groupChat, appStateProvider)
-                              : groupChat.name,
+                          groupChat.getName(context),
                           overflow: TextOverflow.fade,
                         ),
                       ),

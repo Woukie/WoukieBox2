@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/user.dart';
-import 'package:woukiebox2/src/util/written_message.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class GroupChat {
@@ -14,7 +13,7 @@ class GroupChat {
   DateTime lastMessage;
 
   // Supports any type from written_message. Use WrittenChatMessage over WrittenGlobalMessage to display the latest user data
-  final List<GlobalMessage> messages = List.empty(growable: true);
+  final List<NetworkChatMessage> messages = List.empty(growable: true);
   final List<int> bucketsLoading = List.empty(growable: true);
 
   GroupChat(
@@ -26,18 +25,17 @@ class GroupChat {
     this.lastMessage,
   );
 
-  static String generateGroupName(
-      GroupChat groupChat, AppStateProvider appStateProvider) {
-    List<int> members = groupChat.users
-        .where((user) => user != appStateProvider.currentUser)
-        .toList();
+  String _generateGroupName(BuildContext context) {
+    AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
+
+    List<int> members =
+        users.where((user) => user != appStateProvider.currentUser).toList();
 
     String name = "";
     for (int i = 0; i < min(members.length, 3); i++) {
-      int member = members[i];
       User user = User.getUser(context, id);
-      if (user == null) appStateProvider.scheduleGetUser(member);
-      name += "${user?.username ?? "Loading..."}, ";
+
+      name += "${user.username}, ";
     }
 
     if (name.isEmpty) {
@@ -55,5 +53,9 @@ class GroupChat {
     return appStateProvider.selectedChat != id &&
         (!appStateProvider.lastRead.containsKey(id) ||
             lastMessage.isAfter(appStateProvider.lastRead[id]!));
+  }
+
+  String getName(BuildContext context) {
+    return name.isEmpty ? _generateGroupName(context) : name;
   }
 }
