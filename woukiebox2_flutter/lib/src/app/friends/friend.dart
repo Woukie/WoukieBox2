@@ -4,8 +4,8 @@ import 'package:woukiebox2/main.dart';
 import 'package:woukiebox2/src/app/profile/profile_dropdown.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
-import 'package:woukiebox2/src/util/user.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
+import 'package:woukiebox2/src/util/user.dart';
 import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class Friend extends StatelessWidget {
@@ -28,14 +28,7 @@ class Friend extends StatelessWidget {
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
 
-    bool loading = appStateProvider.users[userId] == null;
-
-    UserClient user =
-        appStateProvider.users[userId] ?? UserUtil.getLoading(context, userId);
-
-    if (loading) {
-      appStateProvider.scheduleGetUser(userId);
-    }
+    User user = User.getUser(context, userId);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
@@ -80,10 +73,10 @@ class Friend extends StatelessWidget {
                         onPressed: () {
                           Navigator.pop(context);
                           client.sockets.sendStreamMessage(
-                            CreateChatClient(
-                              name: "",
-                              owners: [userId].toList(),
-                              users: [userId].toList(),
+                            NetworkChatMessage(
+                              action: MessageType.Create,
+                              targets: [userId].toList(),
+                              chat: 0,
                             ),
                           );
                         },

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/providers/styling_provider.dart';
-import 'package:woukiebox2_client/woukiebox2_client.dart';
+import 'package:woukiebox2/src/util/user.dart';
 
 import 'friend.dart';
 
@@ -144,8 +144,8 @@ class FriendList extends StatelessWidget {
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
     userIds.sort((userA, userB) {
-      UserClient? userClientA = appStateProvider.users[userA];
-      UserClient? userClientB = appStateProvider.users[userB];
+      User? userClientA = appStateProvider.users[userA];
+      User? userClientB = appStateProvider.users[userB];
 
       if ((userClientA == null) || (userClientB == null)) {
         return userA.compareTo(userB);
