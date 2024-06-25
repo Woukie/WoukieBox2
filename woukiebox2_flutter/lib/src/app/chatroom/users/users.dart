@@ -4,9 +4,8 @@ import 'package:woukiebox2/src/app/profile/profile_editor.dart';
 import 'package:woukiebox2/src/app/profile/profile_preview.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/providers/styling_provider.dart';
-import 'package:woukiebox2/src/util/user.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
-import 'package:woukiebox2_client/woukiebox2_client.dart';
+import 'package:woukiebox2/src/util/user.dart';
 
 import 'user_item.dart';
 
@@ -20,25 +19,20 @@ class Users extends StatelessWidget {
 
     GroupChat? groupChat =
         appStateProvider.chats[appStateProvider.selectedChat];
-    List<UserClient> users = List.empty(growable: true);
+    List<User> users = List.empty(growable: true);
+
     if (appStateProvider.selectedPage == 0) {
       users = appStateProvider.users.values.toList();
       users.removeWhere((user) => !user.visible);
-    } else if (appStateProvider.chats
-        .containsKey(appStateProvider.selectedChat)) {
+    } else if (appStateProvider.chats.containsKey(
+      appStateProvider.selectedChat,
+    )) {
       for (int userId in groupChat!.users) {
-        UserClient? user = appStateProvider.users[userId];
-
-        if (user == null) {
-          user = UserUtil.getLoading(context, userId);
-          appStateProvider.scheduleGetUser(userId);
-        }
-
-        users.add(user);
+        users.add(User.getUser(context, userId));
       }
     }
 
-    final UserClient? localUser = appStateProvider.currentUser != null
+    final User? localUser = appStateProvider.currentUser != null
         ? appStateProvider.users[appStateProvider.currentUser!]
         : null;
 
@@ -75,7 +69,7 @@ class Users extends StatelessWidget {
                     child: ListView.builder(
                       itemCount: users.length,
                       itemBuilder: (context, index) {
-                        UserClient user = users[index];
+                        User user = users[index];
 
                         return ProfilePreview(
                           user: user,

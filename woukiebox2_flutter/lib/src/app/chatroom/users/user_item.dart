@@ -6,7 +6,6 @@ import 'package:woukiebox2/src/providers/app_state_provider.dart';
 import 'package:woukiebox2/src/util/user.dart';
 import 'package:woukiebox2/src/util/group_chat.dart';
 import 'package:woukiebox2/src/util/hex_color.dart';
-import 'package:woukiebox2_client/woukiebox2_client.dart';
 
 class UserItem extends StatelessWidget {
   const UserItem({
@@ -20,7 +19,7 @@ class UserItem extends StatelessWidget {
   Widget build(BuildContext context) {
     AppStateProvider appStateProvider = Provider.of<AppStateProvider>(context);
 
-    UserClient user = UserUtil.getUser(context, userId);
+    User user = User.getUser(context, userId);
 
     GroupChat? chat = appStateProvider.chats[appStateProvider.selectedChat];
 
