@@ -60,34 +60,34 @@ class Message extends StatelessWidget {
               : HeadMessage(chatMessage: message);
         case MessageType.AddFriends:
           return SystemMessage(
-            senderId: message.sender,
+            senderId: message.sender!,
             actionText: " added ",
             targetIds: message.targets,
           );
         case MessageType.Rename:
           return SystemMessage(
-            senderId: message.sender,
+            senderId: message.sender!,
             actionText: " renamed the chat to '${message.message}'",
           );
         case MessageType.Create:
           return SystemMessage(
-            senderId: message.sender,
+            senderId: message.sender!,
             actionText: " created the chat",
           );
         case MessageType.Kick:
           return SystemMessage(
-            senderId: message.sender,
+            senderId: message.sender!,
             actionText: " kicked ",
             targetIds: message.targets,
           );
         case MessageType.Leave:
           return SystemMessage(
-            senderId: message.sender,
+            senderId: message.sender!,
             actionText: " left the chat",
           );
         case MessageType.Promote:
           return SystemMessage(
-            senderId: message.sender,
+            senderId: message.sender!,
             actionText: " promoted ",
             targetIds: message.targets,
           );

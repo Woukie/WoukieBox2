@@ -65,6 +65,14 @@ class EndpointProfilePicture extends _i1.EndpointRef {
       );
 }
 
+/// {@category Endpoint}
+class EndpointSockets extends _i1.EndpointRef {
+  EndpointSockets(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'sockets';
+}
+
 class _Modules {
   _Modules(Client client) {
     auth = _i5.Caller(client);
@@ -90,6 +98,7 @@ class Client extends _i1.ServerpodClient {
         ) {
     crud = EndpointCrud(this);
     profilePicture = EndpointProfilePicture(this);
+    sockets = EndpointSockets(this);
     modules = _Modules(this);
   }
 
@@ -97,12 +106,15 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointProfilePicture profilePicture;
 
+  late final EndpointSockets sockets;
+
   late final _Modules modules;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
         'crud': crud,
         'profilePicture': profilePicture,
+        'sockets': sockets,
       };
 
   @override

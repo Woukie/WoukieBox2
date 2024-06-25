@@ -11,10 +11,11 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
+/// Represents a logable action. If a client recieves this, it is intended for them to log it. Clients can also send this to initiate an action.
 abstract class NetworkChatMessage extends _i1.SerializableEntity {
   NetworkChatMessage._({
     required this.action,
-    required this.sender,
+    this.sender,
     this.sentAt,
     required this.chat,
     this.message,
@@ -24,7 +25,7 @@ abstract class NetworkChatMessage extends _i1.SerializableEntity {
 
   factory NetworkChatMessage({
     required _i2.MessageType action,
-    required int sender,
+    int? sender,
     DateTime? sentAt,
     required int chat,
     String? message,
@@ -40,7 +41,7 @@ abstract class NetworkChatMessage extends _i1.SerializableEntity {
       action: serializationManager
           .deserialize<_i2.MessageType>(jsonSerialization['action']),
       sender:
-          serializationManager.deserialize<int>(jsonSerialization['sender']),
+          serializationManager.deserialize<int?>(jsonSerialization['sender']),
       sentAt: serializationManager
           .deserialize<DateTime?>(jsonSerialization['sentAt']),
       chat: serializationManager.deserialize<int>(jsonSerialization['chat']),
@@ -56,8 +57,8 @@ abstract class NetworkChatMessage extends _i1.SerializableEntity {
   /// The action that is intended by this message
   _i2.MessageType action;
 
-  /// ID representing the user that initiated the message.
-  int sender;
+  /// ID representing the user that initiated the message. Null when sent by a client
+  int? sender;
 
   /// Time stamp for when the message was sent. Server always sends this.
   DateTime? sentAt;
@@ -87,7 +88,7 @@ abstract class NetworkChatMessage extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'action': action.toJson(),
-      'sender': sender,
+      if (sender != null) 'sender': sender,
       if (sentAt != null) 'sentAt': sentAt?.toJson(),
       'chat': chat,
       if (message != null) 'message': message,
@@ -102,7 +103,7 @@ class _Undefined {}
 class _NetworkChatMessageImpl extends NetworkChatMessage {
   _NetworkChatMessageImpl({
     required _i2.MessageType action,
-    required int sender,
+    int? sender,
     DateTime? sentAt,
     required int chat,
     String? message,
@@ -121,7 +122,7 @@ class _NetworkChatMessageImpl extends NetworkChatMessage {
   @override
   NetworkChatMessage copyWith({
     _i2.MessageType? action,
-    int? sender,
+    Object? sender = _Undefined,
     Object? sentAt = _Undefined,
     int? chat,
     Object? message = _Undefined,
@@ -130,7 +131,7 @@ class _NetworkChatMessageImpl extends NetworkChatMessage {
   }) {
     return NetworkChatMessage(
       action: action ?? this.action,
-      sender: sender ?? this.sender,
+      sender: sender is int? ? sender : this.sender,
       sentAt: sentAt is DateTime? ? sentAt : this.sentAt,
       chat: chat ?? this.chat,
       message: message is String? ? message : this.message,

@@ -28,12 +28,11 @@ class _MessageBoxState extends State<MessageBox> {
           : appStateProvider.selectedChat;
       if (target == null) return;
 
-      client.sockets.sendStreamMessage(
-        ChatMessageClient(
-          message: message,
-          target: target,
-        ),
-      );
+      client.sockets.sendStreamMessage(NetworkChatMessage(
+        action: MessageType.Message,
+        message: message,
+        chat: target,
+      ));
     }
 
     _focusNode ??= FocusNode(

@@ -1,11 +1,11 @@
+### Represents a logable action. If a client recieves this, it is intended for them to log it. Clients can also send this to initiate an action.
 class: NetworkChatMessage
 
-### Represents a logable action. If a client recieves this, it is intended for them to log it. Clients can also send this to initiate an action.
 fields:
   ### The action that is intended by this message
   action: MessageType
-  ### ID representing the user that initiated the message.
-  sender: int
+  ### ID representing the user that initiated the message. Null when sent by a client
+  sender: int?
   ### Time stamp for when the message was sent. Server always sends this.
   sentAt: DateTime?
   ### Chat ID of the destination, 0 = global.

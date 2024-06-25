@@ -16,7 +16,7 @@ class HeadMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    User user = User.getUser(context, chatMessage.sender);
+    User user = User.getUser(context, chatMessage.sender!);
 
     return Padding(
       padding: const EdgeInsets.only(top: 12),
