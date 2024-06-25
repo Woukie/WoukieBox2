@@ -14,10 +14,10 @@ class SessionManager {
 
     session.messages.postMessage(
       "global",
-      LeaveChatServer(
-        chat: 0,
+      NetworkChatMessage(
+        action: MessageType.Leave,
         sender: userId,
-        sentAt: DateTime.now().toUtc(),
+        chat: 0,
       ),
     );
 
