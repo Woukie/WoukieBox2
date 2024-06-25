@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woukiebox2/src/app/profile/profile_pic.dart';
 import 'package:woukiebox2/src/providers/app_state_provider.dart';
-import 'package:woukiebox2/src/util/hex_color.dart';
-import 'package:woukiebox2_client/woukiebox2_client.dart';
+import 'package:woukiebox2/src/util/user.dart';
 
 class SelectFriendDialogue {
   static Future<void> showDialogue(
@@ -59,12 +58,7 @@ class SelectFriendDialogue {
                             itemBuilder: (BuildContext context, int index) {
                               int friendId = friendsList[index];
 
-                              UserClient? user =
-                                  appStateProvider.users[friendId];
-
-                              if (user == null) {
-                                appStateProvider.scheduleGetUser(friendId);
-                              }
+                              User user = User.getUser(context, friendId);
 
                               return InkWell(
                                 borderRadius: BorderRadius.circular(12),
@@ -79,22 +73,19 @@ class SelectFriendDialogue {
                                   child: Row(
                                     children: [
                                       ProfilePic(
-                                        url: user == null ? "" : user.image,
-                                        offline: user?.visible ?? false,
+                                        url: user.image,
+                                        offline: user.visible,
                                         showIndicator: false,
                                       ),
                                       const Padding(
-                                          padding: EdgeInsets.only(right: 8)),
+                                        padding: EdgeInsets.only(right: 8),
+                                      ),
                                       Expanded(
                                         child: Text(
                                           style: TextStyle(
-                                            color: user == null
-                                                ? null
-                                                : HexColor.fromHex(user.colour),
+                                            color: user.getColor(),
                                           ),
-                                          user == null
-                                              ? "Loading..."
-                                              : user.username,
+                                          user.username,
                                         ),
                                       ),
                                       const Padding(
