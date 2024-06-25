@@ -59,12 +59,10 @@ class ConnectionStateProvider extends ChangeNotifier {
       print("${message.runtimeType} | $message");
     }
 
-    if (message is ChatMessageServer) {
+    if (message is NetworkChatMessage) {
       _appStateProvider.chatMessage(message);
     } else if (message is RoomMembersServer) {
       _appStateProvider.roomMembers(message);
-    } else if (message is LeaveChatServer) {
-      _appStateProvider.leaveMessage(message);
     } else if (message is JoinChatServer) {
       _appStateProvider.joinMessage(message);
     } else if (message is SelfIdentifierServer) {
@@ -81,14 +79,6 @@ class ConnectionStateProvider extends ChangeNotifier {
       _appStateProvider.lastReadServer(message);
     } else if (message is ReadChatServer) {
       _appStateProvider.readChatServer(message);
-    } else if (message is AddChatMembersServer) {
-      _appStateProvider.addChatMembers(message);
-    } else if (message is KickChatMemberServer) {
-      _appStateProvider.kickChatMember(message);
-    } else if (message is PromoteChatMemberServer) {
-      _appStateProvider.promoteChatMember(message);
-    } else if (message is RenameChat) {
-      _appStateProvider.renameChat(message);
     }
   }
 }
