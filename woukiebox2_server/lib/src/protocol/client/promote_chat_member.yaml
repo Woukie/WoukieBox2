@@ -1,5 +1,0 @@
-class: PromoteChatMemberClient
-
-fields:
-  user: int
-  chat: int

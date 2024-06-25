@@ -1,9 +1,12 @@
 class: ChatMessage
+serverOnly: true
 
 table: chatmessage
 fields:
   sentAt: DateTime
-  message: String
+  action: MessageType
+  message: String?
+  targets: List<int>?
   sender: UserPersistent?, relation
   chat: Chat?, relation # (onDelete=Cascade) <- This implementation of referential actions just doesn't work so we have to do it by code
   bucket: int

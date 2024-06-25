@@ -3,7 +3,7 @@ import 'dart:core';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:woukiebox2_server/src/socket/chat_message_manager.dart';
+import 'package:woukiebox2_server/src/socket/chat_manager.dart';
 import 'package:woukiebox2_server/src/util.dart';
 
 class CrudEndpoint extends Endpoint {
@@ -43,7 +43,7 @@ class CrudEndpoint extends Endpoint {
         (await Util.getPersistentData(session, senderInfo.id))!;
     if (!senderPersistant.chats.contains(chat)) return null;
 
-    bucket ??= (await ChatMessageManager.getLatestBucket(session, chat)).bucket;
+    bucket ??= (await ChatManager.getLatestBucket(session, chat)).bucket;
 
     return (await ChatMessage.db.find(
       session,

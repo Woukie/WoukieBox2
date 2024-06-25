@@ -448,16 +448,9 @@ class AppStateProvider extends ChangeNotifier {
     if (_chats[chat] != null &&
         chatMessages != null &&
         chatMessages.isNotEmpty) {
-      List<ChatMessage> newMessages = chatMessages
-          .map(
-            (message) => ChatMessage(
-              bucket: message.bucket,
-              message: message.message,
-              senderId: message.senderId,
-              sentAt: message.sentAt,
-            ),
-          )
-          .toList();
+      List<BaseMessage> newMessages = chatMessages.map((message) {
+        return BaseMessage.serverToWritten(message);
+      }).toList();
 
       groupChat.messages.insertAll(0, newMessages.reversed);
       notifyListeners();
@@ -484,6 +477,14 @@ class AppStateProvider extends ChangeNotifier {
     } else {
       chats[message.chat]?.users.remove(message.target);
       chats[message.chat]?.lastMessage = message.sentAt;
+      chats[message.chat]?.messages.add(
+            KickMessage(
+              bucket: message.bucket,
+              senderId: message.sender,
+              sentAt: message.sentAt,
+              target: message.target,
+            ),
+          );
 
       if (isChatSelected() && _selectedChat == message.chat) {
         readChat(message.chat);
@@ -496,6 +497,14 @@ class AppStateProvider extends ChangeNotifier {
   void promoteChatMember(protocol.PromoteChatMemberServer message) {
     chats[message.chat]?.owners.add(message.target);
     chats[message.chat]?.lastMessage = message.sentAt;
+    chats[message.chat]?.messages.add(
+          PromoteMessage(
+            bucket: message.bucket,
+            senderId: message.sender,
+            sentAt: message.sentAt,
+            target: message.target,
+          ),
+        );
 
     if (isChatSelected() && _selectedChat == message.chat) {
       readChat(message.chat);
@@ -507,6 +516,14 @@ class AppStateProvider extends ChangeNotifier {
   void addChatMembers(protocol.AddChatMembersServer message) {
     _chats[message.chat]?.users.addAll(message.users);
     chats[message.chat]?.lastMessage = message.sentAt;
+    chats[message.chat]?.messages.add(
+          AddUsersMessage(
+            bucket: message.bucket,
+            senderId: message.sender,
+            sentAt: message.sentAt,
+            users: message.users,
+          ),
+        );
 
     if (isChatSelected() && _selectedChat == message.chat) {
       readChat(message.chat);

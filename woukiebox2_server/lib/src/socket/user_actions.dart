@@ -2,7 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:woukiebox2_server/src/friend_manager.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
-import 'package:woukiebox2_server/src/socket/chat_message_manager.dart';
+import 'package:woukiebox2_server/src/socket/chat_manager.dart';
 import 'package:woukiebox2_server/src/socket/session_manager.dart';
 import 'package:woukiebox2_server/src/util.dart';
 
@@ -10,13 +10,13 @@ import 'package:woukiebox2_server/src/util.dart';
 class UserActions {
   static chatMessage(
     Session session,
-    ChatMessageClient message,
+    NetworkChatMessage message,
     int userId,
   ) async {
-    if (message.target == 0) {
-      ChatMessageManager.sendGlobalMessage(session, message, userId);
+    if (message.chat == 0) {
+      ChatManager.sendGlobalMessage(session, message, userId);
     } else {
-      ChatMessageManager.sendChatMessage(session, message);
+      ChatManager.sendChatMessage(session, message);
     }
   }
 
@@ -173,7 +173,7 @@ class UserActions {
 
   static Future<void> leaveChat(
     StreamingSession session,
-    LeaveChatClient message,
+    message,
   ) async {
     UserInfo? senderInfo = await Util.getAuthUser(session);
     if (senderInfo == null) return;
@@ -192,6 +192,13 @@ class UserActions {
     for (int user in chat.users) {
       session.messages.postMessage(
         user.toString(),
+        ChatMessage(
+          chat: chat.id!,
+          bucket: bucket,
+          left: true,
+          sender: senderInfo.id!,
+          sentAt: chat.lastMessage,
+        ),
         LeaveChatServer(
           chat: chat.id!,
           sender: senderInfo.id!,
@@ -287,16 +294,30 @@ class UserActions {
         !chat.users.contains(targetInfo.id) ||
         chat.owners.contains(targetInfo.id)) return;
 
-    await _removeUserFromChat(chat, targetInfo, targetPersistent, session);
+    int bucket = 0;
+    if (!await _removeUserFromChat(
+        chat, targetInfo, targetPersistent, session)) {
+      bucket = (await ChatManager.recordMessage(
+        null,
+        null,
+        targetInfo.id!,
+        null,
+        senderInfo.id!,
+        chat.id!,
+      ))
+          .bucket;
+    }
 
     chat.users.add(targetInfo.id!);
     for (int user in chat.users) {
       session.messages.postMessage(
         user.toString(),
-        KickChatMemberServer(
+        ChatMessageServer(
           chat: chat.id!,
+          bucket: bucket,
+          left: false,
           sender: senderInfo.id!,
-          target: targetInfo.id!,
+          kickTarget: targetInfo.id!,
           sentAt: DateTime.now().toUtc(),
         ),
       );
@@ -395,12 +416,21 @@ class UserActions {
     }
   }
 
-  static Future<void> _removeUserFromChat(
+  // Return value indicates whether the chat was deleted as a result of the operation
+  static Future<bool> _removeUserFromChat(
     Chat chat,
     UserInfo userInfo,
     UserPersistent userPersistent,
     StreamingSession session,
   ) async {
+    // Remove chat from user
+    userPersistent.chats.remove(chat.id);
+    LastRead.db.deleteWhere(session,
+        where: (row) =>
+            (row.chatId.equals(chat.id!)) &
+            (row.userInfoId.equals(userInfo.id)));
+    await UserPersistent.db.updateRow(session, userPersistent);
+
     // Remove user from chat
     chat.users.remove(userInfo.id);
     if (chat.users.isEmpty) {
@@ -413,7 +443,7 @@ class UserActions {
         where: (row) => row.chatId.equals(chat.id!),
       );
       await Chat.db.deleteRow(session, chat);
-      ChatMessageManager.deleteBucket(chat.id!);
+      ChatManager.deleteBucket(chat.id!);
     } else {
       if (chat.owners.contains(userInfo.id) && chat.owners.length == 1) {
         chat.owners.add(chat.users.first);
@@ -423,14 +453,10 @@ class UserActions {
 
       chat.lastMessage = DateTime.now().toUtc();
       await Chat.db.updateRow(session, chat);
+
+      return true;
     }
 
-    // Remove chat from user
-    userPersistent.chats.remove(chat.id);
-    LastRead.db.deleteWhere(session,
-        where: (row) =>
-            (row.chatId.equals(chat.id!)) &
-            (row.userInfoId.equals(userInfo.id)));
-    await UserPersistent.db.updateRow(session, userPersistent);
+    return false;
   }
 }

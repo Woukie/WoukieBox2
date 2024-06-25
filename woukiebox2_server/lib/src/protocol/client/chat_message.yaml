@@ -1,5 +1,0 @@
-class: ChatMessageClient
-
-fields:
-  target: int # Indicates desired destination of message, 0 is global
-  message: String

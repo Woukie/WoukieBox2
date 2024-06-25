@@ -1,5 +1,0 @@
-class: RenameChat
-
-fields:
-  name: String
-  chat: int

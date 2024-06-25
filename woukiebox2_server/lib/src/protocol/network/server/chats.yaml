@@ -1,0 +1,5 @@
+class: ChatsServer
+
+### Sent to users on logging in, indicates what chats they are in
+fields:
+  chats: List<Chat>

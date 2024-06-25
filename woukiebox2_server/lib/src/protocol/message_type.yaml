@@ -1,0 +1,8 @@
+enum: MessageType
+serialized: byName
+values:
+  - Message
+  - Rename
+  - Leave
+  - Kick
+  - Promote

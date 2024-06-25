@@ -1,0 +1,18 @@
+class: NetworkChatMessage
+
+### Represents a logable action. If a client recieves this, it is intended for them to log it. Clients can also send this to initiate an action.
+fields:
+  ### The action that is intended by this message
+  action: MessageType
+  ### ID representing the user that initiated the message.
+  sender: int
+  ### Time stamp for when the message was sent. Server always sends this.
+  sentAt: DateTime?
+  ### Chat ID of the destination, 0 = global.
+  chat: int
+  ### The content of an action if needed, potentially message, or rename chat action.
+  message: String?
+  ### Target list corresponding to the ID of the user target(s) of an action, if applicable.
+  target: List<int>?
+  ### Not null when recieved by the server or for global messages, indicates what bucket the message was stored in on the server.
+  bucket: int?

@@ -16,7 +16,9 @@ abstract class ChatMessage extends _i1.TableRow {
   ChatMessage._({
     int? id,
     required this.sentAt,
-    required this.message,
+    required this.action,
+    this.message,
+    this.targets,
     required this.senderId,
     this.sender,
     required this.chatId,
@@ -27,7 +29,9 @@ abstract class ChatMessage extends _i1.TableRow {
   factory ChatMessage({
     int? id,
     required DateTime sentAt,
-    required String message,
+    required _i2.MessageType action,
+    String? message,
+    List<int>? targets,
     required int senderId,
     _i2.UserPersistent? sender,
     required int chatId,
@@ -43,8 +47,12 @@ abstract class ChatMessage extends _i1.TableRow {
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       sentAt: serializationManager
           .deserialize<DateTime>(jsonSerialization['sentAt']),
+      action: serializationManager
+          .deserialize<_i2.MessageType>(jsonSerialization['action']),
       message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
+          .deserialize<String?>(jsonSerialization['message']),
+      targets: serializationManager
+          .deserialize<List<int>?>(jsonSerialization['targets']),
       senderId:
           serializationManager.deserialize<int>(jsonSerialization['senderId']),
       sender: serializationManager
@@ -64,7 +72,11 @@ abstract class ChatMessage extends _i1.TableRow {
 
   DateTime sentAt;
 
-  String message;
+  _i2.MessageType action;
+
+  String? message;
+
+  List<int>? targets;
 
   int senderId;
 
@@ -82,7 +94,9 @@ abstract class ChatMessage extends _i1.TableRow {
   ChatMessage copyWith({
     int? id,
     DateTime? sentAt,
+    _i2.MessageType? action,
     String? message,
+    List<int>? targets,
     int? senderId,
     _i2.UserPersistent? sender,
     int? chatId,
@@ -94,7 +108,9 @@ abstract class ChatMessage extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'sentAt': sentAt.toJson(),
-      'message': message,
+      'action': action.toJson(),
+      if (message != null) 'message': message,
+      if (targets != null) 'targets': targets?.toJson(),
       'senderId': senderId,
       if (sender != null) 'sender': sender?.toJson(),
       'chatId': chatId,
@@ -109,7 +125,9 @@ abstract class ChatMessage extends _i1.TableRow {
     return {
       'id': id,
       'sentAt': sentAt,
+      'action': action,
       'message': message,
+      'targets': targets,
       'senderId': senderId,
       'chatId': chatId,
       'bucket': bucket,
@@ -121,7 +139,9 @@ abstract class ChatMessage extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'sentAt': sentAt.toJson(),
-      'message': message,
+      'action': action.toJson(),
+      if (message != null) 'message': message,
+      if (targets != null) 'targets': targets?.toJson(),
       'senderId': senderId,
       if (sender != null) 'sender': sender?.allToJson(),
       'chatId': chatId,
@@ -143,8 +163,14 @@ abstract class ChatMessage extends _i1.TableRow {
       case 'sentAt':
         sentAt = value;
         return;
+      case 'action':
+        action = value;
+        return;
       case 'message':
         message = value;
+        return;
+      case 'targets':
+        targets = value;
         return;
       case 'senderId':
         senderId = value;
@@ -322,7 +348,9 @@ class _ChatMessageImpl extends ChatMessage {
   _ChatMessageImpl({
     int? id,
     required DateTime sentAt,
-    required String message,
+    required _i2.MessageType action,
+    String? message,
+    List<int>? targets,
     required int senderId,
     _i2.UserPersistent? sender,
     required int chatId,
@@ -331,7 +359,9 @@ class _ChatMessageImpl extends ChatMessage {
   }) : super._(
           id: id,
           sentAt: sentAt,
+          action: action,
           message: message,
+          targets: targets,
           senderId: senderId,
           sender: sender,
           chatId: chatId,
@@ -343,7 +373,9 @@ class _ChatMessageImpl extends ChatMessage {
   ChatMessage copyWith({
     Object? id = _Undefined,
     DateTime? sentAt,
-    String? message,
+    _i2.MessageType? action,
+    Object? message = _Undefined,
+    Object? targets = _Undefined,
     int? senderId,
     Object? sender = _Undefined,
     int? chatId,
@@ -353,7 +385,9 @@ class _ChatMessageImpl extends ChatMessage {
     return ChatMessage(
       id: id is int? ? id : this.id,
       sentAt: sentAt ?? this.sentAt,
-      message: message ?? this.message,
+      action: action ?? this.action,
+      message: message is String? ? message : this.message,
+      targets: targets is List<int>? ? targets : this.targets?.clone(),
       senderId: senderId ?? this.senderId,
       sender: sender is _i2.UserPersistent? ? sender : this.sender?.copyWith(),
       chatId: chatId ?? this.chatId,
@@ -369,8 +403,17 @@ class ChatMessageTable extends _i1.Table {
       'sentAt',
       this,
     );
+    action = _i1.ColumnEnum(
+      'action',
+      this,
+      _i1.EnumSerialization.byName,
+    );
     message = _i1.ColumnString(
       'message',
+      this,
+    );
+    targets = _i1.ColumnSerializable(
+      'targets',
       this,
     );
     senderId = _i1.ColumnInt(
@@ -389,7 +432,11 @@ class ChatMessageTable extends _i1.Table {
 
   late final _i1.ColumnDateTime sentAt;
 
+  late final _i1.ColumnEnum<_i2.MessageType> action;
+
   late final _i1.ColumnString message;
+
+  late final _i1.ColumnSerializable targets;
 
   late final _i1.ColumnInt senderId;
 
@@ -431,7 +478,9 @@ class ChatMessageTable extends _i1.Table {
   List<_i1.Column> get columns => [
         id,
         sentAt,
+        action,
         message,
+        targets,
         senderId,
         chatId,
         bucket,

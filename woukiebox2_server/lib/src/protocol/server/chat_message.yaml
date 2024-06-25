@@ -1,8 +1,0 @@
-class: ChatMessageServer
-
-fields:
-  sender: int
-  sentAt: DateTime
-  chat: int # message destination, 0 = global
-  message: String
-  bucket: int? # null bucket for global messages

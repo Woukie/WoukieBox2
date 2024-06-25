@@ -1,5 +1,0 @@
-class: KickChatMemberClient
-
-fields:
-  user: int
-  chat: int

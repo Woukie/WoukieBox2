@@ -4,4 +4,3 @@ crud:
 profilePicture:
   - getUploadDescription:
   - verifyUpload:
-sockets:

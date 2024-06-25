@@ -23,25 +23,31 @@ class SocketsEndpoint extends Endpoint {
     StreamingSession session,
     SerializableEntity message,
   ) async {
-    // Believe it or not, a switch/case would be worse.
-    if (message is ChatMessageClient) {
-      UserActions.chatMessage(session, message, getUserObject(session).id);
+    if (message is NetworkChatMessage) {
+      switch (message.action) {
+        case MessageType.Message:
+          UserActions.chatMessage(session, message, getUserObject(session).id);
+          break;
+        case MessageType.Kick:
+          UserActions.kickUser(session, message);
+          break;
+        case MessageType.Leave:
+          UserActions.leaveChat(session, message);
+          break;
+        case MessageType.Promote:
+          UserActions.promoteChatMember(session, message);
+          break;
+        case MessageType.Rename:
+          UserActions.renameChat(session, message);
+          break;
+        default:
+      }
     } else if (message is UpdateProfileClient) {
       UserActions.updateProfile(session, message, getUserObject(session).id);
     } else if (message is FriendRequestClient) {
       UserActions.friendRequest(session, message);
     } else if (message is CreateChatClient) {
       UserActions.createChat(session, message);
-    } else if (message is LeaveChatClient) {
-      UserActions.leaveChat(session, message);
-    } else if (message is RenameChat) {
-      UserActions.renameChat(session, message);
-    } else if (message is KickChatMemberClient) {
-      UserActions.kickChatMember(session, message);
-    } else if (message is PromoteChatMemberClient) {
-      UserActions.promoteChatMember(session, message);
-    } else if (message is AddChatMembersClient) {
-      UserActions.addChatMembers(session, message);
     } else if (message is ReadChatClient) {
       UserActions.readChat(session, message);
     }

@@ -1,7 +1,0 @@
-class: AddChatMembersServer
-
-fields:
-  chat: int
-  sender: int
-  users: List<int>
-  sentAt: DateTime

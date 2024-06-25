@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'package:woukiebox2_client/src/protocol/server/user.dart' as _i3;
+import 'package:woukiebox2_client/src/protocol/network/server/user.dart' as _i3;
 import 'package:woukiebox2_client/src/protocol/chat_message.dart' as _i4;
 import 'package:serverpod_auth_client/module.dart' as _i5;
 import 'protocol.dart' as _i6;
@@ -64,14 +64,6 @@ class EndpointProfilePicture extends _i1.EndpointRef {
       );
 }
 
-/// {@category Endpoint}
-class EndpointSockets extends _i1.EndpointRef {
-  EndpointSockets(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'sockets';
-}
-
 class _Modules {
   _Modules(Client client) {
     auth = _i5.Caller(client);
@@ -97,7 +89,6 @@ class Client extends _i1.ServerpodClient {
         ) {
     crud = EndpointCrud(this);
     profilePicture = EndpointProfilePicture(this);
-    sockets = EndpointSockets(this);
     modules = _Modules(this);
   }
 
@@ -105,15 +96,12 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointProfilePicture profilePicture;
 
-  late final EndpointSockets sockets;
-
   late final _Modules modules;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
         'crud': crud,
         'profilePicture': profilePicture,
-        'sockets': sockets,
       };
 
   @override
