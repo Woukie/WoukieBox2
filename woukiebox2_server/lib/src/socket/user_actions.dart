@@ -2,7 +2,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:woukiebox2_server/src/socket/friend_manager.dart';
 import 'package:woukiebox2_server/src/generated/protocol.dart';
-import 'package:woukiebox2_server/src/socket/chat_manager.dart';
 import 'package:woukiebox2_server/src/socket/session_manager.dart';
 import 'package:woukiebox2_server/src/util.dart';
 
@@ -223,106 +222,5 @@ class UserActions {
       senderInfo.id.toString(),
       ReadChatServer(chat: message.chat, readAt: readAt),
     );
-  }
-
-  static Future<void> addChatMembers(
-    StreamingSession session,
-    AddChatMembersClient message,
-  ) async {
-    if (message.users.isEmpty) return;
-
-    UserInfo? senderInfo = await Util.getAuthUser(session);
-    if (senderInfo == null) return;
-
-    UserPersistent senderPersistent =
-        (await Util.getPersistentData(session, senderInfo.id))!;
-
-    Chat? chat = await Chat.db.findById(session, message.chat);
-    if (chat == null || !chat.owners.contains(senderInfo.id)) return;
-
-    for (int target in message.users) {
-      if (chat.users.contains(target) ||
-          !senderPersistent.friends.contains(target)) return;
-
-      UserInfo? targetInfo = await Util.getAuthUser(session, target);
-      if (targetInfo == null) return;
-    }
-
-    DateTime now = DateTime.now().toUtc();
-    chat.users.addAll(message.users);
-    for (int target in message.users) {
-      UserPersistent? targetPersistent =
-          await Util.getPersistentData(session, target);
-      if (targetPersistent == null) continue;
-      targetPersistent.chats.add(chat.id!);
-      UserPersistent.db.updateRow(session, targetPersistent);
-    }
-    chat.lastMessage = now;
-    await Chat.db.updateRow(session, chat);
-
-    for (int user in chat.users) {
-      if (message.users.contains(user)) {
-        session.messages.postMessage(
-          user.toString(),
-          CreateChatServer(
-            chat: chat,
-          ),
-        );
-      } else {
-        session.messages.postMessage(
-          user.toString(),
-          AddChatMembersServer(
-            chat: chat.id!,
-            sender: senderInfo.id!,
-            users: message.users,
-            sentAt: now,
-          ),
-        );
-      }
-    }
-  }
-
-  // Return value indicates whether the chat was deleted as a result of the operation
-  static Future<bool> _removeUserFromChat(
-    Chat chat,
-    UserInfo userInfo,
-    UserPersistent userPersistent,
-    StreamingSession session,
-  ) async {
-    // Remove chat from user
-    userPersistent.chats.remove(chat.id);
-    LastRead.db.deleteWhere(session,
-        where: (row) =>
-            (row.chatId.equals(chat.id!)) &
-            (row.userInfoId.equals(userInfo.id)));
-    await UserPersistent.db.updateRow(session, userPersistent);
-
-    // Remove user from chat
-    chat.users.remove(userInfo.id);
-    if (chat.users.isEmpty) {
-      await ChatMessage.db.deleteWhere(
-        session,
-        where: (message) => message.chatId.equals(chat.id!),
-      );
-      await LastRead.db.deleteWhere(
-        session,
-        where: (row) => row.chatId.equals(chat.id!),
-      );
-      await Chat.db.deleteRow(session, chat);
-      ChatManager.deleteBucket(chat.id!);
-    } else {
-      if (chat.owners.contains(userInfo.id) && chat.owners.length == 1) {
-        chat.owners.add(chat.users.first);
-      }
-
-      chat.owners.remove(userInfo.id);
-
-      chat.lastMessage = DateTime.now().toUtc();
-      await Chat.db.updateRow(session, chat);
-
-      return true;
-    }
-
-    return false;
   }
 }

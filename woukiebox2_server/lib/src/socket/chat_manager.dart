@@ -269,12 +269,73 @@ class ChatManager {
     }
   }
 
-  static void addFriends({
+  static Future<void> addFriends({
     required StreamingSession session,
     required int chatId,
     required List<int> targetIds,
     required int senderId,
-  }) {}
+  }) async {
+    if (targetIds.isEmpty) return;
+
+    UserInfo? senderInfo = await Util.getAuthUser(session);
+    if (senderInfo == null) return;
+
+    UserPersistent senderPersistent = (await Util.getPersistentData(session))!;
+
+    Chat? chat = await Chat.db.findById(session, senderId);
+    if (chat == null) return;
+
+    if (!chat.owners.contains(senderInfo.id)) return;
+
+    for (int target in targetIds) {
+      if (chat.users.contains(target) ||
+          !senderPersistent.friends.contains(target)) return;
+    }
+
+    DateTime now = DateTime.now().toUtc();
+    chat.users.addAll(targetIds);
+    for (int target in targetIds) {
+      UserPersistent? targetPersistent =
+          await Util.getPersistentData(session, target);
+      if (targetPersistent == null) continue;
+      targetPersistent.chats.add(chat.id!);
+      UserPersistent.db.updateRow(session, targetPersistent);
+    }
+    chat.lastMessage = now;
+    await Chat.db.updateRow(session, chat);
+
+    ChatMessage chatMessage = await _writeMessageToDatabase(
+      session: session,
+      action: MessageType.AddFriends,
+      senderId: senderId,
+      chatId: chatId,
+      sentAt: DateTime.now().toUtc(),
+      targets: targetIds,
+    );
+
+    for (int user in chat.users) {
+      if (targetIds.contains(user)) {
+        session.messages.postMessage(
+          user.toString(),
+          CreateChatServer(
+            chat: chat,
+          ),
+        );
+      } else {
+        session.messages.postMessage(
+          user.toString(),
+          NetworkChatMessage(
+            action: MessageType.AddFriends,
+            sender: senderId,
+            chat: chatId,
+            bucket: chatMessage.bucket,
+            sentAt: chatMessage.sentAt,
+            targets: targetIds,
+          ),
+        );
+      }
+    }
+  }
 
   static void renameChat({
     required StreamingSession session,
